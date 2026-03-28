@@ -8,46 +8,46 @@
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
-        body { background-color: var(--preto); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; }
-        #setup-player { background: #222; padding: 30px; border-radius: 15px; text-align: center; border: 1px solid #444; margin-top: 50px; }
-        input { padding: 12px; border-radius: 5px; border: none; width: 200px; font-size: 1rem; margin-bottom: 15px; outline: none; }
+        body { background-color: var(--preto); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 10px; }
+        #setup-player { background: #222; padding: 30px; border-radius: 15px; text-align: center; border: 1px solid #444; margin-top: 20px; }
+        input { padding: 12px; border-radius: 5px; border: none; width: 180px; font-size: 1rem; margin-bottom: 15px; outline: none; }
         button.primary { padding: 12px 25px; background: var(--cor-correta); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        #grid { display: grid; grid-template-rows: repeat(6, 1fr); gap: 5px; margin: 20px 0; }
+        #grid { display: grid; grid-template-rows: repeat(6, 1fr); gap: 5px; margin: 15px 0; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { width: 50px; height: 50px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; }
+        .tile { width: 45px; height: 45px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.6rem; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
-        #leaderboard { width: 300px; background: #1a1a1b; padding: 15px; border-radius: 10px; margin-top: 30px; border: 1px solid #333; }
-        .rank-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; }
+        #leaderboard { width: 280px; background: #1a1a1b; padding: 15px; border-radius: 10px; margin-top: 20px; border: 1px solid #333; }
+        .rank-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #333; font-size: 0.9rem; }
         .gold { color: #ffd700; font-weight: bold; }
-        #keyboard { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .kb-row { display: flex; justify-content: center; gap: 5px; }
-        .key { padding: 15px 10px; background: #818384; border-radius: 4px; cursor: pointer; font-weight: bold; border: none; color: white; min-width: 35px; }
+        #keyboard { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+        .kb-row { display: flex; justify-content: center; gap: 4px; }
+        .key { padding: 14px 8px; background: #818384; border-radius: 4px; cursor: pointer; font-weight: bold; border: none; color: white; min-width: 30px; font-size: 0.8rem; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
     <div id="setup-player">
         <h2>TERMO INFINITO</h2>
-        <p>Digite seu Nick para o Rank Mundial:</p>
+        <p>Seu Nick para o Rank:</p>
         <input type="text" id="playerName" maxlength="12" placeholder="Ex: Jorge_Pro"> <br>
-        <button class="primary" onclick="iniciarTudo()">ENTRAR NO JOGO</button>
+        <button class="primary" onclick="iniciarTudo()">ENTRAR</button>
     </div>
 
     <div id="game-container" style="display:none">
-        <div id="stats">Jogador: <b id="displayPlayer"></b> | Sequência: <span id="streak" style="color:#6aaa64; font-weight:bold;">0</span></div>
+        <div id="stats"><b id="displayPlayer"></b> | 🔥 <span id="streak">0</span></div>
         <div id="grid"></div>
-        <div id="message" style="color: #ffd700; height: 25px; margin-bottom: 10px; font-weight: bold;"></div>
+        <div id="message" style="color: #ffd700; height: 20px; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; text-align: center;"></div>
         <div id="keyboard"></div>
         <div id="leaderboard">
             <h4>🏆 TOP 5 MUNDIAL</h4>
-            <div id="rank-list">Buscando jogadores...</div>
+            <div id="rank-list">Carregando...</div>
         </div>
     </div>
 
     <script>
-        // --- SEUS DADOS DO FIREBASE ---
+        // --- CONFIGURAÇÃO DO FIREBASE (COM SEUS DADOS REAIS) ---
         const firebaseConfig = {
             apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0",
             authDomain: "termo-rank-5d80d.firebaseapp.com",
@@ -58,13 +58,14 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // --- LISTA DE PALAVRAS EM PORTUGUÊS (5 LETRAS) ---
-        const PALAVRAS = ["TERMO", "JOGOS", "NOITE", "FESTA", "PORTA", "AREIA", "MUNDO", "TEMPO", "LIVRO", "CARTA", "AMIGO", "PEDRA", "COBRA", "CHAVE", "CARRO", "PEIXE", "BRASIL", "PLANO", "FORTE", "SABOR"];
+        // --- DICIONÁRIO EXPANDIDO (PORTUGUÊS) ---
+        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "TENRA", "SUTIL", "VIGOR", "AUREA", "SANAR", "PODER", "AUDAS", "IDEIA", "CERNE", "MUITO", "MORAL", "SOBRE", "JUSTO", "HONRA", "MUNDO", "QUERER", "AREIA", "CARTA", "LIVRO", "FESTA", "NOITE", "PORTA", "CHAVE", "PEIXE", "CARRO", "PLANO", "FORTE", "SABOR", "PEDRA", "COBRA", "BRASIL", "TEMPO", "AMIGO", "FOGO", "AGUA", "VENTO", "TERRA", "ALMA", "VIDA", "SAUDE", "MEDO", "AMOR", "PAZ", "SORTE", "GRITO", "CANTO", "DENTE", "BRACO", "PERNA", "CORPO", "MENTE", "SONHO", "CAMPO", "CIDADE", "FLOR", "FRUTA", "HORTA", "NAVIO", "AVIAO", "TREM", "CASA", "ESCOLA", "TRILHA", "PONTE", "OURO", "PRATA", "BRONZE", "METAL", "CORTE", "BRUXA", "MAGIA", "FADA", "HEROI", "VILAO", "SOLAR", "LUNAR", "NUVEM", "CHUVA", "NEVE", "CALOR", "FRIO", "VERAO", "PASSO", "CORDA", "BALAO", "LIVRE", "PRESO", "ALTO", "BAIXO", "LARGO", "CURTO", "CHEIO", "VAZIO", "DOCE", "AZEDO", "SALTO", "QUEDA", "PULO", "RISCO", "LUTA", "JOGO", "DADO", "BOLA", "GOL", "REDE", "MESA", "SALA", "COPA", "TETO", "CHAO", "MURO", "POSTE", "LUZ", "SOM", "VOZ", "PAPEL", "TINTA", "LAPIS", "MOLA", "PECA", "FIO", "PILHA", "RADIO", "TELA", "FOTO", "MAPA", "GUIA", "AULA", "PROVA", "NOTA", "SINO", "BANDA", "RIMA", "VERSO", "COPO", "PRATO", "GARFO", "FACA", "SOPA", "CAFE", "SUCO", "BOLO", "TRIGO", "MILHO", "UVA", "MANGA", "COCO", "CAJU"];
+
         let segredo = ""; let linha = 0; let tentativa = ""; let player = ""; let streak = 0;
 
         function iniciarTudo() {
-            player = document.getElementById('playerName').value.trim();
-            if(player.length < 3) return alert("Nome muito curto!");
+            player = document.getElementById('playerName').value.trim().toUpperCase();
+            if(player.length < 3) return alert("Nick muito curto!");
             document.getElementById('setup-player').style.display = 'none';
             document.getElementById('game-container').style.display = 'block';
             document.getElementById('displayPlayer').innerText = player;
@@ -73,6 +74,7 @@
 
         function novoJogo() {
             segredo = PALAVRAS[Math.floor(Math.random() * PALAVRAS.length)].toUpperCase();
+            if(segredo.length !== 5) { novoJogo(); return; }
             linha = 0; tentativa = "";
             document.getElementById('grid').innerHTML = "";
             document.getElementById('message').innerText = "";
@@ -115,20 +117,50 @@
         function verificar() {
             const tiles = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
             let acertos = 0;
-            for(let i=0; i<5; i++) {
-                if(tentativa[i] === segredo[i]) { tiles[i].classList.add('correct'); acertos++; }
-                else if(segredo.includes(tentativa[i])) { tiles[i].classList.add('present'); }
-                else { tiles[i].classList.add('absent'); }
+
+            // LÓGICA CORRIGIDA PARA LETRAS REPETIDAS
+            const contagemLetrasSecretas = {};
+            for (let i = 0; i < 5; i++) {
+                const l = segredo[i];
+                contagemLetrasSecretas[l] = (contagemLetrasSecretas[l] || 0) + 1;
             }
+
+            const estados = new Array(5).fill('absent');
+
+            // Primeira passada: Verdes
+            for (let i = 0; i < 5; i++) {
+                if (tentativa[i] === segredo[i]) {
+                    estados[i] = 'correct';
+                    acertos++;
+                    contagemLetrasSecretas[tentativa[i]]--;
+                }
+            }
+
+            // Segunda passada: Amarelos
+            for (let i = 0; i < 5; i++) {
+                if (estados[i] === 'correct') continue;
+                const letraT = tentativa[i];
+                if (segredo.includes(letraT) && contagemLetrasSecretas[letraT] > 0) {
+                    estados[i] = 'present';
+                    contagemLetrasSecretas[letraT]--;
+                }
+            }
+
+            // Pintar tiles
+            for (let i = 0; i < 5; i++) {
+                tiles[i].classList.add(estados[i]);
+            }
+
             if(acertos === 5) {
-                streak++; document.getElementById('streak').innerText = streak;
+                streak++;
+                document.getElementById('streak').innerText = streak;
                 salvarPontos();
-                document.getElementById('message').innerText = "VOCÊ ACERTOU!";
-                setTimeout(novoJogo, 1500);
+                document.getElementById('message').innerText = "CERTO! PRÓXIMA...";
+                setTimeout(novoJogo, 1200);
             } else if(linha === 5) {
-                document.getElementById('message').innerText = "ERROU! A palavra era: " + segredo;
+                document.getElementById('message').innerText = "ERROU! ERA: " + segredo;
                 streak = 0; document.getElementById('streak').innerText = streak;
-                salvarPontos(); // Salva o zeramento da sequência
+                salvarPontos();
                 setTimeout(novoJogo, 3000);
             } else { linha++; tentativa = ""; }
         }
@@ -136,6 +168,7 @@
         function criarTeclado() {
             const layout = [["Q","W","E","R","T","Y","U","I","O","P"], ["A","S","D","F","G","H","J","K","L"], ["APAGAR","Z","X","C","V","B","N","M","ENTER"]];
             const kb = document.getElementById('keyboard');
+            kb.innerHTML = "";
             layout.forEach(r => {
                 const div = document.createElement('div');
                 div.className = 'kb-row';
