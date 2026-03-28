@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termo Infinito - Rank Mundial</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <style>
+        :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
+        body { background-color: var(--preto); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; }
+        #setup-player { background: #222; padding: 30px; border-radius: 15px; text-align: center; border: 1px solid #444; margin-top: 50px; }
+        input { padding: 12px; border-radius: 5px; border: none; width: 200px; font-size: 1rem; margin-bottom: 15px; outline: none; }
+        button.primary { padding: 12px 25px; background: var(--cor-correta); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        #grid { display: grid; grid-template-rows: repeat(6, 1fr); gap: 5px; margin: 20px 0; }
+        .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+        .tile { width: 50px; height: 50px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; }
+        .tile.correct { background: var(--cor-correta); border: none; }
+        .tile.present { background: var(--cor-lugar-errado); border: none; }
+        .tile.absent { background: var(--cor-errada); border: none; }
+        #leaderboard { width: 300px; background: #1a1a1b; padding: 15px; border-radius: 10px; margin-top: 30px; border: 1px solid #333; }
+        .rank-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; }
+        .gold { color: #ffd700; font-weight: bold; }
+        #keyboard { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .kb-row { display: flex; justify-content: center; gap: 5px; }
+        .key { padding: 15px 10px; background: #818384; border-radius: 4px; cursor: pointer; font-weight: bold; border: none; color: white; min-width: 35px; }
+    </style>
+</head>
+<body>
+
+    <div id="setup-player">
+        <h2>TERMO INFINITO</h2>
+        <p>Digite seu Nick para o Rank Mundial:</p>
+        <input type="text" id="playerName" maxlength="12" placeholder="Ex: Jorge_Pro"> <br>
+        <button class="primary" onclick="iniciarTudo()">ENTRAR NO JOGO</button>
+    </div>
+
+    <div id="game-container" style="display:none">
+        <div id="stats">Jogador: <b id="displayPlayer"></b> | Sequência: <span id="streak" style="color:#6aaa64; font-weight:bold;">0</span></div>
+        <div id="grid"></div>
+        <div id="message" style="color: #ffd700; height: 25px; margin-bottom: 10px; font-weight: bold;"></div>
+        <div id="keyboard"></div>
+        <div id="leaderboard">
+            <h4>🏆 TOP 5 MUNDIAL</h4>
+            <div id="rank-list">Buscando jogadores...</div>
+        </div>
+    </div>
+
+    <script>
+        // --- SEUS DADOS REAIS DO FIREBASE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0",
+            authDomain: "termo-rank-5d80d.firebaseapp.com",
+            databaseURL: "https://termo-rank-5d80d-default-rtdb.firebaseio.com",
+            projectId: "termo-rank-5d80d",
+            storageBucket: "termo-rank-5d80d.firebasestorage.app",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // --- LÓGICA DO JOGO ---
+        const PALAVRAS = ["TERMO", "JOGOS", "NOITE", "CLUBE", "FESTA", "PORTA", "AREIA", "MUNDO", "PIXEL", "LOGIC", "NUVEM", "IDEIA", "TEMPO", "LIVRO", "CARTA", "AMIGO", "PEDRA", "COBRA"];
+        let segredo = ""; let linha = 0; let tentativa = ""; let player = ""; let streak = 0;
+
+        function iniciarTudo() {
+            player = document.getElementById('playerName').value.trim();
+            if(player.length < 3) return alert("Nome muito curto!");
+            document.getElementById('setup-player').style.display = 'none';
+            document.getElementById('game-container').style.display = 'block';
+            document.getElementById('displayPlayer').innerText = player;
+            carregarRank(); novoJogo(); criarTeclado();
+        }
+
+        function novoJogo() {
+            segredo = PALAVRAS[Math.floor(Math.random() * PALAVRAS.length)].toUpperCase();
+            linha = 0; tentativa = "";
+            document.getElementById('grid').innerHTML = "";
+            document.getElementById('message').innerText = "";
+            for (let i = 0; i < 6; i++) {
+                const row = document.createElement('div');
+                row.className = 'row';
+                for (let j = 0; j < 5; j++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    row.appendChild(tile);
+                }
+                document.getElementById('grid').appendChild(row);
+            }
+        }
+
+        function carregarRank() {
+            db.ref('ranking').orderByChild('streak').limitToLast(5).on('value', snap => {
+                const list = document.getElementById('rank-list');
+                list.innerHTML = "";
+                let dados = [];
+                snap.forEach(c => { dados.push(c.val()); });
+                dados.reverse().forEach((p, i) => {
+                    list.innerHTML += `<div class="rank-item ${i==0?'gold':''}"><span>${i+1}º ${p.nome}</span> <b>${p.streak}</b></div>`;
+                });
+            });
+        }
+
+        function salvarPontos() {
+            db.ref('ranking/' + player).set({ nome: player, streak: streak });
+        }
+
+        function digitar(letra) {
+            if(letra === 'ENTER') { if(tentativa.length === 5) verificar(); return; }
+            if(letra === 'DEL') { tentativa = tentativa.slice(0, -1); }
+            else if(tentativa.length < 5 && /^[A-Z]$/.test(letra)) { tentativa += letra; }
+            const tiles = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
+            tiles.forEach((t, i) => t.innerText = tentativa[i] || "");
+        }
+
+        function verificar() {
+            const tiles = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
+            let acertos = 0;
+            for(let i=0; i<5; i++) {
+                if(tentativa[i] === segredo[i]) { tiles[i].classList.add('correct'); acertos++; }
+                else if(segredo.includes(tentativa[i])) { tiles[i].classList.add('present'); }
+                else { tiles[i].classList.add('absent'); }
+            }
+            if(acertos === 5) {
+                streak++; document.getElementById('streak').innerText = streak;
+                salvarPontos();
+                document.getElementById('message').innerText = "ACERTOU!";
+                setTimeout(novoJogo, 1500);
+            } else if(linha === 5) {
+                document.getElementById('message').innerText = "Era: " + segredo;
+                streak = 0; document.getElementById('streak').innerText = streak;
+                setTimeout(novoJogo, 3000);
+            } else { linha++; tentativa = ""; }
+        }
+
+        function criarTeclado() {
+            const layout = [["Q","W","E","R","T","Y","U","I","O","P"], ["A","S","D","F","G","H","J","K","L"], ["DEL","Z","X","C","V","B","N","M","ENTER"]];
+            const kb = document.getElementById('keyboard');
+            layout.forEach(r => {
+                const div = document.createElement('div');
+                div.className = 'kb-row';
+                r.forEach(k => {
+                    const b = document.createElement('button');
+                    b.className = 'key'; b.innerText = k;
+                    b.onclick = () => digitar(k);
+                    div.appendChild(b);
+                });
+                kb.appendChild(div);
+            });
+        }
+        window.addEventListener('keydown', e => {
+            let k = e.key.toUpperCase();
+            if(k === "BACKSPACE") k = "DEL";
+            digitar(k);
+        });
+    </script>
+</body>
+</html>
