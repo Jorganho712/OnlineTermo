@@ -28,7 +28,6 @@
         }
 
         .mobile-ad-container { display: none; width: 100%; min-height: 50px; justify-content: center; align-items: center; background: transparent; padding: 5px 0; }
-
         .side-ad { position: fixed; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; z-index: 1; background: transparent; }
         .ad-left { left: calc(50% - 400px); }
         .ad-right { right: calc(50% - 400px); }
@@ -55,14 +54,9 @@
         .tile.absent { background: var(--cor-errada); border: none; }
 
         /* PAINEL DE DICAS EM CIMA DO TECLADO */
-        .hint-panel {
-            text-align: center; color: #ffd700; font-size: 14px; font-weight: bold; min-height: 20px; margin-bottom: 5px;
-        }
+        .hint-panel { text-align: center; color: #ffd700; font-size: 14px; font-weight: bold; min-height: 20px; margin-bottom: 5px; }
 
-        .action-bar {
-            display: flex; justify-content: center; gap: 10px; padding: 8px;
-            background: #121213;
-        }
+        .action-bar { display: flex; justify-content: center; gap: 10px; padding: 8px; background: #121213; }
         .btn-action { 
             flex: 1; max-width: 120px; padding: 10px; border: none; border-radius: 6px; 
             color: white; font-weight: bold; font-size: 11px; cursor: pointer; text-transform: uppercase;
@@ -77,6 +71,15 @@
     </style>
 </head>
 <body>
+
+    <div class="side-ad ad-left">
+        <script type="text/javascript">atOptions = { 'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };</script>
+        <script src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
+    </div>
+    <div class="side-ad ad-right">
+        <script type="text/javascript">atOptions = { 'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };</script>
+        <script src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
+    </div>
 
     <div class="game-column">
         <div class="mobile-ad-container">
@@ -120,6 +123,15 @@
         let vidas = 3; 
         const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE"];
 
+        // COMANDO DE CONSOLE: Digite revelar() no console
+        window.revelar = function() {
+            const msg = document.getElementById('message');
+            msg.innerText = "DEBUG: " + segredo;
+            msg.style.color = "#ff4444";
+            setTimeout(() => { msg.innerText = ""; msg.style.color = "#ffd700"; }, 3000);
+            return "A palavra secreta é: " + segredo;
+        };
+
         function dispararAnuncio() { window.open(SMARTLINK, '_blank') || (window.location.href = SMARTLINK); }
         function mostrarRegistro() { document.getElementById('auth-screen').style.display='none'; document.getElementById('register-screen').style.display='flex'; }
         function voltarLogin() { document.getElementById('register-screen').style.display='none'; document.getElementById('auth-screen').style.display='flex'; }
@@ -137,6 +149,14 @@
         function entrarComoConvidado() { nickAtual = "Visitante"; streak = 0; mostrarJogo(); }
 
         auth.onAuthStateChanged(user => { if(user) { db.ref('users/'+user.uid).on('value', s => { if(s.val()){ nickAtual=s.val().nick; streak=s.val().streak||0; mostrarJogo(); }}); } });
+
+        function abrirRanking() {
+            document.getElementById('rank-screen').style.display='flex'; const l = document.getElementById('rank-list'); l.innerHTML="Carregando...";
+            db.ref('users').orderByChild('streak').limitToLast(10).once('value', s => {
+                l.innerHTML=""; let p=[]; s.forEach(c=>{p.push(c.val())});
+                p.reverse().forEach((x,i)=>{ l.innerHTML += `<div style="padding:6px; border-bottom:1px solid #333; display:flex; justify-content:space-between;"><span>${i+1}º ${x.nick}</span> <span>🔥 ${x.streak||0}</span></div>`; });
+            });
+        }
 
         function novoJogo() {
             if(vidas<=0){ document.getElementById('game-container').style.display='none'; document.getElementById('out-of-lives').style.display='flex'; return; }
@@ -219,18 +239,11 @@
         async function pularPalavra() { 
             if(nickAtual === "Visitante") return alert("Crie uma conta para usar o Pulo!");
             dispararAnuncio(); 
-            
-            // Aumentar streak
             streak++;
             const agora = Date.now();
-            await db.ref('users/'+auth.currentUser.uid).update({
-                streak: streak,
-                lastSkip: agora
-            });
-
+            await db.ref('users/'+auth.currentUser.uid).update({ streak: streak, lastSkip: agora });
             document.getElementById('streakDisplay').innerText = streak;
             document.getElementById('message').innerText = "PULOU! A palavra era: " + segredo;
-            
             setTimeout(novoJogo, 2000); 
         }
         
