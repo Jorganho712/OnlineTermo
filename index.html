@@ -14,92 +14,66 @@
 
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
-        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; touch-action: manipulation; }
         
-        body { 
-            background-color: var(--preto); color: white; font-family: sans-serif; 
-            margin: 0; padding: 0; overflow: hidden; position: fixed; width: 100%; height: 100%;
-        }
+        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; overflow: hidden; position: fixed; width: 100%; height: 100%; }
 
-        .game-column { 
-            width: 100%; max-width: 450px; margin: 0 auto; 
-            display: flex; flex-direction: column; 
-            height: 100dvh; position: relative; z-index: 5;
-        }
+        .game-column { width: 100%; max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; height: 100dvh; }
 
-        .mobile-ad-container { display: none; width: 100%; min-height: 50px; justify-content: center; align-items: center; background: transparent; padding: 5px 0; }
-        .side-ad { position: fixed; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; z-index: 1; background: transparent; }
-        .ad-left { left: calc(50% - 400px); }
-        .ad-right { right: calc(50% - 400px); }
-
-        #auth-screen, #register-screen, #rank-screen, #out-of-lives { position: absolute; inset: 0; background: var(--preto); display: flex; justify-content: center; align-items: center; z-index: 100; }
-        .card { background: #222; padding: 20px; border-radius: 12px; width: 90%; text-align: center; border: 1px solid #333; }
-        input { width: 100%; padding: 12px; margin-bottom: 8px; background: #111; color: white; border: 1px solid #444; border-radius: 5px; font-size: 16px; }
-        .btn-main { width: 100%; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; }
-
-        #game-container { display: none; flex-direction: column; height: 100%; width: 100%; }
-        .header-jogo { display: flex; justify-content: center; align-items: center; padding: 10px; background: #1a1a1b; border-bottom: 1px solid #333; }
-        
-        #game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+        /* TECLADO E GRIDS */
+        #game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #grid { display: grid; gap: 4px; padding: 5px; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
-        .tile { 
-            width: 11vw; height: 11vw; max-width: 45px; max-height: 45px;
-            border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; 
-            font-size: 1.3rem; font-weight: bold; text-transform: uppercase;
-        }
-        .tile.selected { border-color: #818384; background: #222; }
+        .tile { width: 11vw; height: 11vw; max-width: 45px; max-height: 45px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.3rem; font-weight: bold; text-transform: uppercase; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        /* PAINEL DE DICAS EM CIMA DO TECLADO */
-        .hint-panel { text-align: center; color: #ffd700; font-size: 14px; font-weight: bold; min-height: 20px; margin-bottom: 5px; }
+        .hint-panel { text-align: center; color: #ffd700; font-size: 14px; font-weight: bold; min-height: 20px; }
+        .action-bar { display: flex; justify-content: center; gap: 10px; padding: 8px; }
+        .btn-action { flex: 1; max-width: 120px; padding: 10px; border: none; border-radius: 6px; color: white; font-weight: bold; font-size: 11px; cursor: pointer; }
 
-        .action-bar { display: flex; justify-content: center; gap: 10px; padding: 8px; background: #121213; }
-        .btn-action { 
-            flex: 1; max-width: 120px; padding: 10px; border: none; border-radius: 6px; 
-            color: white; font-weight: bold; font-size: 11px; cursor: pointer; text-transform: uppercase;
-        }
-
-        #keyboard { padding: 5px; background: var(--preto); padding-bottom: max(15px, env(safe-area-inset-bottom)); }
+        #keyboard { padding: 5px; padding-bottom: max(15px, env(safe-area-inset-bottom)); }
         .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 5px; }
-        .key { height: 42px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.75rem; font-weight: bold; flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .key.wide { flex: 1.6; background: #565758; }
+        .key { height: 45px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.8rem; font-weight: bold; flex: 1; cursor: pointer; }
+        .key.absent { background: #1a1a1b !important; color: #3a3a3c !important; pointer-events: none; }
+        .key.wide { flex: 1.5; }
 
-        @media (max-width: 850px) { .side-ad { display: none !important; } .mobile-ad-container { display: flex; } }
+        /* TELAS */
+        #auth-screen, #out-of-lives { position: absolute; inset: 0; background: var(--preto); display: flex; justify-content: center; align-items: center; z-index: 100; }
+        .card { background: #222; padding: 25px; border-radius: 12px; width: 90%; text-align: center; border: 1px solid #333; }
+        .btn-main { width: 100%; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="side-ad ad-left">
-        <script type="text/javascript">atOptions = { 'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };</script>
-        <script src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
-    </div>
-    <div class="side-ad ad-right">
-        <script type="text/javascript">atOptions = { 'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };</script>
-        <script src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
-    </div>
-
     <div class="game-column">
-        <div class="mobile-ad-container">
-            <script type="text/javascript">atOptions = { 'key' : '06eee4bace60b9e3d155aa2f08f93474', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };</script>
-            <script src="https://www.highperformanceformat.com/06eee4bace60b9e3d155aa2f08f93474/invoke.js"></script>
+        <div id="auth-screen">
+            <div class="card">
+                <h2>Verbete Online</h2>
+                <input type="text" id="loginNick" style="width:100%; padding:10px; margin-bottom:5px;" placeholder="Nome">
+                <input type="password" id="loginPass" style="width:100%; padding:10px;" placeholder="Senha">
+                <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
+                <button style="background:none; border:none; color:#888; margin-top:15px; cursor:pointer;" onclick="entrarComoConvidado()">Entrar como Visitante</button>
+            </div>
         </div>
 
-        <div id="auth-screen"><div class="card"><h2>Verbete Online</h2><input type="text" id="loginNick" placeholder="Nome"><input type="password" id="loginPass" placeholder="Senha"><button class="btn-main" onclick="fazerLogin()">ENTRAR</button><div style="display:flex; flex-direction:column; gap:8px; margin-top:15px;"><button style="background:none; border:1px solid #444; color:#bbb; padding:8px; border-radius:5px; cursor:pointer;" onclick="mostrarRegistro()">Criar Conta</button><button style="background:none; border:1px solid #444; color:#bbb; padding:8px; border-radius:5px; cursor:pointer;" onclick="entrarComoConvidado()">Jogar como Visitante</button><button style="background:none; border:1px solid #444; color:#bbb; padding:8px; border-radius:5px; cursor:pointer;" onclick="abrirRanking()">Ver Ranking</button></div></div></div>
-        <div id="register-screen" style="display:none;"><div class="card"><h3>Criar Conta</h3><input type="text" id="regNick" placeholder="Nome"><input type="password" id="regPass" placeholder="Senha"><button class="btn-main" onclick="registrar()">CADASTRAR</button><button style="background:none; border:none; color:#888; margin-top:10px; cursor:pointer;" onclick="voltarLogin()">Voltar</button></div></div>
-        <div id="rank-screen" style="display:none;"><div class="card"><h3>RANKING</h3><div id="rank-list" style="text-align:left; margin:10px 0; max-height:220px; overflow-y:auto;"></div><button class="btn-main" onclick="fecharRanking()">VOLTAR</button></div></div>
-        <div id="out-of-lives" style="display:none;"><div class="card"><h3>Vidas Esgotadas!</h3><button class="btn-main" onclick="abrirAnuncioVida()" style="background:#4a90e2">Ganhar +1 Vida (Anúncio)</button></div></div>
+        <div id="out-of-lives" style="display:none;">
+            <div class="card">
+                <h3>Limite de Jogos Diários!</h3>
+                <p>Você já jogou as 3 partidas de hoje.</p>
+                <button class="btn-main" onclick="abrirAnuncioVida()" style="background:#4a90e2">Ganhar +1 Jogo (Anúncio)</button>
+            </div>
+        </div>
 
-        <div id="game-container">
-            <div class="header-jogo">
-                <div style="font-size:12px; font-weight:bold;">👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span> | ❤️ <span id="livesDisplay">3</span></div>
+        <div id="game-container" style="display:none; flex-direction:column; height:100%;">
+            <div style="padding:10px; text-align:center; border-bottom:1px solid #333; font-size:12px;">
+                👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span> | ❤️ <span id="livesDisplay">3</span>
             </div>
             
             <div id="game-area">
                 <div id="grid"></div>
-                <div id="message" style="color:#ffd700; font-size:13px; margin-top:8px; height:18px;"></div>
+                <div id="message" style="color:#ffd700; margin-top:10px; height:20px; font-weight:bold;"></div>
             </div>
 
             <div id="hint-display" class="hint-panel"></div>
@@ -119,136 +93,172 @@
         const SMARTLINK = "https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072";
         
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
-        let tentativaArray = ["", "", "", "", ""]; let focadoIndex = 0;
-        let vidas = 3; 
-        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE"];
+        let tentativaArray = ["","","","",""]; let focadoIndex = 0;
+        let vidas = 3; let letrasErradas = new Set();
+        let listaPalavras = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO"];
 
-        // COMANDO DE CONSOLE: Digite revelar() no console
-        window.revelar = function() {
-            const msg = document.getElementById('message');
-            msg.innerText = "DEBUG: " + segredo;
-            msg.style.color = "#ff4444";
-            setTimeout(() => { msg.innerText = ""; msg.style.color = "#ffd700"; }, 3000);
-            return "A palavra secreta é: " + segredo;
+        // COMANDOS DE CONSOLE
+        window.revelar = () => { console.log("A palavra é: " + segredo); return "Revelado no console!"; };
+        window.liberar = async () => {
+            vidas = 1;
+            if(auth.currentUser) await db.ref('users/'+auth.currentUser.uid).update({ gamesToday: 0 });
+            mostrarJogo();
+            return "Acesso liberado! Jogue novamente.";
         };
 
-        function dispararAnuncio() { window.open(SMARTLINK, '_blank') || (window.location.href = SMARTLINK); }
-        function mostrarRegistro() { document.getElementById('auth-screen').style.display='none'; document.getElementById('register-screen').style.display='flex'; }
-        function voltarLogin() { document.getElementById('register-screen').style.display='none'; document.getElementById('auth-screen').style.display='flex'; }
-        function fecharRanking() { document.getElementById('rank-screen').style.display='none'; }
-
-        async function registrar() {
-            const n = document.getElementById('regNick').value.trim(); const p = document.getElementById('regPass').value;
-            if(!n) return alert("Digite um nome!");
-            try { const res = await auth.createUserWithEmailAndPassword(n.toLowerCase()+"@termo.com", p); await db.ref('users/'+res.user.uid).set({nick:n, streak:0, lastSkip:0}); location.reload(); } catch(e){ alert("Erro!"); }
-        }
         async function fazerLogin() {
             const n = document.getElementById('loginNick').value.trim(); const p = document.getElementById('loginPass').value;
-            try { await auth.signInWithEmailAndPassword(n.toLowerCase()+"@termo.com", p); } catch(e){ alert("Login incorreto!"); }
+            try { await auth.signInWithEmailAndPassword(n.toLowerCase()+"@termo.com", p); } catch(e){ alert("Erro no login!"); }
         }
-        function entrarComoConvidado() { nickAtual = "Visitante"; streak = 0; mostrarJogo(); }
 
-        auth.onAuthStateChanged(user => { if(user) { db.ref('users/'+user.uid).on('value', s => { if(s.val()){ nickAtual=s.val().nick; streak=s.val().streak||0; mostrarJogo(); }}); } });
+        function entrarComoConvidado() { nickAtual = "Visitante"; vidas = 3; mostrarJogo(); }
 
-        function abrirRanking() {
-            document.getElementById('rank-screen').style.display='flex'; const l = document.getElementById('rank-list'); l.innerHTML="Carregando...";
-            db.ref('users').orderByChild('streak').limitToLast(10).once('value', s => {
-                l.innerHTML=""; let p=[]; s.forEach(c=>{p.push(c.val())});
-                p.reverse().forEach((x,i)=>{ l.innerHTML += `<div style="padding:6px; border-bottom:1px solid #333; display:flex; justify-content:space-between;"><span>${i+1}º ${x.nick}</span> <span>🔥 ${x.streak||0}</span></div>`; });
-            });
+        auth.onAuthStateChanged(async user => {
+            if(user) {
+                db.ref('users/'+user.uid).on('value', async s => {
+                    const data = s.val();
+                    nickAtual = data.nick;
+                    streak = data.streak || 0;
+                    
+                    // Lógica de 3 vezes ao dia
+                    const hoje = new Date().toLocaleDateString();
+                    if(data.lastDate !== hoje) {
+                        await db.ref('users/'+user.uid).update({ lastDate: hoje, gamesToday: 0 });
+                        vidas = 3;
+                    } else {
+                        vidas = 3 - (data.gamesToday || 0);
+                    }
+                    mostrarJogo();
+                });
+            }
+        });
+
+        function mostrarJogo() {
+            if(vidas <= 0) {
+                document.getElementById('game-container').style.display='none';
+                document.getElementById('out-of-lives').style.display='flex';
+                return;
+            }
+            document.getElementById('auth-screen').style.display='none';
+            document.getElementById('out-of-lives').style.display='none';
+            document.getElementById('game-container').style.display='flex';
+            document.getElementById('displayNick').innerText = nickAtual;
+            document.getElementById('livesDisplay').innerText = vidas;
+            document.getElementById('streakDisplay').innerText = streak;
+            novoJogo();
         }
 
         function novoJogo() {
-            if(vidas<=0){ document.getElementById('game-container').style.display='none'; document.getElementById('out-of-lives').style.display='flex'; return; }
-            segredo = PALAVRAS[Math.floor(Math.random()*PALAVRAS.length)]; 
-            linha=0; tentativaArray=["","","","",""]; focadoIndex=0;
+            // Evitar palavras repetidas
+            let disponiveis = listaPalavras.filter(p => p !== segredo);
+            segredo = disponiveis[Math.floor(Math.random()*disponiveis.length)];
+            
+            linha=0; tentativaArray=["","","","",""]; focadoIndex=0; letrasErradas.clear();
             document.getElementById('hint-display').innerText = "";
-            const g = document.getElementById('grid'); g.innerHTML="";
-            for(let i=0;i<6;i++){ const r=document.createElement('div'); r.className='row'; for(let j=0;j<5;j++){ const t=document.createElement('div'); t.className='tile'; t.onclick=()=>{if(i===linha){focadoIndex=j;atualizarVisual();}}; r.appendChild(t); } g.appendChild(r); }
-            atualizarVisual();
-            checkSkipAvailability();
-        }
-
-        function mostrarJogo() { 
-            document.querySelectorAll('#auth-screen,#register-screen,#rank-screen,#out-of-lives').forEach(x=>x.style.display='none'); 
-            document.getElementById('game-container').style.display='flex'; 
-            document.getElementById('displayNick').innerText=nickAtual; 
-            document.getElementById('livesDisplay').innerText=vidas; 
-            document.getElementById('streakDisplay').innerText=streak; 
-            novoJogo(); criarTecladoVisual(); 
-        }
-
-        function digitar(k) { if(k==='ENTER'){ if(tentativaArray.join('').length===5) verificar(); return; } if(k==='DEL'){ tentativaArray[focadoIndex]=""; if(focadoIndex>0) focadoIndex--; } else { if(focadoIndex<5){ tentativaArray[focadoIndex]=k; if(focadoIndex<4) focadoIndex++; } } atualizarVisual(); }
-        
-        function verificar() {
-            const ts = document.querySelectorAll('.row')[linha].querySelectorAll('.tile'); let ok=0;
-            for(let i=0;i<5;i++){
-                if(tentativaArray[i]===segredo[i]){ ts[i].classList.add('correct'); ok++; }
-                else if(segredo.includes(tentativaArray[i])) ts[i].classList.add('present');
-                else ts[i].classList.add('absent');
-            }
-            if(ok===5){ 
-                streak++; 
-                if(nickAtual!=="Visitante"){ db.ref('users/'+auth.currentUser.uid).update({streak:streak}); } 
-                document.getElementById('streakDisplay').innerText = streak;
-                document.getElementById('message').innerText = "Acertou!";
-                setTimeout(novoJogo, 1500); 
-            } else if(linha===5){ 
-                streak = 0;
-                if(nickAtual!=="Visitante"){ db.ref('users/'+auth.currentUser.uid).update({streak:0}); }
-                document.getElementById('streakDisplay').innerText = 0;
-                vidas--; document.getElementById('livesDisplay').innerText = vidas;
-                document.getElementById('message').innerText = "Era: " + segredo;
-                setTimeout(novoJogo, 2500); 
-            } else { linha++; focadoIndex=0; tentativaArray=["","","","",""]; setTimeout(atualizarVisual, 100); }
-        }
-
-        function atualizarVisual() { 
-            const rows = document.querySelectorAll('.row'); if(!rows[linha]) return; 
-            const ts=rows[linha].querySelectorAll('.tile'); 
-            ts.forEach((t,i)=>{ t.innerText=tentativaArray[i]; t.classList.remove('selected'); if(i===focadoIndex) t.classList.add('selected'); }); 
             document.getElementById('message').innerText = "";
+            const g = document.getElementById('grid'); g.innerHTML="";
+            for(let i=0;i<6;i++){
+                const r=document.createElement('div'); r.className='row';
+                for(let j=0;j<5;j++){ const t=document.createElement('div'); t.className='tile'; r.appendChild(t); }
+                g.appendChild(r);
+            }
+            criarTeclado();
+            atualizarVisual();
         }
 
-        function criarTecladoVisual() {
+        function criarTeclado() {
             const lay=[["Q","W","E","R","T","Y","U","I","O","P"],["A","S","D","F","G","H","J","K","L"],["DEL","Z","X","C","V","B","N","M","ENTER"]];
             const kb=document.getElementById('keyboard'); kb.innerHTML="";
-            lay.forEach(r=>{ const d=document.createElement('div'); d.className='kb-row'; r.forEach(k=>{ const b=document.createElement('button'); b.className=(k.length>1)?'key wide':'key'; b.innerText=k; b.onclick=()=>digitar(k); d.appendChild(b); }); kb.appendChild(d); });
+            lay.forEach(r=>{
+                const d=document.createElement('div'); d.className='kb-row';
+                r.forEach(k=>{
+                    const b=document.createElement('button');
+                    b.className = (k.length>1) ? 'key wide' : 'key';
+                    b.id = "key-" + k;
+                    b.innerText = k;
+                    if(letrasErradas.has(k)) b.classList.add('absent');
+                    b.onclick = () => digitar(k);
+                    d.appendChild(b);
+                });
+                kb.appendChild(d);
+            });
         }
-        
-        function usarDica() { 
-            dispararAnuncio();
-            const letra = segredo[Math.floor(Math.random()*5)];
-            document.getElementById('hint-display').innerText = "DICA: A palavra contém a letra " + letra;
+
+        function digitar(k) {
+            if(k==='ENTER') { if(tentativaArray.join('').length===5) verificar(); }
+            else if(k==='DEL') { tentativaArray[focadoIndex]=""; if(focadoIndex>0) focadoIndex--; }
+            else { if(focadoIndex<5) { tentativaArray[focadoIndex]=k; if(focadoIndex<4) focadoIndex++; } }
+            atualizarVisual();
         }
-        
-        async function checkSkipAvailability() {
-            if(nickAtual === "Visitante") return;
-            const snapshot = await db.ref('users/'+auth.currentUser.uid+'/lastSkip').once('value');
-            const lastSkip = snapshot.val() || 0;
-            const agora = Date.now();
-            if(agora - lastSkip < 86400000) {
-                document.getElementById('btn-skip').style.opacity = "0.5";
-                document.getElementById('btn-skip').disabled = true;
+
+        async function verificar() {
+            const ts = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
+            let acertos = 0;
+            let chute = tentativaArray.join('');
+
+            for(let i=0; i<5; i++) {
+                const letra = tentativaArray[i];
+                if(letra === segredo[i]) { ts[i].classList.add('correct'); acertos++; }
+                else if(segredo.includes(letra)) { ts[i].classList.add('present'); }
+                else { 
+                    ts[i].classList.add('absent'); 
+                    letrasErradas.add(letra);
+                    document.getElementById("key-"+letra)?.classList.add('absent');
+                }
+            }
+
+            if(acertos === 5) {
+                streak++;
+                await finalizarPartida(true);
+                document.getElementById('message').innerText = "Excelente!";
+                setTimeout(mostrarJogo, 2000);
+            } else if(linha === 5) {
+                streak = 0;
+                await finalizarPartida(true);
+                document.getElementById('message').innerText = "Palavra: " + segredo;
+                setTimeout(mostrarJogo, 3000);
             } else {
-                document.getElementById('btn-skip').style.opacity = "1";
-                document.getElementById('btn-skip').disabled = false;
+                linha++; focadoIndex=0; tentativaArray=["","","","",""];
+                atualizarVisual();
             }
         }
 
-        async function pularPalavra() { 
-            if(nickAtual === "Visitante") return alert("Crie uma conta para usar o Pulo!");
-            dispararAnuncio(); 
-            streak++;
-            const agora = Date.now();
-            await db.ref('users/'+auth.currentUser.uid).update({ streak: streak, lastSkip: agora });
-            document.getElementById('streakDisplay').innerText = streak;
-            document.getElementById('message').innerText = "PULOU! A palavra era: " + segredo;
-            setTimeout(novoJogo, 2000); 
+        async function finalizarPartida(contarVida) {
+            if(nickAtual !== "Visitante") {
+                const userRef = db.ref('users/'+auth.currentUser.uid);
+                const s = await userRef.once('value');
+                const nJogos = (s.val().gamesToday || 0) + (contarVida ? 1 : 0);
+                await userRef.update({ streak: streak, gamesToday: nJogos });
+            } else if(contarVida) {
+                vidas--;
+            }
         }
-        
-        function abrirAnuncioVida() { dispararAnuncio(); vidas=1; mostrarJogo(); }
-        window.onkeydown=(e)=>{ if(document.getElementById('game-container').style.display==='flex'){ const k=e.key.toUpperCase(); if(k==='ENTER') digitar('ENTER'); else if(k==='BACKSPACE') digitar('DEL'); else if(k.length===1 && k.match(/[A-Z]/)) digitar(k); } };
+
+        function atualizarVisual() {
+            const row = document.querySelectorAll('.row')[linha];
+            const ts = row.querySelectorAll('.tile');
+            ts.forEach((t, i) => {
+                t.innerText = tentativaArray[i];
+                t.style.borderColor = (i === focadoIndex) ? "#818384" : "#3a3a3c";
+            });
+        }
+
+        function usarDica() {
+            window.open(SMARTLINK);
+            const letra = segredo[Math.floor(Math.random()*5)];
+            document.getElementById('hint-display').innerText = "DICA: Possui a letra " + letra;
+        }
+
+        async function pularPalavra() {
+            if(nickAtual === "Visitante") return alert("Crie uma conta!");
+            window.open(SMARTLINK);
+            streak++;
+            await finalizarPartida(true);
+            document.getElementById('message').innerText = "PULOU! Era: " + segredo;
+            setTimeout(mostrarJogo, 2000);
+        }
+
+        function abrirAnuncioVida() { window.open(SMARTLINK); vidas = 1; mostrarJogo(); }
     </script>
 </body>
 </html>
