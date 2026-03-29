@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Verbete Online - Pro</title>
+    <title>Verbete Online</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -12,20 +12,24 @@
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
         * { box-sizing: border-box; touch-action: manipulation; }
-        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; overflow: hidden; width: 100%; height: 100dvh; display: flex; align-items: center; justify-content: center; }
+        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; overflow: hidden; height: 100dvh; display: flex; align-items: center; justify-content: center; }
 
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
         .overlay.active { display: flex; }
 
-        .card { background: #222; padding: 25px; border-radius: 12px; width: 100%; max-width: 320px; text-align: center; border: 1px solid #333; }
+        .card { background: #222; padding: 25px; border-radius: 12px; width: 100%; max-width: 350px; text-align: center; border: 1px solid #333; }
         .btn-main { width: 100%; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
         
+        .rank-list { text-align: left; margin: 15px 0; max-height: 300px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; }
+        .rank-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; font-family: monospace; }
+        .rank-item:last-child { border-bottom: none; }
+
         .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; height: 100%; position: relative; }
         .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
         
         #grid { display: grid; gap: 5px; padding: 10px; margin: auto; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { width: 60px; height: 60px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: 0.1s; }
+        .tile { width: 60px; height: 60px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
         .tile.selected { border-color: #818384; background: #222; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
@@ -47,13 +51,21 @@
                 <h1>Verbete</h1>
                 <input type="text" id="loginNick" style="width:100%; padding:12px; margin-bottom:8px; background:#111; color:white; border:1px solid #444; border-radius:5px;" placeholder="Nome">
                 <input type="password" id="loginPass" style="width:100%; padding:12px; margin-bottom:8px; background:#111; color:white; border:1px solid #444; border-radius:5px;" placeholder="Senha">
-                <button class="btn-main" onclick="fazerLogin()">Entrar</button>
+                <button class="btn-main" onclick="fazerLogin()">Entrar / Criar</button>
+            </div>
+        </div>
+
+        <div id="rank-screen" class="overlay">
+            <div class="card">
+                <h2>🏆 Top 10 Global</h2>
+                <div id="rank-content" class="rank-list">Carregando...</div>
+                <button class="btn-main" onclick="fecharTelas()">Voltar</button>
             </div>
         </div>
 
         <div id="out-of-lives" class="overlay">
             <div class="card">
-                <h2>Limite Diário</h2>
+                <h2>Vidas Esgotadas</h2>
                 <p id="ad-text">Jogue mais 3 vezes assistindo um anúncio.</p>
                 <button id="btn-ad" class="btn-main" onclick="assistirAnuncioReset()" style="background:#4a90e2;">🎬 LIBERAR +3 JOGOS</button>
                 <button style="background:none; border:none; color:#888; margin-top:15px; cursor:pointer;" onclick="fazerLogout()">Sair</button>
@@ -64,8 +76,8 @@
             <div class="top-nav">
                 <div style="font-weight:bold;">👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span></div>
                 <div style="display:flex; gap:10px;">
-                    <button onclick="abrirRanking()" style="background:none; border:none; color:white; cursor:pointer; font-size:20px;">🏆</button>
-                    <button onclick="fazerLogout()" style="background:none; border:none; color:white; cursor:pointer; font-size:20px;">🚪</button>
+                    <button onclick="abrirRanking()" style="background:none; border:none; color:white; cursor:pointer; font-size:24px;">🏆</button>
+                    <button onclick="fazerLogout()" style="background:none; border:none; color:white; cursor:pointer; font-size:24px;">🚪</button>
                 </div>
             </div>
             
@@ -90,13 +102,30 @@
         let tentativaArray = ["","","","",""];
         let nickAtual = ""; let streak = 0; let partidasHj = 0; let adResetUsado = false; let skipUsado = false;
 
-        // TRAPAÇAS
         window.revelar = () => alert("Palavra: " + segredo);
         window.liberar = async () => { if(auth.currentUser) await db.ref('users/'+auth.currentUser.uid).update({gamesToday:0, adResetUsed:false, skipUsed:false}); location.reload(); };
 
         function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
+        function abrirRanking() { document.getElementById('rank-screen').classList.add('active'); carregarRank(); }
 
-        // TECLADO FÍSICO
+        // SISTEMA DE RANKING CORRIGIDO
+        async function carregarRank() {
+            const list = document.getElementById('rank-content');
+            list.innerHTML = "Carregando...";
+            db.ref('users').orderByChild('streak').limitToLast(10).once('value', snapshot => {
+                let html = "";
+                let players = [];
+                snapshot.forEach(child => { players.push(child.val()); });
+                players.reverse().forEach((p, index) => {
+                    html += `<div class="rank-item">
+                                <span>${index + 1}º ${p.nick || 'Anônimo'}</span>
+                                <span>🔥 ${p.streak || 0}</span>
+                             </div>`;
+                });
+                list.innerHTML = html || "Nenhum jogador ainda.";
+            });
+        }
+
         window.addEventListener('keydown', (e) => {
             if(document.getElementById('game-container').style.display === 'none') return;
             if(e.key === "Enter") digitar("ENTER");
@@ -123,7 +152,7 @@
                         fecharTelas(); document.getElementById('game-container').style.display='flex';
                         document.getElementById('displayNick').innerText = nickAtual;
                         document.getElementById('streakDisplay').innerText = streak;
-                        if(skipUsado) { document.getElementById('btn-skip').disabled = true; document.getElementById('btn-skip').innerText = "USADO"; }
+                        if(skipUsado) { document.getElementById('btn-skip').disabled = true; document.getElementById('btn-skip').innerText = "PULO USADO"; }
                         novoJogo();
                     }
                 });
@@ -183,6 +212,7 @@
 
         function atualizarVisual() {
             const rows = document.querySelectorAll('.row');
+            if(!rows[linha]) return;
             const ts = rows[linha].querySelectorAll('.tile');
             ts.forEach((t, i) => {
                 t.innerText = tentativaArray[i];
