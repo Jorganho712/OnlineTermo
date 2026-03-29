@@ -3,41 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <meta name="monetag" content="ecb4314ab31c0303ae951ea7628b02a7">
+
     <title>Termo Infinito - Pro</title>
+    
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
-        body { background-color: var(--preto); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 15px; }
+        body { background-color: var(--preto); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 15px; min-height: 100vh; }
         
-        /* Telas de Autenticação */
         .auth-card { background: #222; padding: 25px; border-radius: 15px; border: 1px solid #444; width: 300px; text-align: center; margin-top: 50px; }
         input { width: 90%; padding: 12px; margin: 8px 0; border-radius: 5px; border: 1px solid #444; background: #111; color: white; outline: none; }
         button.btn-main { width: 100%; padding: 12px; background: var(--cor-correta); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
         button.btn-guest { width: 100%; padding: 10px; background: #444; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; }
         button.btn-link { background: transparent; color: #aaa; border: none; text-decoration: underline; font-size: 0.8rem; cursor: pointer; margin-top: 15px; }
 
-        /* Jogo */
-        #game-container { display: none; flex-direction: column; align-items: center; width: 100%; }
+        #game-container { display: none; flex-direction: column; align-items: center; width: 100%; padding-bottom: 50px; }
         #grid { display: grid; gap: 5px; margin: 15px 0; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
         .tile { width: 45px; height: 45px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.6rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
-        
-        /* Destaque do quadrado selecionado */
         .tile.selected { border-color: #ffd700; transform: scale(1.05); }
-        
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        /* Teclado e Rank */
         #keyboard { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
         .kb-row { display: flex; justify-content: center; gap: 4px; }
         .key { padding: 14px 8px; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+        
         #leaderboard { width: 280px; background: #1a1a1b; padding: 15px; border-radius: 10px; margin-top: 20px; border: 1px solid #333; }
         .rank-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #333; font-size: 0.9rem; }
+
+        /* ESPAÇO PARA ANÚNCIO MONETAG */
+        #ad-slot { margin-top: 20px; min-height: 50px; width: 100%; text-align: center; }
     </style>
 </head>
 <body>
@@ -49,7 +51,7 @@
             <input type="password" id="loginPass" placeholder="Senha">
             <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
             <hr style="margin: 20px 0; border: 0; border-top: 1px solid #444;">
-            <input type="text" id="guestNick" placeholder="Apenas Nick (Convidado)">
+            <input type="text" id="guestNick" placeholder="Nick (Convidado)">
             <button class="btn-guest" onclick="entrarComoConvidado()">JOGAR SEM SALVAR</button>
             <button class="btn-link" onclick="alternarTelas('signup-box')">Criar nova conta</button>
         </div>
@@ -70,9 +72,14 @@
             <button onclick="logout()" style="padding: 5px; font-size: 0.7rem; background: #444; color: white; border: none;">SAIR</button>
         </div>
         <div>🔥 Sequência: <span id="streak">0</span></div>
+        
         <div id="grid"></div>
         <div id="message" style="color: #ffd700; height: 20px; font-weight: bold; margin: 10px 0;"></div>
         <div id="keyboard"></div>
+
+        <div id="ad-slot">
+            </div>
+
         <div id="leaderboard">
             <h4>🏆 TOP 5 RANKING</h4>
             <div id="rank-list">Carregando...</div>
@@ -163,7 +170,9 @@
         }
 
         function atualizarVisual() {
-            const tiles = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
+            const rows = document.querySelectorAll('.row');
+            if(!rows[linha]) return;
+            const tiles = rows[linha].querySelectorAll('.tile');
             tiles.forEach((t, i) => {
                 t.innerText = tentativaArray[i];
                 t.classList.toggle('selected', i === focadoIndex);
