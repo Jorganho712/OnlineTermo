@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Verbete Online</title>
+    <title>Verbete Online - Versão Final</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -16,12 +16,12 @@
 
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
         .overlay.active { display: flex; }
+
         .card { background: #222; padding: 25px; border-radius: 12px; width: 100%; max-width: 350px; text-align: center; border: 1px solid #333; }
         .btn-main { width: 100%; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
         
-        .rank-list { text-align: left; margin: 15px 0; max-height: 300px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; }
+        .rank-list { text-align: left; margin: 15px 0; max-height: 250px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; }
         .rank-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; font-family: monospace; }
-        .rank-item:last-child { border-bottom: none; }
 
         .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; height: 100%; position: relative; }
         .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
@@ -64,7 +64,7 @@
 
         <div id="out-of-lives" class="overlay">
             <div class="card">
-                <h2>Vidas Esgotadas</h2>
+                <h2>Limite Atingido</h2>
                 <p id="ad-text">Jogue mais 3 vezes assistindo um anúncio.</p>
                 <button id="btn-ad" class="btn-main" onclick="assistirAnuncioReset()" style="background:#4a90e2;">🎬 LIBERAR +3 JOGOS</button>
                 <button style="background:none; border:none; color:#888; margin-top:15px; cursor:pointer;" onclick="fazerLogout()">Sair</button>
@@ -95,36 +95,37 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.database();
         const SMARTLINK = "https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072";
+        
+        // Base de segredos (serão comparadas sem acento no jogo)
         const SEGREDO_POOL = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO"];
 
         let segredo = ""; let linha = 0; let focadoIndex = 0;
         let tentativaArray = ["","","","",""];
         let nickAtual = ""; let streak = 0; let partidasHj = 0; let adResetUsado = false; let skipUsado = false;
 
+        // DEVELOPER TOOLS
         window.revelar = () => alert("Palavra: " + segredo);
         window.liberar = async () => { if(auth.currentUser) await db.ref('users/'+auth.currentUser.uid).update({gamesToday:0, adResetUsed:false, skipUsed:false}); location.reload(); };
 
+        function removerAcentos(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
         function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
         function abrirRanking() { document.getElementById('rank-screen').classList.add('active'); carregarRank(); }
 
-        // SISTEMA DE RANKING CORRIGIDO e teste
+        // RANKING SYSTEM
         async function carregarRank() {
             const list = document.getElementById('rank-content');
             list.innerHTML = "Carregando...";
             db.ref('users').orderByChild('streak').limitToLast(10).once('value', snapshot => {
-                let html = "";
-                let players = [];
+                let html = ""; let players = [];
                 snapshot.forEach(child => { players.push(child.val()); });
-                players.reverse().forEach((p, index) => {
-                    html += `<div class="rank-item">
-                                <span>${index + 1}º ${p.nick || 'Anônimo'}</span>
-                                <span>🔥 ${p.streak || 0}</span>
-                             </div>`;
+                players.reverse().forEach((p, idx) => {
+                    html += `<div class="rank-item"><span>${idx + 1}º ${p.nick}</span><span>🔥 ${p.streak || 0}</span></div>`;
                 });
-                list.innerHTML = html || "Nenhum jogador ainda.";
+                list.innerHTML = html || "Ninguém no rank ainda.";
             });
         }
 
+        // TECLADO FÍSICO
         window.addEventListener('keydown', (e) => {
             if(document.getElementById('game-container').style.display === 'none') return;
             if(e.key === "Enter") digitar("ENTER");
@@ -138,115 +139,10 @@
                     const d = s.val() || {};
                     nickAtual = d.nick; streak = d.streak || 0;
                     const hj = new Date().toLocaleDateString();
-                    if(d.lastDate !== hj) {
-                        await db.ref('users/'+user.uid).update({ lastDate: hj, gamesToday: 0, adResetUsed: false, skipUsed: false });
-                    }
+                    if(d.lastDate !== hj) await db.ref('users/'+user.uid).update({ lastDate: hj, gamesToday: 0, adResetUsed: false, skipUsed: false });
                     partidasHj = d.gamesToday || 0; adResetUsado = d.adResetUsed || false; skipUsado = d.skipUsed || false;
 
-                    if(partidasHj >= 3 && !adResetUsado) { document.getElementById('game-container').style.display='none'; document.getElementById('out-of-lives').classList.add('active'); }
+                    if(partidasHj >= 3 && !adResetUsado) { abrirTela('out-of-lives'); }
                     else if(partidasHj >= 6 || (partidasHj >= 3 && adResetUsado)) {
-                        document.getElementById('game-container').style.display='none'; document.getElementById('out-of-lives').classList.add('active');
-                        document.getElementById('btn-ad').disabled = true; document.getElementById('btn-ad').innerText = "LIMITE DIÁRIO ATINGIDO";
-                    } else {
-                        fecharTelas(); document.getElementById('game-container').style.display='flex';
-                        document.getElementById('displayNick').innerText = nickAtual;
-                        document.getElementById('streakDisplay').innerText = streak;
-                        if(skipUsado) { document.getElementById('btn-skip').disabled = true; document.getElementById('btn-skip').innerText = "PULO USADO"; }
-                        novoJogo();
-                    }
-                });
-            }
-        });
-
-        async function validarNoDicionario(p) {
-            try { const r = await fetch(`https://api.dicionario-aberto.net/word/${p.toLowerCase()}`); const d = await r.json(); return d.length > 0; }
-            catch(e) { return true; }
-        }
-
-        function novoJogo() {
-            segredo = SEGREDO_POOL[Math.floor(Math.random()*SEGREDO_POOL.length)];
-            linha = 0; focadoIndex = 0; tentativaArray = ["","","","",""];
-            const g = document.getElementById('grid'); g.innerHTML = "";
-            for(let i=0; i<6; i++) {
-                const r = document.createElement('div'); r.className = 'row';
-                for(let j=0; j<5; j++) {
-                    const t = document.createElement('div'); t.className = 'tile';
-                    t.onclick = () => { if(i === linha) { focadoIndex = j; atualizarVisual(); } };
-                    r.appendChild(t);
-                }
-                g.appendChild(r);
-            }
-            criarTeclado(); atualizarVisual();
-        }
-
-        function digitar(k) {
-            if(k === "ENTER") { if(!tentativaArray.includes("")) verificar(); }
-            else if(k === "DEL") { tentativaArray[focadoIndex] = ""; if(focadoIndex > 0) focadoIndex--; }
-            else { tentativaArray[focadoIndex] = k; if(focadoIndex < 4) focadoIndex++; }
-            atualizarVisual();
-        }
-
-        async function verificar() {
-            const chute = tentativaArray.join("");
-            document.getElementById('message').innerText = "Validando...";
-            const existe = await validarNoDicionario(chute);
-            if(!existe) { document.getElementById('message').innerText = "Palavra inválida!"; return; }
-
-            const ts = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
-            let acertos = 0;
-            for(let i=0; i<5; i++) {
-                if(tentativaArray[i] === segredo[i]) { ts[i].classList.add('correct'); acertos++; }
-                else if(segredo.includes(tentativaArray[i])) ts[i].classList.add('present');
-                else ts[i].classList.add('absent');
-            }
-
-            if(acertos === 5) {
-                await db.ref('users/'+auth.currentUser.uid).update({ streak: streak + 1, gamesToday: partidasHj + 1 });
-            } else if(linha === 5) {
-                await db.ref('users/'+auth.currentUser.uid).update({ streak: 0, gamesToday: partidasHj + 1 });
-            } else {
-                linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual();
-            }
-        }
-
-        function atualizarVisual() {
-            const rows = document.querySelectorAll('.row');
-            if(!rows[linha]) return;
-            const ts = rows[linha].querySelectorAll('.tile');
-            ts.forEach((t, i) => {
-                t.innerText = tentativaArray[i];
-                t.classList.remove('selected');
-                if(i === focadoIndex) t.classList.add('selected');
-            });
-            document.getElementById('message').innerText = "";
-        }
-
-        function criarTeclado() {
-            const lay=[["Q","W","E","R","T","Y","U","I","O","P"],["A","S","D","F","G","H","J","K","L"],["DEL","Z","X","C","V","B","N","M","ENTER"]];
-            const kb=document.getElementById('keyboard'); kb.innerHTML="";
-            lay.forEach(r=>{
-                const d=document.createElement('div'); d.className='kb-row';
-                r.forEach(k=>{
-                    const b=document.createElement('button');
-                    b.className=(k.length>1)?'key wide':'key'; b.innerText=k;
-                    b.onclick=()=>digitar(k); d.appendChild(b);
-                });
-                kb.appendChild(d);
-            });
-        }
-
-        async function assistirAnuncioReset() { if(!adResetUsado) { window.open(SMARTLINK); await db.ref('users/'+auth.currentUser.uid).update({adResetUsed:true, gamesToday:0}); } }
-        async function pularPalavra() { if(!skipUsado) { window.open(SMARTLINK); await db.ref('users/'+auth.currentUser.uid).update({skipUsed:true, streak:streak+1, gamesToday:partidasHj+1}); } }
-        function fazerLogout() { auth.signOut().then(() => location.reload()); }
-        async function fazerLogin() {
-            const n = document.getElementById('loginNick').value.trim(); const p = document.getElementById('loginPass').value;
-            if(!n || !p) return alert("Preencha!");
-            try { await auth.signInWithEmailAndPassword(n.toLowerCase()+"@termo.com", p); } 
-            catch(e) { 
-                const res = await auth.createUserWithEmailAndPassword(n.toLowerCase()+"@termo.com", p);
-                await db.ref('users/'+res.user.uid).set({nick:n, streak:0, gamesToday:0, skipUsed:false, adResetUsed:false});
-            }
-        }
-    </script>
-</body>
-</html>
+                        abrirTela('out-of-lives');
+                        document.getElementById('btn-ad').disabled = true
