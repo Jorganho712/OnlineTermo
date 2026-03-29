@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Termo Infinito</title>
-    /* teste */
+    
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -12,69 +12,70 @@
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
         body { background-color: var(--preto); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
-
-        /* Cabeçalho */
-        .header-jogo { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 500px; padding: 10px; background: #1a1a1b; box-sizing: border-box; border-bottom: 1px solid #333; }
-        .btn-logout { background: #ce3a3a; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+/* teste */
+        /* Cabeçalho do Jogo */
+        .header-jogo { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 500px; padding: 12px; background: #1a1a1b; border-bottom: 1px solid #333; box-sizing: border-box; }
+        .btn-logout { background: #ce3a3a; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.7rem; }
 
         .layout-principal { display: flex; justify-content: center; width: 100%; margin-top: 10px; }
         .coluna-ad { width: 160px; flex-shrink: 0; }
         .area-jogo { flex: 1; max-width: 500px; display: flex; flex-direction: column; align-items: center; }
 
-        /* Grid e Teclado */
+        /* Grid de Letras */
         #grid { display: grid; gap: 5px; margin-bottom: 15px; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { width: 55px; height: 55px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
+        .tile { width: 55px; height: 55px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
         .tile.selected { border-color: #ffd700; background-color: #2a2a2e; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        #keyboard { display: flex; flex-direction: column; gap: 6px; width: 95%; margin-bottom: 15px; }
+        /* Teclado Virtual */
+        #keyboard { display: flex; flex-direction: column; gap: 6px; width: 95%; margin-bottom: 10px; }
         .kb-row { display: flex; justify-content: center; gap: 4px; }
-        .key { padding: 15px 6px; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.8rem; font-weight: bold; flex: 1; }
+        .key { padding: 15px 4px; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.8rem; font-weight: bold; flex: 1; }
         .key.wide { flex: 1.5; background: #565758; }
 
-        /* Mobile Adjustments */
-        @media (max-width: 1000px) {
-            .coluna-ad { display: none !important; }
-            .tile { width: 45px !important; height: 45px !important; font-size: 1.5rem !important; }
-        }
-
-        /* Container de Anúncio Debaixo do Teclado */
-        .ad-container-bottom { width: 320px; height: 50px; margin: 10px 0; background: #1a1a1b; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-
-        /* Telas de Login/Cadastro */
-        .auth-card { background: #222; padding: 25px; border-radius: 12px; margin-top: 50px; text-align: center; width: 300px; border: 1px solid #444; }
+        /* Telas de Autenticação */
+        .auth-card { background: #222; padding: 25px; border-radius: 12px; margin-top: 40px; text-align: center; width: 300px; border: 1px solid #444; }
         input { width: 90%; padding: 12px; margin: 10px 0; background: #111; color: white; border: 1px solid #444; border-radius: 5px; }
         .btn-main { width: 100%; padding: 12px; background: var(--cor-correta); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .link-auth { color: #aaa; font-size: 0.8rem; margin-top: 15px; cursor: pointer; display: block; text-decoration: underline; }
+
+        /* Container de Anúncio */
+        .ad-bottom-wrapper { width: 320px; height: 50px; margin-top: 15px; display: flex; justify-content: center; align-items: center; }
+
+        @media (max-width: 1000px) {
+            .coluna-ad { display: none !important; }
+            .tile { width: 48px; height: 48px; font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div id="login-box" class="auth-card">
-            <h2>Entrar</h2>
-            <input type="text" id="loginNick" placeholder="Nome do Jogador">
+            <h2>Termo Infinito</h2>
+            <input type="text" id="loginNick" placeholder="Seu Nome">
             <input type="password" id="loginPass" placeholder="Sua Senha">
-            <button class="btn-main" onclick="fazerLogin()">JOGAR AGORA</button>
-            <p style="font-size: 0.8rem; color: #aaa; margin-top: 15px; cursor: pointer;" onclick="alternarTela('signup-box')">Novo por aqui? <u>Criar Conta</u></p>
-            <button onclick="entrarComoConvidado()" style="margin-top:10px; background:none; border:none; color:#555; cursor:pointer;">Entrar como Convidado</button>
+            <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
+            <span class="link-auth" onclick="alternarTela('signup-box')">Criar uma nova conta</span>
+            <button onclick="entrarComoConvidado()" style="margin-top:15px; background:none; border:none; color:#555; cursor:pointer;">Entrar como Convidado</button>
         </div>
 
         <div id="signup-box" class="auth-card" style="display:none">
-            <h2>Criar Conta</h2>
+            <h2>Novo Cadastro</h2>
             <input type="text" id="userNick" placeholder="Escolha um Nome">
-            <input type="password" id="userPass" placeholder="Senha (mín. 6 dígitos)">
+            <input type="password" id="userPass" placeholder="Senha (mín. 6 letras)">
             <button class="btn-main" style="background:#4a90e2" onclick="criarConta()">CADASTRAR</button>
-            <p style="font-size: 0.8rem; color: #aaa; margin-top: 15px; cursor: pointer;" onclick="alternarTela('login-box')">Já tem conta? <u>Voltar ao Login</u></p>
+            <span class="link-auth" onclick="alternarTela('login-box')">Já tenho conta. Voltar</span>
         </div>
     </div>
 
     <div id="game-container" style="display:none; width: 100%;">
         <div class="header-jogo">
             <div>👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span></div>
-            <button class="btn-logout" onclick="logout()">SAIR</button>
+            <button class="btn-logout" onclick="logout()">SAIR (LOGOUT)</button>
         </div>
 
         <div class="layout-principal">
@@ -85,10 +86,10 @@
 
             <div class="area-jogo">
                 <div id="grid"></div>
-                <div id="message" style="height: 30px; color: #ffd700; font-weight: bold; font-size: 1.2rem;"></div>
+                <div id="message" style="height: 30px; color: #ffd700; font-weight: bold; margin-bottom: 5px;"></div>
                 <div id="keyboard"></div>
                 
-                <div class="ad-container-bottom">
+                <div class="ad-bottom-wrapper">
                     <script type="text/javascript">
                         atOptions = {
                             'key' : '06eee4bace60b9e3d155aa2f08f93474',
@@ -134,12 +135,12 @@
         async function criarConta() {
             const nick = document.getElementById('userNick').value.trim();
             const pass = document.getElementById('userPass').value;
-            if(!nick || pass.length < 6) return alert("Preencha o nome e a senha (mín. 6 dígitos)");
+            if(!nick || pass.length < 6) return alert("Preencha o nome e a senha (mín. 6 letras)");
             const email = nick.toLowerCase() + "@termo.com";
             try {
                 const res = await auth.createUserWithEmailAndPassword(email, pass);
                 await db.ref('users/' + res.user.uid).set({ nick: nick, streak: 0 });
-            } catch (e) { alert("Erro: Nome em uso ou problema na rede."); }
+            } catch (e) { alert("Nome em uso ou erro de rede."); }
         }
 
         async function fazerLogin() {
@@ -147,7 +148,7 @@
             const pass = document.getElementById('loginPass').value;
             if(!nick) return alert("Digite seu nome!");
             try { await auth.signInWithEmailAndPassword(nick.toLowerCase() + "@termo.com", pass); } 
-            catch (e) { alert("Nome ou senha incorretos."); }
+            catch (e) { alert("Dados incorretos!"); }
         }
 
         function logout() { auth.signOut().then(() => location.reload()); }
@@ -156,7 +157,9 @@
         auth.onAuthStateChanged(user => {
             if (user) {
                 db.ref('users/' + user.uid).once('value').then(snap => {
-                    nickAtual = snap.val().nick; streak = snap.val().streak || 0; mostrarJogo();
+                    const data = snap.val();
+                    nickAtual = data.nick; streak = data.streak || 0;
+                    mostrarJogo();
                 });
             }
         });
@@ -167,11 +170,13 @@
             document.getElementById('displayNick').innerText = nickAtual;
             document.getElementById('streakDisplay').innerText = streak;
             novoJogo(); criarTeclado();
-            window.addEventListener('keydown', (e) => {
-                if(e.key === 'Enter') digitar('ENTER');
-                else if(e.key === 'Backspace') digitar('DEL');
-                else if(/^[a-zA-Z]$/.test(e.key)) digitar(e.key.toUpperCase());
-            });
+            window.addEventListener('keydown', handleKey);
+        }
+
+        function handleKey(e) {
+            if(e.key === 'Enter') digitar('ENTER');
+            else if(e.key === 'Backspace') digitar('DEL');
+            else if(/^[a-zA-Z]$/.test(e.key)) digitar(e.key.toUpperCase());
         }
 
         function novoJogo() {
@@ -187,7 +192,8 @@
                 }
                 grid.appendChild(row);
             }
-            document.getElementById('message').innerText = ""; atualizarVisual();
+            document.getElementById('message').innerText = "";
+            atualizarVisual();
         }
 
         function atualizarVisual() {
@@ -216,7 +222,7 @@
                 else tiles[i].classList.add('absent');
             }
             if(acertos === 5) { 
-                document.getElementById('message').innerText = "VITORIA!"; 
+                document.getElementById('message').innerText = "VENCEU!"; 
                 if(nickAtual !== "Convidado") {
                     streak++;
                     db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
@@ -224,7 +230,7 @@
                 }
                 setTimeout(novoJogo, 2000); 
             } else if(linha === 5) { 
-                document.getElementById('message').innerText = "PALAVRA: " + segredo; 
+                document.getElementById('message').innerText = "ERA: " + segredo; 
                 setTimeout(novoJogo, 3000); 
             } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); }
         }
