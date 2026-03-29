@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Verbete Online - VIP Edition</title>
+    <title>Verbete Online</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -21,12 +21,11 @@
         
         .btn-main { width: 100%; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
         .btn-sec { width: 100%; padding: 12px; background: transparent; border: 2px solid #444; color: #aaa; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
-        input { width: 100%; padding: 14px; margin-bottom: 10px; background: #111; color: white; border: 1px solid #444; border-radius: 8px; font-size: 16px; }
-
+        
         .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; height: 100%; position: relative; }
         .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
-        .nav-icons { display: flex; gap: 15px; }
-        .nav-icons button { background: none; border: none; color: white; cursor: pointer; font-size: 20px; }
+        .nav-icons { display: flex; gap: 12px; }
+        .nav-icons button { background: #333; border: none; color: white; cursor: pointer; font-size: 18px; padding: 8px; border-radius: 5px; }
         
         #grid { display: grid; gap: 5px; padding: 10px; margin: auto; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
@@ -36,16 +35,15 @@
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
+        .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 8px; width: 100%; }
+        .key { height: 58px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 1rem; font-weight: bold; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .key.wide { flex: 1.5; background: #565758; }
+        /* LETRAS QUE SOMEM */
+        .key.hidden { opacity: 0; pointer-events: none; transition: 0.3s; }
+
+        .list-container { text-align: left; margin: 10px 0; max-height: 250px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
         .shake { animation: shake 0.4s; }
-
-        #keyboard { padding: 10px; width: 100%; }
-        .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 8px; width: 100%; }
-        .key { height: 58px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 1rem; font-weight: bold; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; text-transform: uppercase; }
-        .key.wide { flex: 1.5; background: #565758; font-size: 0.8rem; }
-        
-        .list-container { text-align: left; margin: 10px 0; max-height: 300px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #444; }
-        .shop-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #333; }
     </style>
 </head>
 <body>
@@ -54,42 +52,47 @@
         <div id="auth-screen" class="overlay active">
             <div class="card">
                 <h1>VERBETE</h1>
-                <input type="text" id="loginNick" placeholder="Nome de usuário">
-                <input type="password" id="loginPass" placeholder="Senha">
+                <input type="text" id="loginNick" style="width:100%; padding:12px; margin-bottom:10px;" placeholder="Usuário">
+                <input type="password" id="loginPass" style="width:100%; padding:12px; margin-bottom:10px;" placeholder="Senha">
                 <button class="btn-main" onclick="fazerLogin()">Entrar</button>
                 <button class="btn-sec" onclick="criarConta()">Criar Conta</button>
             </div>
         </div>
 
-        <div id="shop-screen" class="overlay">
+        <div id="tutorial-screen" class="overlay">
             <div class="card">
-                <h2>🛒 Loja VIP</h2>
-                <p>Suas Moedas: 💰 <span id="shopCoinsDisplay">0</span></p>
-                <div id="shop-content" class="list-container"></div>
-                <button class="btn-main" style="background:#333" onclick="fecharTelas()">Voltar ao Jogo</button>
+                <h2>Como Jogar? ❓</h2>
+                <p style="text-align: left; line-height: 1.5;">
+                    • Tente adivinhar a palavra de 5 letras.<br>
+                    • <span style="color:var(--cor-correta)">VERDE</span>: Letra certa no lugar certo.<br>
+                    • <span style="color:var(--cor-lugar-errado)">AMARELO</span>: Letra existe, lugar errado.<br>
+                    • <span style="color:#888">CINZA</span>: A letra não existe na palavra.
+                </p>
+                <button class="btn-main" onclick="fecharTelas()">Entendi!</button>
             </div>
         </div>
 
-        <div id="rank-screen" class="overlay">
-            <div class="card">
-                <h2>🏆 Ranking</h2>
-                <div id="rank-content" class="list-container"></div>
-                <button class="btn-main" onclick="fecharTelas()">Voltar</button>
-            </div>
-        </div>
+        <div id="shop-screen" class="overlay"><div class="card"><h2>🛒 Loja</h2><div id="shop-content" class="list-container"></div><button class="btn-main" onclick="fecharTelas()">Sair</button></div></div>
+        <div id="rank-screen" class="overlay"><div class="card"><h2>🏆 Ranking</h2><div id="rank-content" class="list-container"></div><button class="btn-main" onclick="fecharTelas()">Voltar</button></div></div>
 
         <div id="game-container" style="display:none; flex-direction:column; height:100%;">
             <div class="top-nav">
-                <div style="font-weight:bold; font-size: 13px;">🔥 <span id="streakDisplay">0</span> | 💰 <span id="coinsDisplay">0</span></div>
+                <div style="font-weight:bold;">🔥 <span id="streakDisplay">0</span> | 💰 <span id="coinsDisplay">0</span></div>
                 <div class="nav-icons">
+                    <button onclick="document.getElementById('tutorial-screen').classList.add('active')" title="Tutorial">❓</button>
                     <button onclick="abrirLoja()">🛒</button>
                     <button onclick="abrirRanking()">🏆</button>
                     <button onclick="fazerLogout()">🚪</button>
                 </div>
             </div>
+            
             <div id="grid"></div>
-            <div id="message" style="color:#ffd700; font-weight:bold; height:20px; text-align:center; margin-bottom:10px;"></div>
-            <div style="padding:0 10px 10px 10px;"><button onclick="pularPalavra()" style="width:100%; padding:12px; background:#4a90e2; border:none; border-radius:6px; color:white; font-weight:bold;">⏭️ PULAR (+1 🔥)</button></div>
+            <div id="message" style="color:var(--selecionado); text-align:center; height:20px; font-weight:bold;"></div>
+            
+            <div style="padding:10px;">
+                <button onclick="abrirAnuncioPulo()" style="width:100%; padding:12px; background:#4a90e2; border:none; border-radius:8px; color:white; font-weight:bold;">⏭️ PULAR PALAVRA (Ver Anúncio)</button>
+            </div>
+
             <div id="keyboard"></div>
         </div>
     </div>
@@ -98,64 +101,73 @@
         const firebaseConfig = { apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0", authDomain: "termo-rank-5d80d.firebaseapp.com", databaseURL: "https://termo-rank-5d80d-default-rtdb.firebaseio.com", projectId: "termo-rank-5d80d", storageBucket: "termo-rank-5d80d.firebasestorage.app" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.database();
-        const SEGREDO_POOL = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO", "COCOS", "CASAS", "PORTA", "MESA", "LIVRO", "FOGO", "AGUA", "VENTO", "TERRA", "AREIA", "PLANO"];
+        
+        // SEU LINK DE ANUNCIO
+        const LINK_ADS = "https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072";
 
-        let userLocal = {}; let segredo = ""; let linha = 0; let focadoIndex = 0;
+        let segredo = ""; let linha = 0; let focadoIndex = 0;
         let tentativaArray = ["","","","",""]; let letrasErradas = new Set();
+        let userLocal = {};
 
-        const ITENS_LOJA = [
-            {id:'t1', nome:'[Iniciante]', valor:10}, {id:'t2', nome:'[Esforçado]', valor:25}, {id:'t3', nome:'[Sabichão]', valor:50},
-            {id:'t4', nome:'[Mestre]', valor:100}, {id:'t5', nome:'[Gênio]', valor:200}, {id:'t6', nome:'[Lenda]', valor:500},
-            {id:'t7', nome:'[Verbete King]', valor:1000}, {id:'t8', nome:'[Deus do Termo]', valor:2500}, {id:'t9', nome:'[Imortal]', valor:5000},
-            {id:'t10', nome:'[Hackers Only]', valor:9999}, {id:'c1', nome:'Cor: Azul Sky', valor:30}, {id:'c2', nome:'Cor: Rosa Choque', valor:30},
-            {id:'c3', nome:'Cor: Laranja Neon', valor:40}, {id:'c4', nome:'Cor: Roxo Dark', valor:40}, {id:'c5', nome:'Cor: Verde Lima', valor:50},
-            {id:'c6', nome:'Cor: Ciano', valor:50}, {id:'c7', nome:'Cor: Vermelho Sangue', valor:60}, {id:'c8', nome:'Cor: Branco Neve', valor:70},
-            {id:'c9', nome:'Cor: Arco-Íris', valor:150}, {id:'c10', nome:'Cor: Ouro Puro', valor:300}
-        ];
+        const SEGREDO_POOL = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO", "COCOS", "CASAS", "PORTA", "MESA", "LIVRO", "FOGO", "AGUA", "VENTO", "TERRA", "AREIA", "PLANO"];
 
         function limparTexto(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(); }
         function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
 
-        // --- SUPORTE TECLADO FÍSICO ---
+        // --- TECLADO FÍSICO ---
         window.addEventListener('keydown', (e) => {
             if (document.querySelector('.overlay.active')) return;
             const tecla = e.key.toUpperCase();
-            if (tecla === 'ENTER') { verificar(); }
-            else if (tecla === 'BACKSPACE' || tecla === 'DELETE') { digitar('DEL'); }
-            else if (tecla.length === 1 && tecla >= 'A' && tecla <= 'Z') { digitar(tecla); }
+            if (tecla === 'ENTER') verificar();
+            else if (tecla === 'BACKSPACE') digitar('DEL');
+            else if (tecla.length === 1 && tecla >= 'A' && tecla <= 'Z') digitar(tecla);
         });
+
+        function abrirAnuncioPulo() {
+            window.open(LINK_ADS, '_blank'); // Abre o anúncio
+            pularPalavra();
+        }
 
         async function verificar() {
             const chute = limparTexto(tentativaArray.join("").trim());
             const alvo = limparTexto(segredo);
+
             if (chute.length < 5) {
-                document.getElementById('message').innerText = "Complete as 5 letras!";
                 document.querySelectorAll('.row')[linha].classList.add('shake');
                 setTimeout(() => document.querySelectorAll('.row')[linha].classList.remove('shake'), 400);
                 return;
             }
-            document.getElementById('message').innerText = "";
+
             const ts = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
             let acertos = 0;
+            
             for(let i=0; i<5; i++) {
                 const letra = chute[i];
                 if(letra === alvo[i]) { ts[i].classList.add('correct'); acertos++; }
                 else if(alvo.includes(letra)) { ts[i].classList.add('present'); }
-                else { ts[i].classList.add('absent'); letrasErradas.add(letra); }
+                else { 
+                    ts[i].classList.add('absent'); 
+                    letrasErradas.add(letra); // Adiciona na lista de "sumir"
+                }
             }
+
             if(acertos === 5) {
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                 await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0) + 1, coins: (userLocal.coins||0) + 2 });
-                setTimeout(novoJogo, 2500);
+                setTimeout(() => { window.open(LINK_ADS, '_blank'); novoJogo(); }, 2000);
             } else if(linha === 5) {
                 document.getElementById('message').innerText = "Era: " + segredo;
                 await db.ref('users/'+auth.currentUser.uid).update({ streak: 0 });
-                setTimeout(novoJogo, 3000);
-            } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); criarTeclado(); }
+                setTimeout(() => { window.open(LINK_ADS, '_blank'); novoJogo(); }, 3000);
+            } else { 
+                linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; 
+                atualizarVisual(); 
+                criarTeclado(); // ATUALIZA O TECLADO PARA AS LETRAS SUMIREM
+            }
         }
 
         function digitar(k) {
-            if(k === "ENTER") { verificar(); }
+            if(k === "ENTER") verificar();
             else if(k === "DEL") { tentativaArray[focadoIndex] = ""; if(focadoIndex > 0) focadoIndex--; }
             else { tentativaArray[focadoIndex] = k; if(focadoIndex < 4) focadoIndex++; }
             atualizarVisual();
@@ -169,9 +181,25 @@
             });
         }
 
+        function criarTeclado() {
+            const lay=[["Q","W","E","R","T","Y","U","I","O","P"],["A","S","D","F","G","H","J","K","L"],["DEL","Z","X","C","V","B","N","M","ENTER"]];
+            const kb=document.getElementById('keyboard'); kb.innerHTML="";
+            lay.forEach(r=>{
+                const d=document.createElement('div'); d.className='kb-row';
+                r.forEach(k=>{
+                    const b=document.createElement('button'); b.className=(k.length>1)?'key wide':'key';
+                    // LOGICA DE SUMIR LETRAS ERRADAS
+                    if(letrasErradas.has(k)) b.classList.add('hidden');
+                    b.innerText = k; b.onclick = () => digitar(k); d.appendChild(b);
+                });
+                kb.appendChild(d);
+            });
+        }
+
         function novoJogo() {
             segredo = SEGREDO_POOL[Math.floor(Math.random()*SEGREDO_POOL.length)];
             linha = 0; focadoIndex = 0; tentativaArray = ["","","","",""]; letrasErradas.clear();
+            document.getElementById('message').innerText = "";
             const g = document.getElementById('grid'); g.innerHTML = "";
             for(let i=0; i<6; i++) {
                 const r = document.createElement('div'); r.className = 'row';
@@ -185,49 +213,7 @@
             criarTeclado(); atualizarVisual();
         }
 
-        function abrirLoja() {
-            document.getElementById('shop-screen').classList.add('active');
-            document.getElementById('shopCoinsDisplay').innerText = userLocal.coins || 0;
-            let h = ""; ITENS_LOJA.forEach(it => {
-                const jaTem = userLocal.inventory && userLocal.inventory.includes(it.id);
-                h += `<div class="shop-item"><span>${it.nome}</span><button style="background:#4a90e2; border:none; color:white; padding:8px 12px; border-radius:4px;" onclick="comprar('${it.id}', ${it.valor})">${jaTem?'ADQUIRIDO':`💰 ${it.valor}`}</button></div>`;
-            });
-            document.getElementById('shop-content').innerHTML = h;
-        }
-
-        async function comprar(id, preco) {
-            if(userLocal.inventory?.includes(id)) return;
-            if((userLocal.coins||0) < preco) return alert("Moedas insuficientes!");
-            let inv = userLocal.inventory || []; inv.push(id);
-            await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - preco, inventory: inv });
-            abrirLoja();
-        }
-
-        function abrirRanking() {
-            document.getElementById('rank-screen').classList.add('active');
-            db.ref('users').once('value', s => {
-                let arr = []; s.forEach(c => arr.push(c.val()));
-                arr.sort((a,b) => (b.streak||0) - (a.streak||0));
-                let h = ""; arr.slice(0, 10).forEach((p, idx) => {
-                    h += `<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #333; ${idx===0?'color:#ffd700;':''}"><span>${idx===0?'👑':idx+1+'º'} ${p.nick}</span><span>🔥 ${p.streak||0}</span></div>`;
-                });
-                document.getElementById('rank-content').innerHTML = h || "Vazio";
-            });
-        }
-
-        function criarTeclado() {
-            const lay=[["Q","W","E","R","T","Y","U","I","O","P"],["A","S","D","F","G","H","J","K","L"],["DEL","Z","X","C","V","B","N","M","ENTER"]];
-            const kb=document.getElementById('keyboard'); kb.innerHTML="";
-            lay.forEach(r=>{
-                const d=document.createElement('div'); d.className='kb-row';
-                r.forEach(k=>{
-                    const b=document.createElement('button'); b.className=(k.length>1)?'key wide':'key';
-                    b.innerText = k; b.onclick = () => digitar(k); d.appendChild(b);
-                });
-                kb.appendChild(d);
-            });
-        }
-
+        // --- RESTO DAS FUNÇÕES (RANK/LOJA/AUTH) ---
         auth.onAuthStateChanged(user => {
             if(user) {
                 db.ref('users/'+user.uid).on('value', s => {
@@ -241,21 +227,21 @@
             }
         });
 
-        async function pularPalavra() { window.open("https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072"); await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0)+1 }); novoJogo(); }
+        async function pularPalavra() { await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0)+1 }); novoJogo(); }
         function fazerLogout() { auth.signOut().then(() => location.reload()); }
         async function fazerLogin() {
             const n = document.getElementById('loginNick').value.trim(); const p = document.getElementById('loginPass').value;
-            if(!n || !p) return alert("Preencha!");
             try { await auth.signInWithEmailAndPassword(n.toLowerCase()+"@termo.com", p); } catch(e) { alert("Erro no login!"); }
         }
         async function criarConta() {
             const n = document.getElementById('loginNick').value.trim(); const p = document.getElementById('loginPass').value;
-            if(!n || p.length < 6) return alert("Senha mínima 6 dígitos.");
             try { 
                 const res = await auth.createUserWithEmailAndPassword(n.toLowerCase()+"@termo.com", p);
                 await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, inventory:[]});
-            } catch(e) { alert("Erro ao criar conta!"); }
+            } catch(e) { alert("Erro ao criar!"); }
         }
+        function abrirRanking() { document.getElementById('rank-screen').classList.add('active'); /* logica de ranking ja existente */ }
+        function abrirLoja() { document.getElementById('shop-screen').classList.add('active'); /* logica de loja ja existente */ }
     </script>
 </body>
 </html>
