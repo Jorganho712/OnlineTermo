@@ -54,10 +54,14 @@
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        /* NOVA BARRA DE AÇÕES EM CIMA DO TECLADO */
+        /* PAINEL DE DICAS EM CIMA DO TECLADO */
+        .hint-panel {
+            text-align: center; color: #ffd700; font-size: 14px; font-weight: bold; min-height: 20px; margin-bottom: 5px;
+        }
+
         .action-bar {
             display: flex; justify-content: center; gap: 10px; padding: 8px;
-            background: #121213; border-top: 1px solid #222;
+            background: #121213;
         }
         .btn-action { 
             flex: 1; max-width: 120px; padding: 10px; border: none; border-radius: 6px; 
@@ -74,35 +78,13 @@
 </head>
 <body>
 
-    <div class="side-ad ad-left">
-        <script type="text/javascript">atOptions = { 'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };</script>
-        <script src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
-    </div>
-    <div class="side-ad ad-right">
-        <script type="text/javascript">atOptions = { 'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };</script>
-        <script src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
-    </div>
-
     <div class="game-column">
         <div class="mobile-ad-container">
             <script type="text/javascript">atOptions = { 'key' : '06eee4bace60b9e3d155aa2f08f93474', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };</script>
             <script src="https://www.highperformanceformat.com/06eee4bace60b9e3d155aa2f08f93474/invoke.js"></script>
         </div>
 
-        <div id="auth-screen">
-            <div class="card">
-                <h2>Verbete Online</h2>
-                <input type="text" id="loginNick" placeholder="Nome">
-                <input type="password" id="loginPass" placeholder="Senha">
-                <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
-                <div style="display:flex; flex-direction:column; gap:8px; margin-top:15px;">
-                    <button style="background:none; border:1px solid #444; color:#bbb; padding:8px; border-radius:5px; cursor:pointer;" onclick="mostrarRegistro()">Criar Conta</button>
-                    <button style="background:none; border:1px solid #444; color:#bbb; padding:8px; border-radius:5px; cursor:pointer;" onclick="entrarComoConvidado()">Jogar como Visitante</button>
-                    <button style="background:none; border:1px solid #444; color:#bbb; padding:8px; border-radius:5px; cursor:pointer;" onclick="abrirRanking()">Ver Ranking</button>
-                </div>
-            </div>
-        </div>
-
+        <div id="auth-screen"><div class="card"><h2>Verbete Online</h2><input type="text" id="loginNick" placeholder="Nome"><input type="password" id="loginPass" placeholder="Senha"><button class="btn-main" onclick="fazerLogin()">ENTRAR</button><div style="display:flex; flex-direction:column; gap:8px; margin-top:15px;"><button style="background:none; border:1px solid #444; color:#bbb; padding:8px; border-radius:5px; cursor:pointer;" onclick="mostrarRegistro()">Criar Conta</button><button style="background:none; border:1px solid #444; color:#bbb; padding:8px; border-radius:5px; cursor:pointer;" onclick="entrarComoConvidado()">Jogar como Visitante</button><button style="background:none; border:1px solid #444; color:#bbb; padding:8px; border-radius:5px; cursor:pointer;" onclick="abrirRanking()">Ver Ranking</button></div></div></div>
         <div id="register-screen" style="display:none;"><div class="card"><h3>Criar Conta</h3><input type="text" id="regNick" placeholder="Nome"><input type="password" id="regPass" placeholder="Senha"><button class="btn-main" onclick="registrar()">CADASTRAR</button><button style="background:none; border:none; color:#888; margin-top:10px; cursor:pointer;" onclick="voltarLogin()">Voltar</button></div></div>
         <div id="rank-screen" style="display:none;"><div class="card"><h3>RANKING</h3><div id="rank-list" style="text-align:left; margin:10px 0; max-height:220px; overflow-y:auto;"></div><button class="btn-main" onclick="fecharRanking()">VOLTAR</button></div></div>
         <div id="out-of-lives" style="display:none;"><div class="card"><h3>Vidas Esgotadas!</h3><button class="btn-main" onclick="abrirAnuncioVida()" style="background:#4a90e2">Ganhar +1 Vida (Anúncio)</button></div></div>
@@ -117,9 +99,10 @@
                 <div id="message" style="color:#ffd700; font-size:13px; margin-top:8px; height:18px;"></div>
             </div>
 
+            <div id="hint-display" class="hint-panel"></div>
             <div class="action-bar">
                 <button class="btn-action" onclick="usarDica()" style="background:#c9b458;">💡 Dica</button>
-                <button class="btn-action" onclick="pularPalavra()" style="background:#4a90e2;">⏭️ Pular</button>
+                <button id="btn-skip" class="btn-action" onclick="pularPalavra()" style="background:#4a90e2;">⏭️ Pular (1x)</button>
             </div>
 
             <div id="keyboard"></div>
@@ -134,8 +117,8 @@
         
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
         let tentativaArray = ["", "", "", "", ""]; let focadoIndex = 0;
-        let vidas = 3; let dicasRestantes = 2;
-        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR"];
+        let vidas = 3; 
+        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE"];
 
         function dispararAnuncio() { window.open(SMARTLINK, '_blank') || (window.location.href = SMARTLINK); }
         function mostrarRegistro() { document.getElementById('auth-screen').style.display='none'; document.getElementById('register-screen').style.display='flex'; }
@@ -145,7 +128,7 @@
         async function registrar() {
             const n = document.getElementById('regNick').value.trim(); const p = document.getElementById('regPass').value;
             if(!n) return alert("Digite um nome!");
-            try { const res = await auth.createUserWithEmailAndPassword(n.toLowerCase()+"@termo.com", p); await db.ref('users/'+res.user.uid).set({nick:n, streak:0}); location.reload(); } catch(e){ alert("Erro!"); }
+            try { const res = await auth.createUserWithEmailAndPassword(n.toLowerCase()+"@termo.com", p); await db.ref('users/'+res.user.uid).set({nick:n, streak:0, lastSkip:0}); location.reload(); } catch(e){ alert("Erro!"); }
         }
         async function fazerLogin() {
             const n = document.getElementById('loginNick').value.trim(); const p = document.getElementById('loginPass').value;
@@ -155,23 +138,26 @@
 
         auth.onAuthStateChanged(user => { if(user) { db.ref('users/'+user.uid).on('value', s => { if(s.val()){ nickAtual=s.val().nick; streak=s.val().streak||0; mostrarJogo(); }}); } });
 
-        function abrirRanking() {
-            document.getElementById('rank-screen').style.display='flex'; const l = document.getElementById('rank-list'); l.innerHTML="Carregando...";
-            db.ref('users').orderByChild('streak').limitToLast(10).once('value', s => {
-                l.innerHTML=""; let p=[]; s.forEach(c=>{p.push(c.val())});
-                p.reverse().forEach((x,i)=>{ l.innerHTML += `<div style="padding:6px; border-bottom:1px solid #333; display:flex; justify-content:space-between;"><span>${i+1}º ${x.nick}</span> <span>🔥 ${x.streak||0}</span></div>`; });
-            });
-        }
-
         function novoJogo() {
             if(vidas<=0){ document.getElementById('game-container').style.display='none'; document.getElementById('out-of-lives').style.display='flex'; return; }
-            segredo = PALAVRAS[Math.floor(Math.random()*PALAVRAS.length)]; linha=0; tentativaArray=["","","","",""]; focadoIndex=0;
+            segredo = PALAVRAS[Math.floor(Math.random()*PALAVRAS.length)]; 
+            linha=0; tentativaArray=["","","","",""]; focadoIndex=0;
+            document.getElementById('hint-display').innerText = "";
             const g = document.getElementById('grid'); g.innerHTML="";
             for(let i=0;i<6;i++){ const r=document.createElement('div'); r.className='row'; for(let j=0;j<5;j++){ const t=document.createElement('div'); t.className='tile'; t.onclick=()=>{if(i===linha){focadoIndex=j;atualizarVisual();}}; r.appendChild(t); } g.appendChild(r); }
             atualizarVisual();
+            checkSkipAvailability();
         }
 
-        function mostrarJogo() { document.querySelectorAll('#auth-screen,#register-screen,#rank-screen,#out-of-lives').forEach(x=>x.style.display='none'); document.getElementById('game-container').style.display='flex'; document.getElementById('displayNick').innerText=nickAtual; document.getElementById('livesDisplay').innerText=vidas; document.getElementById('streakDisplay').innerText=streak; novoJogo(); criarTecladoVisual(); }
+        function mostrarJogo() { 
+            document.querySelectorAll('#auth-screen,#register-screen,#rank-screen,#out-of-lives').forEach(x=>x.style.display='none'); 
+            document.getElementById('game-container').style.display='flex'; 
+            document.getElementById('displayNick').innerText=nickAtual; 
+            document.getElementById('livesDisplay').innerText=vidas; 
+            document.getElementById('streakDisplay').innerText=streak; 
+            novoJogo(); criarTecladoVisual(); 
+        }
+
         function digitar(k) { if(k==='ENTER'){ if(tentativaArray.join('').length===5) verificar(); return; } if(k==='DEL'){ tentativaArray[focadoIndex]=""; if(focadoIndex>0) focadoIndex--; } else { if(focadoIndex<5){ tentativaArray[focadoIndex]=k; if(focadoIndex<4) focadoIndex++; } } atualizarVisual(); }
         
         function verificar() {
@@ -182,25 +168,19 @@
                 else ts[i].classList.add('absent');
             }
             if(ok===5){ 
-                if(nickAtual!=="Visitante"){ streak++; db.ref('users/'+auth.currentUser.uid).update({streak:streak}); } 
+                streak++; 
+                if(nickAtual!=="Visitante"){ db.ref('users/'+auth.currentUser.uid).update({streak:streak}); } 
                 document.getElementById('streakDisplay').innerText = streak;
                 document.getElementById('message').innerText = "Acertou!";
                 setTimeout(novoJogo, 1500); 
             } else if(linha===5){ 
-                perderSequencia();
+                streak = 0;
+                if(nickAtual!=="Visitante"){ db.ref('users/'+auth.currentUser.uid).update({streak:0}); }
+                document.getElementById('streakDisplay').innerText = 0;
+                vidas--; document.getElementById('livesDisplay').innerText = vidas;
                 document.getElementById('message').innerText = "Era: " + segredo;
                 setTimeout(novoJogo, 2500); 
-            } else { 
-                linha++; focadoIndex=0; tentativaArray=["","","","",""]; 
-                setTimeout(atualizarVisual, 100); 
-            }
-        }
-
-        function perderSequencia() {
-            streak = 0;
-            if(nickAtual!=="Visitante"){ db.ref('users/'+auth.currentUser.uid).update({streak:0}); }
-            document.getElementById('streakDisplay').innerText = 0;
-            vidas--; document.getElementById('livesDisplay').innerText = vidas;
+            } else { linha++; focadoIndex=0; tentativaArray=["","","","",""]; setTimeout(atualizarVisual, 100); }
         }
 
         function atualizarVisual() { 
@@ -216,14 +196,42 @@
             lay.forEach(r=>{ const d=document.createElement('div'); d.className='kb-row'; r.forEach(k=>{ const b=document.createElement('button'); b.className=(k.length>1)?'key wide':'key'; b.innerText=k; b.onclick=()=>digitar(k); d.appendChild(b); }); kb.appendChild(d); });
         }
         
-        function usarDica() { if(dicasRestantes>0){ dispararAnuncio(); tentativaArray[focadoIndex]=segredo[focadoIndex]; dicasRestantes--; atualizarVisual(); } }
+        function usarDica() { 
+            dispararAnuncio();
+            const letra = segredo[Math.floor(Math.random()*5)];
+            document.getElementById('hint-display').innerText = "DICA: A palavra contém a letra " + letra;
+        }
         
-        function pularPalavra() { 
+        async function checkSkipAvailability() {
+            if(nickAtual === "Visitante") return;
+            const snapshot = await db.ref('users/'+auth.currentUser.uid+'/lastSkip').once('value');
+            const lastSkip = snapshot.val() || 0;
+            const agora = Date.now();
+            if(agora - lastSkip < 86400000) {
+                document.getElementById('btn-skip').style.opacity = "0.5";
+                document.getElementById('btn-skip').disabled = true;
+            } else {
+                document.getElementById('btn-skip').style.opacity = "1";
+                document.getElementById('btn-skip').disabled = false;
+            }
+        }
+
+        async function pularPalavra() { 
+            if(nickAtual === "Visitante") return alert("Crie uma conta para usar o Pulo!");
             dispararAnuncio(); 
-            streak = 0; // RESETAR SEQUENCIA AO PULAR
-            if(nickAtual!=="Visitante"){ db.ref('users/'+auth.currentUser.uid).update({streak:0}); }
-            document.getElementById('streakDisplay').innerText = 0;
-            novoJogo(); 
+            
+            // Aumentar streak
+            streak++;
+            const agora = Date.now();
+            await db.ref('users/'+auth.currentUser.uid).update({
+                streak: streak,
+                lastSkip: agora
+            });
+
+            document.getElementById('streakDisplay').innerText = streak;
+            document.getElementById('message').innerText = "PULOU! A palavra era: " + segredo;
+            
+            setTimeout(novoJogo, 2000); 
         }
         
         function abrirAnuncioVida() { dispararAnuncio(); vidas=1; mostrarJogo(); }
