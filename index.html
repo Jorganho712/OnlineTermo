@@ -14,86 +14,90 @@
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
         
-        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; }
+        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw; }
 
         .main-layout { display: flex; justify-content: center; width: 100%; height: 100%; }
 
+        /* Laterais PC */
         .ad-sidebar { flex: 1; display: flex; flex-direction: column; align-items: center; padding-top: 50px; background-color: #0c0c0c; }
-        .game-column { width: 100%; max-width: 500px; display: flex; flex-direction: column; position: relative; }
+        .game-column { width: 100%; max-width: 500px; display: flex; flex-direction: column; position: relative; height: 100%; }
 
-        @media (max-width: 900px) { .ad-sidebar { display: none !important; } }
-
-        /* Login Screen */
-        #auth-screen { 
-            position: absolute; width: 100%; height: 100%; display: flex; 
-            justify-content: center; align-items: center; background: var(--preto); z-index: 100; 
+        @media (max-width: 900px) { 
+            .ad-sidebar { display: none !important; } 
+            .tile { width: 42px !important; height: 42px !important; font-size: 1.2rem !important; } /* Diminui o grid no celular */
+            .key { padding: 12px 0 !important; font-size: 0.7rem !important; } /* Diminui o teclado no celular */
         }
-        .auth-card { background: #222; padding: 25px; border-radius: 12px; text-align: center; width: 85%; max-width: 320px; border: 1px solid #333; }
-        input { width: 100%; padding: 12px; margin: 8px 0; background: #111; color: white; border: 1px solid #444; border-radius: 6px; box-sizing: border-box; }
-        .btn-main { width: 100%; padding: 12px; background: var(--cor-correta); border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
 
-        /* Game Screen */
-        #game-container { display: none; flex-direction: column; height: 100vh; width: 100%; }
-        .header-jogo { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
-        .btn-logout { background: #ce3a3a; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; }
+        /* Telas */
+        #auth-screen { position: absolute; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: var(--preto); z-index: 100; }
+        .auth-card { background: #222; padding: 20px; border-radius: 12px; text-align: center; width: 80%; border: 1px solid #333; }
         
-        #game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #grid { display: grid; gap: 4px; margin-bottom: 10px; }
+        #game-container { display: none; flex-direction: column; height: 100%; width: 100%; justify-content: space-between; }
+
+        .header-jogo { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #1a1a1b; border-bottom: 1px solid #333; height: 50px; box-sizing: border-box; }
+        
+        /* Área Central */
+        #game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+        #grid { display: grid; gap: 4px; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
-        .tile { width: 50px; height: 50px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.6rem; font-weight: bold; text-transform: uppercase; }
+        .tile { width: 55px; height: 55px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; }
         
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        #keyboard { padding: 5px; background: var(--preto); }
-        .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 6px; }
-        .key { padding: 15px 0; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.8rem; font-weight: bold; flex: 1; }
+        /* Teclado na base */
+        #keyboard { padding: 5px; margin-bottom: 5px; }
+        .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 5px; }
+        .key { padding: 18px 0; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.85rem; font-weight: bold; flex: 1; }
         .key.wide { flex: 1.5; background: #565758; }
+
+        /* Espaço para Banner Mobile no rodapé */
+        .mobile-ad-footer { display: none; width: 100%; height: 50px; background: #000; text-align: center; }
+        @media (max-width: 900px) { .mobile-ad-footer { display: block; } }
     </style>
 </head>
 <body>
 
     <div class="main-layout">
-        
         <div class="ad-sidebar">
-            <script>atOptions = { 'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };</script>
-            <script src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
+            <script>atOptions={'key':'bbd26afcc6a6f83c66b0322a7e089fb1','format':'iframe','height':600,'width':160,'params':{}};</script>
+            <script src="//www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
         </div>
 
         <div class="game-column">
-            
             <div id="auth-screen">
                 <div class="auth-card">
                     <h2>Termo Infinito</h2>
-                    <input type="text" id="loginNick" placeholder="Nome">
-                    <input type="password" id="loginPass" placeholder="Senha">
-                    <button class="btn-main" onclick="fazerLogin()">JOGAR</button>
-                    <button onclick="entrarComoConvidado()" style="margin-top:15px; color:#666; background:none; border:none; cursor:pointer;">Entrar como Convidado</button>
+                    <input type="text" id="loginNick" placeholder="Nome" style="width:100%; padding:10px; margin:5px 0; background:#111; color:white; border:1px solid #444;">
+                    <input type="password" id="loginPass" placeholder="Senha" style="width:100%; padding:10px; margin:5px 0; background:#111; color:white; border:1px solid #444;">
+                    <button onclick="fazerLogin()" style="width:100%; padding:12px; background:var(--cor-correta); border:none; color:white; font-weight:bold; cursor:pointer; margin-top:10px;">JOGAR</button>
                 </div>
             </div>
 
             <div id="game-container">
                 <div class="header-jogo">
-                    <div>👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span></div>
-                    <button class="btn-logout" onclick="logout()">SAIR</button>
+                    <div style="font-size: 14px;">👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span></div>
+                    <button onclick="logout()" style="background:#ce3a3a; border:none; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">SAIR</button>
                 </div>
                 
                 <div id="game-area">
                     <div id="grid"></div>
-                    <div id="message" style="height:25px; color:#ffd700; font-weight:bold;"></div>
+                    <div id="message" style="height:20px; color:#ffd700; margin-top:10px; font-weight:bold;"></div>
                 </div>
 
                 <div id="keyboard"></div>
-            </div>
 
+                <div class="mobile-ad-footer">
+                    <span style="font-size:10px; color:#444;">ANÚNCIO</span>
+                </div>
+            </div>
         </div>
 
         <div class="ad-sidebar">
-            <script>atOptions = { 'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };</script>
-            <script src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
+            <script>atOptions={'key':'bbd26afcc6a6f83c66b0322a7e089fb1','format':'iframe','height':600,'width':160,'params':{}};</script>
+            <script src="//www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
         </div>
-
     </div>
 
     <script>
@@ -110,17 +114,15 @@
 
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
         let tentativaArray = ["", "", "", "", ""]; let focadoIndex = 0;
-        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "JUSTO", "MUITO", "VIVER", "IDEIA"];
+        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "JUSTO", "VIVER", "IDEIA", "SUTIL"];
 
         async function fazerLogin() {
             const nick = document.getElementById('loginNick').value.trim();
             const pass = document.getElementById('loginPass').value;
             if(!nick) return;
-            try { await auth.signInWithEmailAndPassword(nick.toLowerCase() + "@termo.com", pass); } 
-            catch (e) { alert("Senha ou Nome incorretos!"); }
+            try { await auth.signInWithEmailAndPassword(nick.toLowerCase() + "@termo.com", pass); } catch (e) { alert("Erro no Login!"); }
         }
 
-        function entrarComoConvidado() { nickAtual = "Visitante"; mostrarJogo(); }
         function logout() { auth.signOut().then(() => location.reload()); }
 
         auth.onAuthStateChanged(user => {
@@ -179,11 +181,9 @@
             }
             if(ok === 5) { 
                 document.getElementById('message').innerText = "VENCEU! 🎉"; 
-                if(nickAtual !== "Visitante") {
-                    streak++;
-                    db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
-                    document.getElementById('streakDisplay').innerText = streak;
-                }
+                streak++;
+                db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
+                document.getElementById('streakDisplay').innerText = streak;
                 setTimeout(novoJogo, 2000); 
             } else if(linha === 5) {
                 document.getElementById('message').innerText = "ERA: " + segredo;
