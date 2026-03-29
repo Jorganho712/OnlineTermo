@@ -27,18 +27,20 @@
             height: 100dvh; position: relative; z-index: 5;
         }
 
-        /* ANÚNCIO MOBILE COM TRANSPARÊNCIA */
+        /* ANÚNCIO MOBILE COM BORDA DE TESTE */
         .mobile-ad-container {
             display: none; width: 100%; min-height: 50px;
             justify-content: center; align-items: center;
             background: transparent; padding: 5px 0;
+            border: 1px dashed #444; /* BORDA PARA TESTE */
         }
 
-        /* Banners Laterais (PC) COM TRANSPARÊNCIA */
+        /* Banners Laterais (PC) COM BORDA DE TESTE */
         .side-ad { 
             position: fixed; top: 50%; transform: translateY(-50%); 
             width: 160px; height: 600px; z-index: 1; 
             background: transparent;
+            border: 1px dashed #444; /* BORDA PARA TESTE */
         }
         .ad-left { left: calc(50% - 400px); }
         .ad-right { right: calc(50% - 400px); }
@@ -66,7 +68,7 @@
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        /* Teclado Compacto */
+        /* Teclado */
         #keyboard { padding: 5px; background: var(--preto); padding-bottom: max(15px, env(safe-area-inset-bottom)); }
         .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 5px; }
         .key { height: 42px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.75rem; font-weight: bold; flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -181,7 +183,6 @@
         
         function verificar() {
             const ts = document.querySelectorAll('.row')[linha].querySelectorAll('.tile'); let ok=0;
-            const tentativaStr = tentativaArray.join('');
             for(let i=0;i<5;i++){
                 if(tentativaArray[i]===segredo[i]){ ts[i].classList.add('correct'); ok++; }
                 else if(segredo.includes(tentativaArray[i])) ts[i].classList.add('present');
