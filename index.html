@@ -28,23 +28,23 @@
             position: relative; z-index: 5;
         }
 
-        /* ANÚNCIO EXCLUSIVO MOBILE (Topo) */
+        /* ANÚNCIO MOBILE (SÓ APARECE NO CELULAR) */
         .mobile-ad-container {
-            display: none; /* Escondido por padrão */
-            width: 100%;
-            min-height: 50px;
-            justify-content: center;
-            align-items: center;
-            background: #000;
-            padding: 5px 0;
+            display: none; width: 100%; min-height: 50px;
+            justify-content: center; align-items: center;
+            background: #000; padding: 5px 0;
         }
+
+        /* Banners Laterais (PC) */
+        .side-ad { position: fixed; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; z-index: 1; }
+        .ad-left { left: calc(50% - 400px); }
+        .ad-right { right: calc(50% - 400px); }
 
         /* Telas Iniciais */
         #auth-screen, #register-screen, #rank-screen, #out-of-lives { position: absolute; inset: 0; background: var(--preto); display: flex; justify-content: center; align-items: center; z-index: 100; }
         .card { background: #222; padding: 20px; border-radius: 12px; width: 90%; text-align: center; border: 1px solid #333; }
         input { width: 100%; padding: 10px; margin-bottom: 8px; background: #111; color: white; border: 1px solid #444; border-radius: 5px; font-size: 16px; }
         .btn-main { width: 100%; padding: 12px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; }
-        .extra-buttons { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
 
         /* Jogo */
         #game-container { display: none; flex-direction: column; height: 100%; width: 100%; }
@@ -53,7 +53,6 @@
         
         #grid { display: grid; gap: 4px; padding: 5px; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
-        
         .tile { 
             width: 11vw; height: 11vw; max-width: 45px; max-height: 45px;
             border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; 
@@ -61,21 +60,15 @@
         }
         .tile.selected { border-color: #818384; background: #222; }
 
-        /* Teclado */
+        /* Teclado Visual */
         #keyboard { padding: 5px; background: var(--preto); padding-bottom: max(10px, env(safe-area-inset-bottom)); }
         .kb-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 4px; }
-        .key { height: 40px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.7rem; font-weight: bold; flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .key { height: 42px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.75rem; font-weight: bold; flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .key.wide { flex: 1.5; background: #565758; }
 
-        /* Banners Laterais (PC) */
-        .side-ad { position: fixed; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; z-index: 1; }
-        .ad-left { left: calc(50% - 400px); }
-        .ad-right { right: calc(50% - 400px); }
-
-        /* REGRAS DE VISIBILIDADE */
         @media (max-width: 850px) { 
-            .side-ad { display: none !important; } /* Esconde banners laterais */
-            .mobile-ad-container { display: flex; } /* Mostra banner no topo */
+            .side-ad { display: none !important; } 
+            .mobile-ad-container { display: flex; } 
         }
     </style>
 </head>
@@ -85,7 +78,6 @@
         <script type="text/javascript">atOptions = { 'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };</script>
         <script src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
     </div>
-
     <div class="side-ad ad-right">
         <script type="text/javascript">atOptions = { 'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };</script>
         <script src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
@@ -93,7 +85,10 @@
 
     <div class="game-column">
         <div class="mobile-ad-container">
-            <div style="color: #444; font-size: 10px;">ANÚNCIO MOBILE</div>
+            <script type="text/javascript">
+                atOptions = { 'key' : '06eee4bace60b9e3d155aa2f08f93474', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
+            </script>
+            <script src="https://www.highperformanceformat.com/06eee4bace60b9e3d155aa2f08f93474/invoke.js"></script>
         </div>
 
         <div id="auth-screen">
@@ -102,30 +97,35 @@
                 <input type="text" id="loginNick" placeholder="Nome">
                 <input type="password" id="loginPass" placeholder="Senha">
                 <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
-                <div class="extra-buttons">
-                    <button class="btn-sub" onclick="mostrarRegistro()">Criar Nova Conta</button>
-                    <button class="btn-sub" onclick="entrarComoConvidado()">Jogar como Visitante</button>
-                    <button class="btn-sub" onclick="abrirRanking()">Ver Ranking</button>
+                <div style="display:flex; flex-direction:column; gap:8px; margin-top:15px;">
+                    <button style="background:none; border:1px solid #444; color:#bbb; padding:8px; border-radius:5px; cursor:pointer; font-size:0.8rem;" onclick="mostrarRegistro()">Criar Nova Conta</button>
+                    <button style="background:none; border:1px solid #444; color:#bbb; padding:8px; border-radius:5px; cursor:pointer; font-size:0.8rem;" onclick="entrarComoConvidado()">Jogar como Visitante</button>
+                    <button style="background:none; border:1px solid #444; color:#bbb; padding:8px; border-radius:5px; cursor:pointer; font-size:0.8rem;" onclick="abrirRanking()">Ver Ranking</button>
                 </div>
             </div>
         </div>
 
-        <div id="register-screen" style="display:none;"><div class="card"><h3>Criar Conta</h3><input type="text" id="regNick" placeholder="Nome"><input type="password" id="regPass" placeholder="Senha"><button class="btn-main" onclick="registrar()">CADASTRAR</button><button class="btn-sub" onclick="voltarLogin()" style="margin-top:10px;">Voltar</button></div></div>
-        <div id="rank-screen" style="display:none;"><div class="card"><h3>RANKING</h3><div id="rank-list"></div><button class="btn-main" onclick="fecharRanking()">VOLTAR</button></div></div>
-        <div id="out-of-lives" style="display:none;"><div class="card"><h3>Vidas Esgotadas!</h3><button class="btn-main" onclick="abrirAnuncioVida()">Ganhar +1 Vida (Anúncio)</button></div></div>
+        <div id="register-screen" style="display:none;"><div class="card"><h3>Criar Conta</h3><input type="text" id="regNick" placeholder="Nome"><input type="password" id="regPass" placeholder="Senha"><button class="btn-main" onclick="registrar()">CADASTRAR</button><button style="background:none; border:none; color:#888; margin-top:10px; cursor:pointer;" onclick="voltarLogin()">Voltar</button></div></div>
+        <div id="rank-screen" style="display:none;"><div class="card"><h3>RANKING</h3><div id="rank-list" style="text-align:left; margin:10px 0; max-height:200px; overflow-y:auto;"></div><button class="btn-main" onclick="fecharRanking()">VOLTAR</button></div></div>
+        <div id="out-of-lives" style="display:none;"><div class="card"><h3>Vidas Esgotadas!</h3><button class="btn-main" onclick="abrirAnuncioVida()" style="background:#4a90e2">Ganhar +1 Vida (Anúncio)</button></div></div>
 
         <div id="game-container">
             <div class="header-jogo">
                 <div style="font-size:10px;">👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span> | ❤️ <span id="livesDisplay">3</span></div>
-                <div><button class="btn-hint" onclick="usarDica()" style="background:#c9b458; border:none; padding:4px 8px; border-radius:4px; font-size:10px;">DICA</button> <button class="btn-skip" onclick="pularPalavra()" style="background:#4a90e2; border:none; color:white; padding:4px 8px; border-radius:4px; font-size:10px;">PULAR</button></div>
+                <div>
+                    <button onclick="usarDica()" style="background:#c9b458; border:none; padding:4px 8px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer;">DICA</button>
+                    <button onclick="pularPalavra()" style="background:#4a90e2; border:none; color:white; padding:4px 8px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer;">PULAR</button>
+                </div>
             </div>
-            <div id="game-area"><div id="grid"></div><div id="message" style="color:#ffd700; font-size:13px; margin-top:5px;"></div></div>
+            <div id="game-area">
+                <div id="grid"></div>
+                <div id="message" style="color:#ffd700; font-size:13px; margin-top:5px; height:15px;"></div>
+            </div>
             <div id="keyboard"></div>
         </div>
     </div>
 
     <script>
-        // ... (Mesmo Script do Firebase e Lógica do Jogo da versão anterior) ...
         const firebaseConfig = { apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0", authDomain: "termo-rank-5d80d.firebaseapp.com", databaseURL: "https://termo-rank-5d80d-default-rtdb.firebaseio.com", projectId: "termo-rank-5d80d", storageBucket: "termo-rank-5d80d.firebasestorage.app" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.database();
@@ -157,7 +157,7 @@
             document.getElementById('rank-screen').style.display='flex'; const l = document.getElementById('rank-list'); l.innerHTML="...";
             db.ref('users').orderByChild('streak').limitToLast(10).once('value', s => {
                 l.innerHTML=""; let p=[]; s.forEach(c=>{p.push(c.val())});
-                p.reverse().forEach((x,i)=>{ l.innerHTML += `<div style="padding:5px 0; border-bottom:1px solid #333;">${i+1}º ${x.nick} - 🔥 ${x.streak||0}</div>`; });
+                p.reverse().forEach((x,i)=>{ l.innerHTML += `<div style="padding:5px; border-bottom:1px solid #333;">${i+1}º ${x.nick} - 🔥 ${x.streak||0}</div>`; });
             });
         }
 
