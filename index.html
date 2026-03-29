@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Termo Infinito</title>
+    <title>Termo Infinito - Jorge</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -13,7 +13,6 @@
 
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
-        
         * { box-sizing: border-box; }
         body { 
             background-color: var(--preto); color: white; font-family: sans-serif; 
@@ -21,49 +20,45 @@
             display: flex; flex-direction: column;
         }
 
-        /* Layout Principal */
+        /* Layout */
         .main-layout { display: flex; justify-content: center; height: 100%; width: 100%; }
-        
-        /* Sidebars apenas para PC */
         .ad-sidebar { flex: 1; display: flex; flex-direction: column; align-items: center; padding-top: 20px; background: #000; min-width: 160px; }
-        
         .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; height: 100%; position: relative; }
 
         @media (max-width: 800px) {
             .ad-sidebar { display: none !important; }
             .tile { width: 38px !important; height: 38px !important; font-size: 1.2rem !important; }
             .key { padding: 12px 0 !important; font-size: 0.7rem !important; }
-            #grid { gap: 3px !important; }
         }
 
         /* Telas */
-        #auth-screen { position: absolute; inset: 0; background: var(--preto); display: flex; justify-content: center; align-items: center; z-index: 100; }
-        .auth-card { background: #222; padding: 20px; border-radius: 10px; width: 85%; text-align: center; border: 1px solid #333; }
+        #auth-screen, #rank-screen { position: absolute; inset: 0; background: var(--preto); display: flex; justify-content: center; align-items: center; z-index: 100; }
+        .card { background: #222; padding: 20px; border-radius: 10px; width: 85%; text-align: center; border: 1px solid #333; }
 
         #game-container { display: none; flex-direction: column; height: 100%; width: 100%; }
+        .header-jogo { display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; background: #1a1a1b; height: 45px; }
 
-        /* Header reduzido para ganhar espaço */
-        .header-jogo { display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; background: #1a1a1b; height: 40px; }
-        .btn-logout { background: #ce3a3a; color: white; border: none; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
-
-        /* Área do Jogo */
-        #game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5px; }
-        #grid { display: grid; gap: 5px; }
-        .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { width: 50px; height: 50px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.6rem; font-weight: bold; text-transform: uppercase; }
-        
+        /* Jogo */
+        #game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #grid { display: grid; gap: 4px; }
+        .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+        .tile { width: 48px; height: 48px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: bold; text-transform: uppercase; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        /* Teclado - O segredo está no padding-bottom */
-        #keyboard { padding: 4px; padding-bottom: env(safe-area-inset-bottom, 15px); }
+        /* Teclado */
+        #keyboard { padding: 5px; padding-bottom: 10px; }
         .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 4px; }
-        .key { padding: 16px 0; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.85rem; font-weight: bold; flex: 1; }
-        .key.wide { flex: 1.6; background: #565758; }
+        .key { padding: 15px 0; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.8rem; font-weight: bold; flex: 1; cursor: pointer; }
+        .key.wide { flex: 1.5; background: #565758; }
 
-        /* Espaço garantido para anúncio mobile */
-        .mobile-banner { height: 50px; width: 100%; background: #000; display: none; text-align: center; }
+        /* Ranking */
+        #rank-list { text-align: left; margin: 15px 0; max-height: 200px; overflow-y: auto; }
+        .rank-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #333; }
+
+        /* Banner Mobile */
+        .mobile-banner { height: 50px; background: #000; display: none; text-align: center; line-height: 50px; font-size: 10px; color: #444; }
         @media (max-width: 800px) { .mobile-banner { display: block; } }
     </style>
 </head>
@@ -77,19 +72,27 @@
 
         <div class="game-column">
             <div id="auth-screen">
-                <div class="auth-card">
+                <div class="card">
                     <h2 style="margin:0 0 15px 0">Termo Infinito</h2>
-                    <input type="text" id="loginNick" placeholder="Nome" style="width:100%; padding:10px; margin-bottom:10px; background:#111; color:white; border:1px solid #444; border-radius:5px;">
-                    <input type="password" id="loginPass" placeholder="Senha" style="width:100%; padding:10px; margin-bottom:15px; background:#111; color:white; border:1px solid #444; border-radius:5px;">
-                    <button onclick="fazerLogin()" style="width:100%; padding:12px; background:var(--cor-correta); border:none; color:white; font-weight:bold; border-radius:5px; cursor:pointer;">JOGAR</button>
-                    <button onclick="entrarComoConvidado()" style="background:none; border:none; color:#666; margin-top:15px; cursor:pointer; text-decoration:underline;">Entrar como Visitante</button>
+                    <input type="text" id="loginNick" placeholder="Nome" style="width:100%; padding:10px; margin-bottom:10px; background:#111; color:white; border:1px solid #444;">
+                    <input type="password" id="loginPass" placeholder="Senha" style="width:100%; padding:10px; margin-bottom:15px; background:#111; color:white; border:1px solid #444;">
+                    <button onclick="fazerLogin()" style="width:100%; padding:12px; background:var(--cor-correta); border:none; color:white; font-weight:bold; cursor:pointer;">JOGAR</button>
+                    <button onclick="abrirRanking()" style="background:none; border:none; color:#aaa; margin-top:15px; cursor:pointer;">🏆 Ver Ranking</button>
+                </div>
+            </div>
+
+            <div id="rank-screen" style="display:none;">
+                <div class="card">
+                    <h3>🏆 TOP 10 RANKING</h3>
+                    <div id="rank-list">Carregando...</div>
+                    <button onclick="fecharRanking()" style="width:100%; padding:10px; background:#444; border:none; color:white;">VOLTAR</button>
                 </div>
             </div>
 
             <div id="game-container">
                 <div class="header-jogo">
                     <div style="font-size:12px;">👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span></div>
-                    <button class="btn-logout" onclick="logout()">SAIR</button>
+                    <button onclick="logout()" style="background:#ce3a3a; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:11px;">SAIR</button>
                 </div>
                 
                 <div id="game-area">
@@ -98,10 +101,7 @@
                 </div>
 
                 <div id="keyboard"></div>
-
-                <div class="mobile-banner">
-                    <span style="font-size:9px; color:#333;">PUBLICIDADE</span>
-                </div>
+                <div class="mobile-banner">PUBLICIDADE ADSTERRA</div>
             </div>
         </div>
 
@@ -112,7 +112,6 @@
     </div>
 
     <script>
-        // Configurações do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0",
             authDomain: "termo-rank-5d80d.firebaseapp.com",
@@ -126,22 +125,24 @@
 
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
         let tentativaArray = ["", "", "", "", ""]; let focadoIndex = 0;
-        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "MUITO", "VIVER", "JUSTO", "IDEIA", "SUTIL", "VIGOR", "AUREA"];
+        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "MUITO", "VIVER", "JUSTO", "IDEIA"];
 
         async function fazerLogin() {
             const nick = document.getElementById('loginNick').value.trim();
             const pass = document.getElementById('loginPass').value;
             if(!nick) return;
-            try { await auth.signInWithEmailAndPassword(nick.toLowerCase() + "@termo.com", pass); } catch (e) { alert("Dados incorretos!"); }
+            try { 
+                await auth.signInWithEmailAndPassword(nick.toLowerCase() + "@termo.com", pass); 
+            } catch (e) { alert("Erro: Verifique nome e senha!"); }
         }
 
-        function entrarComoConvidado() { nickAtual = "Visitante"; mostrarJogo(); }
         function logout() { auth.signOut().then(() => location.reload()); }
 
         auth.onAuthStateChanged(user => {
             if (user) {
-                db.ref('users/' + user.uid).once('value').then(snap => {
-                    nickAtual = snap.val().nick; streak = snap.val().streak || 0;
+                db.ref('users/' + user.uid).on('value', snap => {
+                    const d = snap.val();
+                    nickAtual = d.nick; streak = d.streak || 0;
                     mostrarJogo();
                 });
             }
@@ -154,6 +155,20 @@
             document.getElementById('streakDisplay').innerText = streak;
             novoJogo(); criarTeclado();
         }
+
+        function abrirRanking() {
+            document.getElementById('rank-screen').style.display = 'flex';
+            const list = document.getElementById('rank-list');
+            db.ref('users').orderByChild('streak').limitToLast(10).once('value', snap => {
+                list.innerHTML = "";
+                let players = [];
+                snap.forEach(child => { players.push(child.val()); });
+                players.reverse().forEach((p, i) => {
+                    list.innerHTML += `<div class="rank-item"><span>${i+1}. ${p.nick}</span> <span>🔥 ${p.streak || 0}</span></div>`;
+                });
+            });
+        }
+        function fecharRanking() { document.getElementById('rank-screen').style.display = 'none'; }
 
         function novoJogo() {
             segredo = PALAVRAS[Math.floor(Math.random() * PALAVRAS.length)].toUpperCase();
@@ -193,15 +208,14 @@
                 else tiles[i].classList.add('absent');
             }
             if(ok === 5) { 
-                document.getElementById('message').innerText = "VENCEU! 🎉"; 
-                if(nickAtual !== "Visitante") {
-                    streak++;
-                    db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
-                    document.getElementById('streakDisplay').innerText = streak;
-                }
+                document.getElementById('message').innerText = "ACERTOU! 🏆"; 
+                streak++;
+                db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
                 setTimeout(novoJogo, 2000); 
             } else if(linha === 5) {
-                document.getElementById('message').innerText = "ERA: " + segredo;
+                document.getElementById('message').innerText = "PALAVRA: " + segredo;
+                streak = 0;
+                db.ref('users/' + auth.currentUser.uid).update({ streak: 0 });
                 setTimeout(novoJogo, 3000);
             } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); }
         }
