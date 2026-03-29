@@ -15,35 +15,54 @@
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
         * { box-sizing: border-box; touch-action: manipulation; }
-        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
         
+        body { 
+            background-color: var(--preto); color: white; font-family: sans-serif; 
+            margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw;
+            display: flex; flex-direction: column;
+        }
+
         .game-column { width: 100%; max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; height: 100%; position: relative; }
-        
-        /* Telas */
+
+        /* Telas Iniciais */
         #auth-screen, #rank-screen, #register-screen, #out-of-lives { position: absolute; inset: 0; background: var(--preto); display: flex; justify-content: center; align-items: center; z-index: 100; }
         .card { background: #222; padding: 20px; border-radius: 12px; width: 90%; text-align: center; border: 1px solid #333; }
         
-        .btn-main { width: 100%; padding: 12px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-        .btn-ad { background: #4a90e2; } /* Cor azul para botões de anúncio */
+        input { width: 100%; padding: 10px; margin-bottom: 8px; background: #111; color: white; border: 1px solid #444; border-radius: 5px; }
+        .btn-main { width: 100%; padding: 12px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; }
         
+        .extra-buttons { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
+        .btn-sub { background: none; border: 1px solid #444; color: #bbb; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
+
         /* Jogo */
-        #game-container { display: none; flex-direction: column; height: 100%; }
-        .header-jogo { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #1a1a1b; font-size: 11px; }
+        #game-container { display: none; flex-direction: column; height: 100%; width: 100%; }
+        .header-jogo { display: flex; justify-content: space-between; align-items: center; padding: 5px 12px; background: #1a1a1b; height: 45px; }
         
-        #grid { display: grid; gap: 4px; padding: 10px; justify-content: center; }
+        #game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5px 0; }
+        #grid { display: grid; gap: 4px; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
-        .tile { width: 45px; height: 45px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.4rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
-        .tile.selected { border-color: #818384; }
+        .tile { 
+            width: 45px; height: 45px; border: 2px solid #3a3a3c; 
+            display: flex; justify-content: center; align-items: center; 
+            font-size: 1.4rem; font-weight: bold; text-transform: uppercase;
+            cursor: pointer;
+        }
+        .tile.selected { border-color: #818384; background: #222; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        #keyboard { padding: 5px; margin-top: auto; }
+        /* Teclado Visual */
+        #keyboard { padding: 5px; background: var(--preto); }
         .kb-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 4px; }
-        .key { height: 42px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.8rem; flex: 1; cursor: pointer; }
-        
-        .stats-bar { display: flex; gap: 10px; }
-        .hint-count { color: #c9b458; font-weight: bold; }
+        .key { height: 42px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.85rem; font-weight: bold; flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .key.wide { flex: 1.5; background: #565758; }
+
+        .btn-hint { background: #c9b458; color: black; border: none; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; cursor: pointer; margin-right: 5px; }
+        .btn-skip { background: #4a90e2; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; cursor: pointer; }
+
+        #rank-list { text-align: left; margin: 10px 0; max-height: 180px; overflow-y: auto; font-size: 0.9rem; }
+        .rank-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #333; }
     </style>
 </head>
 <body onkeydown="tecladoFisico(event)">
@@ -51,80 +70,124 @@
     <div class="game-column">
         <div id="auth-screen">
             <div class="card">
-                <h2>Termo Pro</h2>
+                <h2 style="margin:0 0 15px 0">Verbete Online</h2>
                 <input type="text" id="loginNick" placeholder="Nome">
                 <input type="password" id="loginPass" placeholder="Senha">
-                <button class="btn-main" onclick="fazerLogin()">JOGAR</button>
-                <button onclick="entrarComoConvidado()" style="background:none; border:none; color:#777; margin-top:10px;">Visitante</button>
+                <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
+                <div class="extra-buttons">
+                    <button class="btn-sub" onclick="mostrarRegistro()">Criar Nova Conta</button>
+                    <button class="btn-sub" onclick="entrarComoConvidado()">Jogar como Visitante</button>
+                    <button class="btn-sub" onclick="abrirRanking()">Ver Ranking</button>
+                </div>
             </div>
         </div>
 
         <div id="out-of-lives" style="display:none;">
             <div class="card">
-                <h3>Vidas Esgotadas! 💔</h3>
-                <p>Você já jogou suas 3 partidas diárias.</p>
-                <button class="btn-main btn-ad" onclick="ganharVidaExtra()">Assistir Vídeo (+1 Vida)</button>
-                <p style="font-size: 10px; color: #666; margin-top: 10px;">Vidas resetam à meia-noite.</p>
+                <h3>Vidas Esgotadas!</h3>
+                <p style="color:#bbb; font-size:14px;">Você já jogou suas partidas diárias.</p>
+                <button class="btn-main" onclick="ganharVidaExtra()" style="background:#4a90e2">Ganhar +1 Vida (Anúncio)</button>
+            </div>
+        </div>
+
+        <div id="register-screen" style="display:none;">
+            <div class="card">
+                <h3>Criar Conta</h3>
+                <input type="text" id="regNick" placeholder="Nome">
+                <input type="password" id="regPass" placeholder="Senha">
+                <button class="btn-main" onclick="registrar()">CADASTRAR</button>
+                <button class="btn-sub" onclick="voltarLogin()" style="margin-top:10px; width:100%;">Voltar</button>
+            </div>
+        </div>
+
+        <div id="rank-screen" style="display:none;">
+            <div class="card">
+                <h3>RANKING GLOBAL</h3>
+                <div id="rank-list"></div>
+                <button class="btn-main" onclick="fecharRanking()">VOLTAR</button>
             </div>
         </div>
 
         <div id="game-container">
             <div class="header-jogo">
-                <div class="stats-bar">
-                    <span>🔥 <b id="streakDisplay">0</b></span>
-                    <span>❤️ <b id="livesDisplay">3</b></span>
-                    <span>💡 <b id="hintsDisplay">2</b></span>
-                </div>
+                <div style="font-size:10px;">👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span> | ❤️ <span id="livesDisplay">3</span> | 💡 <span id="hintsDisplay">2</span></div>
                 <div>
-                    <button onclick="revelarComAnuncio()" id="btnHint" style="background:#c9b458; border:none; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:10px;">REVELAR</button>
-                    <button onclick="pularComAnuncio()" style="background:#4a90e2; border:none; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:10px; color:white;">PULAR</button>
+                    <button class="btn-hint" onclick="usarDica()">REVELAR</button>
+                    <button class="btn-skip" onclick="pularPalavra()">PULAR</button>
                 </div>
             </div>
-            
             <div id="game-area">
                 <div id="grid"></div>
-                <div id="message" style="text-align:center; color:#ffd700; min-height:20px; margin-top:10px;"></div>
+                <div id="message" style="height:20px; color:#ffd700; font-size:13px; margin-top:8px;"></div>
             </div>
-
             <div id="keyboard"></div>
         </div>
     </div>
 
     <script>
-        const firebaseConfig = { /* SEU CONFIG AQUI */ };
+        const firebaseConfig = {
+            apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0",
+            authDomain: "termo-rank-5d80d.firebaseapp.com",
+            databaseURL: "https://termo-rank-5d80d-default-rtdb.firebaseio.com",
+            projectId: "termo-rank-5d80d",
+            storageBucket: "termo-rank-5d80d.firebasestorage.app",
+        };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); const db = firebase.database();
+        const auth = firebase.auth();
+        const db = firebase.database();
 
         const SMARTLINK = "https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072";
-        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA"];
-        
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
         let tentativaArray = ["", "", "", "", ""]; let focadoIndex = 0;
         let vidas = 3; let dicasRestantes = 2;
+        
+        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA"];
 
-        function entrarComoConvidado() { nickAtual = "Visitante"; mostrarJogo(); }
-        function fazerLogin() { /* lógica de login */ mostrarJogo(); }
-
-        function mostrarJogo() {
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('game-container').style.display = 'flex';
-            checkVidas();
-            novoJogo();
-            criarTecladoVisual();
+        function mostrarRegistro() { document.getElementById('auth-screen').style.display = 'none'; document.getElementById('register-screen').style.display = 'flex'; }
+        function voltarLogin() { document.getElementById('register-screen').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; }
+        function fecharRanking() { document.getElementById('rank-screen').style.display = 'none'; }
+        
+        async function registrar() {
+            const nick = document.getElementById('regNick').value.trim();
+            const pass = document.getElementById('regPass').value;
+            try {
+                const res = await auth.createUserWithEmailAndPassword(nick.toLowerCase() + "@termo.com", pass);
+                await db.ref('users/' + res.user.uid).set({ nick: nick, streak: 0 });
+                location.reload();
+            } catch (e) { alert("Erro ao criar!"); }
         }
 
-        function checkVidas() {
-            if (vidas <= 0) {
-                document.getElementById('out-of-lives').style.display = 'flex';
-                document.getElementById('game-container').style.display = 'none';
-            } else {
-                document.getElementById('out-of-lives').style.display = 'none';
-                document.getElementById('game-container').style.display = 'flex';
+        async function fazerLogin() {
+            const nick = document.getElementById('loginNick').value.trim();
+            const pass = document.getElementById('loginPass').value;
+            try { await auth.signInWithEmailAndPassword(nick.toLowerCase() + "@termo.com", pass); } catch (e) { alert("Login falhou!"); }
+        }
+
+        function entrarComoConvidado() { nickAtual = "Visitante"; streak = 0; mostrarJogo(); }
+        
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                db.ref('users/' + user.uid).on('value', snap => {
+                    if(snap.val()){ nickAtual = snap.val().nick; streak = snap.val().streak || 0; mostrarJogo(); }
+                });
             }
+        });
+
+        function mostrarJogo() {
+            document.querySelectorAll('#auth-screen, #register-screen, #rank-screen, #out-of-lives').forEach(s => s.style.display = 'none');
+            document.getElementById('game-container').style.display = 'flex';
+            document.getElementById('displayNick').innerText = nickAtual;
+            document.getElementById('streakDisplay').innerText = streak;
             document.getElementById('livesDisplay').innerText = vidas;
+            novoJogo(); criarTecladoVisual();
         }
 
         function novoJogo() {
+            if (vidas <= 0) {
+                document.getElementById('game-container').style.display = 'none';
+                document.getElementById('out-of-lives').style.display = 'flex';
+                return;
+            }
             segredo = PALAVRAS[Math.floor(Math.random() * PALAVRAS.length)].toUpperCase();
             linha = 0; tentativaArray = ["", "", "", "", ""]; focadoIndex = 0; dicasRestantes = 2;
             document.getElementById('hintsDisplay').innerText = dicasRestantes;
@@ -133,7 +196,7 @@
                 const row = document.createElement('div'); row.className = 'row';
                 for (let j = 0; j < 5; j++) {
                     const t = document.createElement('div'); t.className = 'tile';
-                    t.onclick = () => { if(i===linha) { focadoIndex=j; atualizarVisual(); } };
+                    t.onclick = () => mudarFoco(i, j);
                     row.appendChild(t);
                 }
                 grid.appendChild(row);
@@ -141,34 +204,28 @@
             atualizarVisual();
         }
 
-        // --- MECÂNICA DE ANÚNCIOS ---
-        
-        function ganharVidaExtra() {
-            window.open(SMARTLINK, '_blank');
-            vidas++;
-            checkVidas();
-        }
-
-        function revelarComAnuncio() {
+        function usarDica() {
             if (dicasRestantes > 0) {
-                window.open(SMARTLINK, '_blank'); // Abre anúncio
+                window.open(SMARTLINK, '_blank');
                 tentativaArray[focadoIndex] = segredo[focadoIndex];
                 dicasRestantes--;
                 document.getElementById('hintsDisplay').innerText = dicasRestantes;
                 atualizarVisual();
-            } else {
-                alert("Limite de 2 dicas por palavra atingido!");
-            }
+            } else { alert("Limite de 2 dicas!"); }
         }
 
-        function pularComAnuncio() {
-            if (confirm("Assistir anúncio para pular esta palavra sem perder seu streak?")) {
-                window.open(SMARTLINK, '_blank');
-                novoJogo();
-            }
+        function pularPalavra() {
+            window.open(SMARTLINK, '_blank');
+            novoJogo();
         }
 
-        // --- LÓGICA DE TECLADO E VERIFICAÇÃO (IGUAL ANTERIOR) ---
+        function ganharVidaExtra() {
+            window.open(SMARTLINK, '_blank');
+            vidas = 1;
+            mostrarJogo();
+        }
+
+        function mudarFoco(L, C) { if (L === linha) { focadoIndex = C; atualizarVisual(); } }
 
         function digitar(k) {
             if(k === 'ENTER') { if(tentativaArray.join('').length === 5) verificar(); return; }
@@ -176,31 +233,20 @@
                 tentativaArray[focadoIndex] = "";
                 if(focadoIndex > 0) focadoIndex--;
             } else { 
-                if(focadoIndex < 5) { tentativaArray[focadoIndex] = k; if(focadoIndex < 4) focadoIndex++; } 
+                if(focadoIndex < 5) { 
+                    tentativaArray[focadoIndex] = k; 
+                    if(focadoIndex < 4) focadoIndex++;
+                } 
             }
             atualizarVisual();
         }
 
-        function verificar() {
-            const tiles = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
-            let ok = 0;
-            for(let i=0; i<5; i++) {
-                if(tentativaArray[i] === segredo[i]) { tiles[i].classList.add('correct'); ok++; }
-                else if(segredo.includes(tentativaArray[i])) tiles[i].classList.add('present');
-                else tiles[i].classList.add('absent');
-            }
-            if(ok === 5) { 
-                document.getElementById('message').innerText = "VENCEU! 🎉"; 
-                streak++; document.getElementById('streakDisplay').innerText = streak;
-                setTimeout(novoJogo, 2000); 
-            } else if(linha === 5) {
-                vidas--;
-                checkVidas();
-                if(vidas > 0) setTimeout(novoJogo, 3000);
-            } else { 
-                linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; 
-                setTimeout(atualizarVisual, 100);
-            }
+        function tecladoFisico(e) {
+            if(document.getElementById('game-container').style.display !== 'flex') return;
+            const k = e.key.toUpperCase();
+            if(k === 'ENTER') digitar('ENTER');
+            else if(k === 'BACKSPACE') digitar('DEL');
+            else if(k.length === 1 && k.match(/[A-Z]/)) digitar(k);
         }
 
         function atualizarVisual() {
@@ -214,11 +260,27 @@
             });
         }
 
-        function tecladoFisico(e) {
-            const k = e.key.toUpperCase();
-            if(k === 'ENTER') digitar('ENTER');
-            else if(k === 'BACKSPACE') digitar('DEL');
-            else if(k.length === 1 && k.match(/[A-Z]/)) digitar(k);
+        function verificar() {
+            const tiles = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
+            let ok = 0;
+            for(let i=0; i<5; i++) {
+                if(tentativaArray[i] === segredo[i]) { tiles[i].classList.add('correct'); ok++; }
+                else if(segredo.includes(tentativaArray[i])) tiles[i].classList.add('present');
+                else tiles[i].classList.add('absent');
+            }
+            if(ok === 5) { 
+                document.getElementById('message').innerText = "VENCEU! 🎉"; 
+                if(nickAtual !== "Visitante") { streak++; db.ref('users/' + auth.currentUser.uid).update({ streak: streak }); }
+                setTimeout(novoJogo, 2000); 
+            } else if(linha === 5) {
+                vidas--;
+                document.getElementById('livesDisplay').innerText = vidas;
+                document.getElementById('message').innerText = "ERA: " + segredo;
+                setTimeout(novoJogo, 3000);
+            } else { 
+                linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; 
+                setTimeout(atualizarVisual, 100);
+            }
         }
 
         function criarTecladoVisual() {
@@ -227,10 +289,24 @@
             lay.forEach(r => {
                 const div = document.createElement('div'); div.className = 'kb-row';
                 r.forEach(k => {
-                    const b = document.createElement('button'); b.className = 'key';
+                    const b = document.createElement('button'); b.className = (k.length > 1) ? 'key wide' : 'key';
                     b.innerText = k; b.onclick = () => digitar(k); div.appendChild(b);
                 });
                 kb.appendChild(div);
+            });
+        }
+
+        function abrirRanking() {
+            document.getElementById('rank-screen').style.display = 'flex';
+            const list = document.getElementById('rank-list');
+            list.innerHTML = "Carregando...";
+            db.ref('users').orderByChild('streak').limitToLast(10).once('value', snap => {
+                list.innerHTML = "";
+                let players = [];
+                snap.forEach(child => { players.push(child.val()); });
+                players.reverse().forEach((p, i) => {
+                    list.innerHTML += `<div class="rank-item"><span>${i+1}º ${p.nick}</span> <span>🔥 ${p.streak || 0}</span></div>`;
+                });
             });
         }
     </script>
