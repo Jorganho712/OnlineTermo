@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Verbete Online</title>
+    <title>Verbete Online - VIP Edition</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -23,25 +23,23 @@
         .list-container { text-align: left; margin: 10px 0; max-height: 250px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #444; }
         .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #333; font-size: 14px; }
         .buy-btn { background: #4a90e2; border: none; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
-        .buy-btn:disabled { background: #333; cursor: default; }
-
+        
         .rank-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; font-family: monospace; }
-
         .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; height: 100%; position: relative; }
         .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
         
         #grid { display: grid; gap: 5px; padding: 10px; margin: auto; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
         .tile { width: 60px; height: 60px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
-        .tile.selected { border-color: #818384; background: #222; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
         #keyboard { padding: 10px; }
         .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 6px; }
-        .key { height: 55px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 1rem; font-weight: bold; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .key { height: 55px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 1rem; font-weight: bold; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s, transform 0.2s; }
         .key.wide { flex: 1.5; background: #565758; }
+        .key.hidden { opacity: 0; pointer-events: none; transform: scale(0.8); }
 
         @media (max-width: 400px) { .tile { width: 15vw; height: 15vw; } }
     </style>
@@ -68,40 +66,25 @@
 
         <div id="shop-screen" class="overlay">
             <div class="card">
-                <h2>🛒 Loja de Estilos</h2>
-                <p style="font-size: 12px; color: #888;">Suas Moedas: 💰 <span id="shopCoinsDisplay">0</span></p>
+                <h2>🛒 Loja</h2>
+                <p>💰 <span id="shopCoinsDisplay">0</span></p>
                 <div id="shop-content" class="list-container"></div>
                 <button class="btn-main" style="background: #333;" onclick="fecharTelas()">Sair</button>
             </div>
         </div>
 
-        <div id="out-of-lives" class="overlay">
-            <div class="card">
-                <h2>Limite Atingido</h2>
-                <p>Jogue mais assistindo um anúncio.</p>
-                <button id="btn-ad" class="btn-main" onclick="assistirAnuncioReset()" style="background:#4a90e2;">🎬 LIBERAR +3 JOGOS</button>
-                <button style="background:none; border:none; color:#888; margin-top:15px; cursor:pointer;" onclick="fazerLogout()">Sair</button>
-            </div>
-        </div>
-
         <div id="game-container" style="display:none; flex-direction:column; height:100%;">
             <div class="top-nav">
-                <div style="font-weight:bold; font-size: 13px;">
-                    🔥 <span id="streakDisplay">0</span> | 💰 <span id="coinsDisplay">0</span>
-                </div>
+                <div style="font-weight:bold; font-size: 13px;">🔥 <span id="streakDisplay">0</span> | 💰 <span id="coinsDisplay">0</span></div>
                 <div style="display:flex; gap:12px;">
                     <button onclick="abrirLoja()" style="background:none; border:none; color:white; cursor:pointer; font-size:20px;">🛒</button>
                     <button onclick="abrirRanking()" style="background:none; border:none; color:white; cursor:pointer; font-size:20px;">🏆</button>
                     <button onclick="fazerLogout()" style="background:none; border:none; color:white; cursor:pointer; font-size:20px;">🚪</button>
                 </div>
             </div>
-            
             <div id="grid"></div>
             <div id="message" style="color:#ffd700; font-weight:bold; height:20px; text-align:center; margin-bottom:10px;"></div>
-
-            <div style="display:flex; justify-content:center; gap:10px; padding:0 10px 10px 10px;">
-                <button id="btn-skip" onclick="pularPalavra()" style="flex:1; padding:12px; background:#4a90e2; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;">⏭️ PULAR (1x)</button>
-            </div>
+            <div style="padding:0 10px 10px 10px;"><button onclick="pularPalavra()" style="width:100%; padding:12px; background:#4a90e2; border:none; border-radius:6px; color:white; font-weight:bold;">⏭️ PULAR</button></div>
             <div id="keyboard"></div>
         </div>
     </div>
@@ -110,49 +93,33 @@
         const firebaseConfig = { apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0", authDomain: "termo-rank-5d80d.firebaseapp.com", databaseURL: "https://termo-rank-5d80d-default-rtdb.firebaseio.com", projectId: "termo-rank-5d80d", storageBucket: "termo-rank-5d80d.firebasestorage.app" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.database();
-        const SMARTLINK = "https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072";
         const SEGREDO_POOL = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO"];
 
-        let userLocal = {};
-        let segredo = ""; let linha = 0; let focadoIndex = 0;
+        let userLocal = {}; let segredo = ""; let linha = 0; let focadoIndex = 0;
         let tentativaArray = ["","","","",""];
+        let letrasErradas = new Set();
 
-        // ADMIN CMDS & PULAR (CORRIGIDOS)
-        window.revelar = () => alert("Palavra secreta: " + segredo);
-        window.liberar = async () => { if(auth.currentUser) { await db.ref('users/'+auth.currentUser.uid).update({gamesToday:0, adResetUsed:false, skipUsed:false}); alert("Limite resetado!"); location.reload(); } };
-        window.setCoins = (v) => { if(auth.currentUser) db.ref('users/'+auth.currentUser.uid).update({ coins: parseInt(v) }); };
-        window.setRank = (v) => { if(auth.currentUser) db.ref('users/'+auth.currentUser.uid).update({ streak: parseInt(v) }); };
-
-        async function pularPalavra() { 
-            if(!userLocal.skipUsed) { 
-                window.open(SMARTLINK); 
-                await db.ref('users/'+auth.currentUser.uid).update({ skipUsed: true, streak: (userLocal.streak || 0) + 1, gamesToday: (userLocal.gamesToday || 0) + 1 }); 
-            } else { alert("Pulo diário já usado!"); }
+        // FUNÇÃO PARA REMOVER ACENTOS
+        function limparTexto(str) {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
         }
 
-        const SHOP_ITEMS = [
-            { id: 'c1', tipo: 'cor', nome: 'Azul Celeste', valor: 20, css: '#00d4ff' },
-            { id: 'c2', tipo: 'cor', nome: 'Dourado VIP', valor: 50, css: '#ffd700' },
-            { id: 'c3', tipo: 'cor', nome: 'Neon Rosa', valor: 100, css: '#ff00ff' },
-            { id: 't1', tipo: 'titulo', nome: 'Tag [PRO]', valor: 30, txt: '[PRO]' },
-            { id: 't2', tipo: 'titulo', nome: 'Tag [MITO]', valor: 80, txt: '[MITO]' },
-            { id: 't3', tipo: 'titulo', nome: 'Tag [LENDA]', valor: 200, txt: '[LENDA]' }
-        ];
+        window.revelar = () => alert("Palavra: " + segredo);
+        window.setCoins = (v) => db.ref('users/'+auth.currentUser.uid).update({ coins: parseInt(v) });
 
-        function removerAcentos(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
         function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
         function abrirRanking() { document.getElementById('rank-screen').classList.add('active'); carregarRank(); }
         function abrirLoja() { document.getElementById('shop-screen').classList.add('active'); carregarLoja(); }
 
         async function carregarRank() {
             const list = document.getElementById('rank-content'); list.innerHTML = "Carregando...";
-            db.ref('users').orderByChild('streak').limitToLast(10).once('value', s => {
-                let h = ""; let arr = [];
-                s.forEach(c => arr.push(c.val()));
-                arr.reverse().forEach((p, idx) => {
+            db.ref('users').once('value', s => {
+                let arr = []; s.forEach(c => { let d = c.val(); d.streak = Number(d.streak)||0; arr.push(d); });
+                arr.sort((a,b) => b.streak - a.streak);
+                let h = ""; arr.slice(0, 10).forEach((p, idx) => {
                     const cor = p.selectedColor || '#fff';
-                    const tag = p.selectedTitle ? `<span style="color:#888; font-size:10px;">${p.selectedTitle}</span> ` : "";
-                    h += `<div class="rank-item"><span style="color:${cor}">${idx+1}º ${tag}${p.nick}</span><span>🔥 ${p.streak || 0}</span></div>`;
+                    const tag = p.selectedTitle ? `<span style="font-size:10px; opacity:0.6;">${p.selectedTitle}</span> ` : "";
+                    h += `<div class="rank-item"><span style="color:${cor}">${idx+1}º ${tag}${p.nick}</span><span>🔥 ${p.streak}</span></div>`;
                 });
                 list.innerHTML = h || "Vazio.";
             });
@@ -161,83 +128,87 @@
         function carregarLoja() {
             const list = document.getElementById('shop-content');
             document.getElementById('shopCoinsDisplay').innerText = userLocal.coins || 0;
-            let h = "";
-            SHOP_ITEMS.forEach(it => {
+            const items = [{id:'c1',tipo:'cor',nome:'Azul',valor:20,css:'#00d4ff'},{id:'c2',tipo:'cor',nome:'Dourado',valor:50,css:'#ffd700'},{id:'t1',tipo:'titulo',nome:'Tag [PRO]',valor:30,txt:'[PRO]'}];
+            let h = ""; items.forEach(it => {
                 const jaTem = userLocal.inventory && userLocal.inventory.includes(it.id);
-                const estaUsando = (it.tipo === 'cor' && userLocal.selectedColor === it.css) || (it.tipo === 'titulo' && userLocal.selectedTitle === it.txt);
-                let btnTxt = jaTem ? "EQUIPAR" : `💰 ${it.valor}`;
-                if(estaUsando) btnTxt = "EQUIPADO";
-                h += `<div class="item-row"><span style="color:${it.css || '#fff'}">${it.nome}</span><button class="buy-btn" ${estaUsando?'disabled':''} onclick="comprarOuEquipar('${it.id}')">${btnTxt}</button></div>`;
+                const usando = (it.tipo === 'cor' && userLocal.selectedColor === it.css) || (it.tipo === 'titulo' && userLocal.selectedTitle === it.txt);
+                h += `<div class="item-row"><span style="color:${it.css||'#fff'}">${it.nome}</span><button class="buy-btn" ${usando?'disabled':''} onclick="comprarOuEquipar('${it.id}')">${jaTem?'EQUIPAR':`💰 ${it.valor}`}</button></div>`;
             });
             list.innerHTML = h;
         }
 
         async function comprarOuEquipar(id) {
-            const it = SHOP_ITEMS.find(i => i.id === id);
-            const inv = userLocal.inventory || [];
+            const items = [{id:'c1',tipo:'cor',css:'#00d4ff',valor:20},{id:'c2',tipo:'cor',css:'#ffd700',valor:50},{id:'t1',tipo:'titulo',txt:'[PRO]',valor:30}];
+            const it = items.find(i => i.id === id); const inv = userLocal.inventory || [];
             if(inv.includes(id)) {
-                let up = {};
-                if(it.tipo === 'cor') up.selectedColor = it.css; else up.selectedTitle = it.txt;
+                let up = {}; if(it.tipo === 'cor') up.selectedColor = it.css; else up.selectedTitle = it.txt;
                 await db.ref('users/'+auth.currentUser.uid).update(up);
             } else if(userLocal.coins >= it.valor) {
-                inv.push(id);
-                let up = { coins: userLocal.coins - it.valor, inventory: inv };
+                inv.push(id); let up = { coins: userLocal.coins - it.valor, inventory: inv };
                 if(it.tipo === 'cor') up.selectedColor = it.css; else up.selectedTitle = it.txt;
                 await db.ref('users/'+auth.currentUser.uid).update(up);
-            } else { alert("Sem moedas!"); }
+            }
         }
 
         auth.onAuthStateChanged(user => {
             if(user) {
                 db.ref('users/'+user.uid).on('value', s => {
                     userLocal = s.val() || {};
-                    const hj = new Date().toLocaleDateString();
-                    if(userLocal.lastDate !== hj) db.ref('users/'+user.uid).update({ lastDate: hj, gamesToday: 0, adResetUsed: false, skipUsed: false });
-                    if(userLocal.gamesToday >= 3 && !userLocal.adResetUsed) { document.getElementById('game-container').style.display='none'; document.getElementById('out-of-lives').classList.add('active'); }
-                    else if(userLocal.gamesToday >= 6) { document.getElementById('game-container').style.display='none'; document.getElementById('out-of-lives').classList.add('active'); document.getElementById('btn-ad').disabled = true; }
-                    else { fecharTelas(); document.getElementById('game-container').style.display='flex'; document.getElementById('streakDisplay').innerText = userLocal.streak || 0; document.getElementById('coinsDisplay').innerText = userLocal.coins || 0; novoJogo(); }
+                    document.getElementById('auth-screen').classList.remove('active');
+                    document.getElementById('game-container').style.display='flex';
+                    document.getElementById('streakDisplay').innerText = userLocal.streak || 0;
+                    document.getElementById('coinsDisplay').innerText = userLocal.coins || 0;
+                    if(!segredo) novoJogo();
                 });
             }
         });
 
-        async function verificar() {
-            const chute = tentativaArray.join("");
-            const r = await fetch(`https://api.dicionario-aberto.net/word/${chute.toLowerCase()}`);
-            const d = await r.json();
-            if(d.length === 0 && !["ETICA", "AREIA", "AVIAO"].includes(chute)) { document.getElementById('message').innerText = "Inválida!"; return; }
-            const ts = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
-            let acertos = 0;
-            const segL = removerAcentos(segredo).toUpperCase();
-            const chuL = removerAcentos(chute).toUpperCase();
-            for(let i=0; i<5; i++) {
-                if(chuL[i] === segL[i]) { ts[i].classList.add('correct'); acertos++; }
-                else if(segL.includes(chuL[i])) ts[i].classList.add('present');
-                else ts[i].classList.add('absent');
-            }
-            if(acertos === 5) {
-                let ganho = (userLocal.streak >= 4) ? 2 * Math.pow(2, (userLocal.streak - 3)) : 2;
-                await db.ref('users/'+auth.currentUser.uid).update({ streak: userLocal.streak + 1, gamesToday: userLocal.gamesToday + 1, coins: userLocal.coins + ganho });
-            } else if(linha === 5) {
-                document.getElementById('message').innerText = "Era: " + segredo;
-                await db.ref('users/'+auth.currentUser.uid).update({ streak: 0, gamesToday: userLocal.gamesToday + 1 });
-                setTimeout(novoJogo, 2500);
-            } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); }
-        }
-
         function novoJogo() {
             segredo = SEGREDO_POOL[Math.floor(Math.random()*SEGREDO_POOL.length)];
             linha = 0; focadoIndex = 0; tentativaArray = ["","","","",""];
+            letrasErradas.clear();
             const g = document.getElementById('grid'); g.innerHTML = "";
             for(let i=0; i<6; i++) {
                 const r = document.createElement('div'); r.className = 'row';
-                for(let j=0; j<5; j++) {
-                    const t = document.createElement('div'); t.className = 'tile';
-                    t.onclick = () => { if(i === linha) { focadoIndex = j; atualizarVisual(); } };
-                    r.appendChild(t);
-                }
+                for(let j=0; j<5; j++) { const t = document.createElement('div'); t.className = 'tile'; r.appendChild(t); }
                 g.appendChild(r);
             }
             criarTeclado(); atualizarVisual();
+        }
+
+        async function verificar() {
+            const chuteRaw = tentativaArray.join("");
+            const chute = limparTexto(chuteRaw);
+            const alvo = limparTexto(segredo);
+
+            const res = await fetch(`https://api.dicionario-aberto.net/word/${chute.toLowerCase()}`);
+            const data = await res.json();
+            if(data.length === 0 && !["ETICA", "AREIA", "AVIAO", "AMAGO", "EXITO"].includes(chute)) { 
+                document.getElementById('message').innerText = "Inválida!"; return; 
+            }
+
+            const ts = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
+            let acertos = 0;
+            
+            for(let i=0; i<5; i++) {
+                const letra = chute[i];
+                if(letra === alvo[i]) { ts[i].classList.add('correct'); acertos++; }
+                else if(alvo.includes(letra)) { ts[i].classList.add('present'); }
+                else { ts[i].classList.add('absent'); letrasErradas.add(letra); }
+            }
+
+            if(acertos === 5) {
+                let ganho = (userLocal.streak >= 4) ? 2 * Math.pow(2, (userLocal.streak - 3)) : 2;
+                await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0) + 1, coins: (userLocal.coins||0) + ganho });
+                setTimeout(novoJogo, 2000);
+            } else if(linha === 5) {
+                document.getElementById('message').innerText = "Era: " + segredo;
+                await db.ref('users/'+auth.currentUser.uid).update({ streak: 0 });
+                setTimeout(novoJogo, 3000);
+            } else { 
+                linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; 
+                atualizarVisual(); criarTeclado(); 
+            }
         }
 
         function digitar(k) {
@@ -248,10 +219,8 @@
         }
 
         function atualizarVisual() {
-            const rows = document.querySelectorAll('.row'); if(!rows[linha]) return;
-            const ts = rows[linha].querySelectorAll('.tile');
-            ts.forEach((t, i) => { t.innerText = tentativaArray[i]; t.classList.remove('selected'); if(i === focadoIndex) t.classList.add('selected'); });
-            document.getElementById('message').innerText = "";
+            const ts = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
+            ts.forEach((t, i) => { t.innerText = tentativaArray[i]; t.style.borderColor = (i===focadoIndex)?'#818384':'#3a3a3c'; });
         }
 
         function criarTeclado() {
@@ -260,26 +229,32 @@
             lay.forEach(r=>{
                 const d=document.createElement('div'); d.className='kb-row';
                 r.forEach(k=>{
-                    const b=document.createElement('button'); b.className=(k.length>1)?'key wide':'key'; b.innerText=k; b.onclick=()=>digitar(k); d.appendChild(b);
+                    const b=document.createElement('button');
+                    b.className=(k.length>1)?'key wide':'key';
+                    if(letrasErradas.has(limparTexto(k))) b.classList.add('hidden');
+                    b.innerText=k; b.onclick=()=>digitar(k); d.appendChild(b);
                 });
                 kb.appendChild(d);
             });
         }
 
         window.addEventListener('keydown', (e) => {
-            if(document.getElementById('game-container').style.display === 'none') return;
-            if(e.key === "Enter") digitar("ENTER"); else if(e.key === "Backspace") digitar("DEL"); else if(e.key.length === 1 && e.key.match(/[a-z]/i)) digitar(e.key.toUpperCase());
+            if(e.key === "Enter") digitar("ENTER"); else if(e.key === "Backspace") digitar("DEL");
+            else if(e.key.length === 1 && e.key.match(/[a-z]/i)) {
+                const k = e.key.toUpperCase();
+                if(!letrasErradas.has(limparTexto(k))) digitar(k);
+            }
         });
 
+        async function pularPalavra() { if(!userLocal.skipUsed) { await db.ref('users/'+auth.currentUser.uid).update({ skipUsed: true, streak: (userLocal.streak||0)+1 }); novoJogo(); } }
         function fazerLogout() { auth.signOut().then(() => location.reload()); }
-        async function assistirAnuncioReset() { if(!userLocal.adResetUsed) { window.open(SMARTLINK); await db.ref('users/'+auth.currentUser.uid).update({adResetUsed:true, gamesToday:0}); } }
         async function fazerLogin() {
             const n = document.getElementById('loginNick').value.trim(); const p = document.getElementById('loginPass').value;
             if(!n || !p) return alert("Preencha!");
             try { await auth.signInWithEmailAndPassword(n.toLowerCase()+"@termo.com", p); } 
             catch(e) { 
                 const res = await auth.createUserWithEmailAndPassword(n.toLowerCase()+"@termo.com", p);
-                await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, gamesToday:0, inventory:[], selectedColor:'#fff', selectedTitle:''});
+                await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, inventory:[], selectedColor:'#fff', selectedTitle:''});
             }
         }
     </script>
