@@ -17,7 +17,15 @@
         .coluna-ad { width: 160px; flex-shrink: 0; }
         .area-jogo { flex: 1; max-width: 500px; display: flex; flex-direction: column; align-items: center; }
 
-        /* Estilos do Grid e Teclado */
+        /* Mobile Adjustments */
+        #ad-mobile-top { display: none; text-align: center; width: 100%; margin: 10px 0; }
+        
+        @media (max-width: 1000px) {
+            .coluna-ad { display: none !important; }
+            #ad-mobile-top { display: block !important; } /* Ativa o anúncio no celular */
+            .tile { width: 45px !important; height: 45px !important; font-size: 1.5rem !important; }
+        }
+
         #grid { display: grid; gap: 5px; margin-bottom: 15px; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
         .tile { width: 55px; height: 55px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
@@ -30,13 +38,6 @@
         .kb-row { display: flex; justify-content: center; gap: 4px; }
         .key { padding: 15px 6px; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.8rem; font-weight: bold; flex: 1; }
         .key.wide { flex: 1.5; background: #565758; }
-
-        /* MOBILE: Ajustes para os anúncios aparecerem */
-        @media (max-width: 1000px) {
-            .coluna-ad { display: none !important; }
-            .tile { width: 45px !important; height: 45px !important; font-size: 1.5rem !important; }
-            #ad-mobile-top { display: block !important; margin-bottom: 15px; }
-        }
 
         .auth-card { background: #222; padding: 25px; border-radius: 12px; margin-top: 50px; text-align: center; width: 300px; }
         input { width: 90%; padding: 12px; margin: 10px 0; background: #111; color: white; border: 1px solid #444; }
@@ -60,11 +61,17 @@
             👤 <span id="displayNick"></span> | 🔥 Streak: <span id="streakDisplay">0</span>
         </div>
 
-        <div id="ad-mobile-top" style="display:none; text-align:center; width:100%;">
+        <div id="ad-mobile-top">
             <script type="text/javascript">
-                atOptions = {'key' : 'b2c5b5eb74a40bdb1a533534b525704c','format' : 'iframe','height' : 50,'width' : 320,'params' : {}};
+                atOptions = {
+                    'key' : '06eee4bace60b9e3d155aa2f08f93474',
+                    'format' : 'iframe',
+                    'height' : 50,
+                    'width' : 320,
+                    'params' : {}
+                };
             </script>
-            <script type="text/javascript" src="https://www.highperformanceformat.com/b2c5b5eb74a40bdb1a533534b525704c/invoke.js"></script>
+            <script type="text/javascript" src="https://www.highperformanceformat.com/06eee4bace60b9e3d155aa2f08f93474/invoke.js"></script>
         </div>
 
         <div class="layout-principal">
@@ -80,10 +87,15 @@
                 
                 <div style="margin-top: 10px; width: 100%; text-align: center;">
                     <script type="text/javascript">
-                        // Se for celular, usa 300x250, se for PC usa 728x90
-                        var adWidth = window.innerWidth < 1000 ? 300 : 728;
-                        var adHeight = window.innerWidth < 1000 ? 250 : 90;
-                        atOptions = {'key' : 'b2c5b5eb74a40bdb1a533534b525704c','format' : 'iframe','height' : adHeight,'width' : adWidth,'params' : {}};
+                        // Se for PC usa 728x90, se for celular ele tenta o máximo possível
+                        var isMobile = window.innerWidth < 1000;
+                        atOptions = {
+                            'key' : 'b2c5b5eb74a40bdb1a533534b525704c',
+                            'format' : 'iframe',
+                            'height' : isMobile ? 50 : 90,
+                            'width' : isMobile ? 320 : 728,
+                            'params' : {}
+                        };
                     </script>
                     <script type="text/javascript" src="https://www.highperformanceformat.com/b2c5b5eb74a40bdb1a533534b525704c/invoke.js"></script>
                 </div>
@@ -97,7 +109,7 @@
     </div>
 
     <script>
-        // ... (Mesma lógica do Firebase e do Jogo do código anterior) ...
+        // Config do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0",
             authDomain: "termo-rank-5d80d.firebaseapp.com",
@@ -111,7 +123,7 @@
 
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
         let tentativaArray = ["", "", "", "", ""]; let focadoIndex = 0;
-        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER"];
+        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "TENRA", "SUTIL", "VIGOR", "AUREA", "SANAR"];
 
         function entrarComoConvidado() { nickAtual = "Convidado"; mostrarJogo(); }
         async function fazerLogin() {
@@ -149,7 +161,8 @@
             for (let i = 0; i < 6; i++) {
                 const row = document.createElement('div'); row.className = 'row';
                 for (let j = 0; j < 5; j++) {
-                    const tile = document.createElement('div'); tile.className = 'tile';
+                    const tile = document.createElement('div'); 
+                    tile.className = 'tile';
                     tile.onclick = () => { if(i === linha) { focadoIndex = j; atualizarVisual(); } };
                     row.appendChild(tile);
                 }
