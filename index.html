@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Termo Infinito</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -11,99 +11,65 @@
     
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
-        
-        /* Ajuste do fundo para cobrir tudo */
-        body { 
-            background-color: var(--preto); 
-            color: white; 
-            font-family: 'Segoe UI', sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        body { background-color: var(--preto); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
 
-        /* Container Principal que organiza as colunas */
-        .layout-principal {
-            display: flex;
-            justify-content: space-between; /* Empurra os anúncios para as pontas */
-            align-items: flex-start;
-            width: 100%;
-            max-width: 1400px;
-            margin-top: 20px;
-        }
+        .layout-principal { display: flex; justify-content: center; width: 100%; margin-top: 10px; }
+        .coluna-ad { width: 160px; flex-shrink: 0; }
+        .area-jogo { flex: 1; max-width: 500px; display: flex; flex-direction: column; align-items: center; }
 
-        /* Colunas de Anúncio Lateral */
-        .coluna-ad {
-            width: 160px;
-            min-height: 600px;
-            flex-shrink: 0; /* Impede o anúncio de achatar */
-        }
-
-        /* Área Central do Jogo */
-        .area-jogo {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0 10px;
-        }
-
-        /* Esconde anúncios laterais no celular para não quebrar o layout */
-        @media (max-width: 1000px) {
-            .coluna-ad { display: none; }
-        }
-
-        /* Estilos do Termo */
-        #grid { display: grid; gap: 5px; margin-bottom: 20px; }
+        /* Estilos do Grid e Teclado */
+        #grid { display: grid; gap: 5px; margin-bottom: 15px; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { 
-            width: 55px; height: 55px; border: 2px solid #3a3a3c; 
-            display: flex; justify-content: center; align-items: center; 
-            font-size: 2rem; font-weight: bold; text-transform: uppercase; 
-        }
+        .tile { width: 55px; height: 55px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
+        .tile.selected { border-color: #ffd700; background-color: #2a2a2e; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        #keyboard { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 500px; }
-        .kb-row { display: flex; justify-content: center; gap: 5px; }
-        .key { 
-            padding: 18px 10px; background: #818384; border-radius: 4px; 
-            color: white; border: none; cursor: pointer; font-weight: bold; 
-        }
-        .key.wide { min-width: 65px; }
+        #keyboard { display: flex; flex-direction: column; gap: 6px; width: 95%; margin-bottom: 20px; }
+        .kb-row { display: flex; justify-content: center; gap: 4px; }
+        .key { padding: 15px 6px; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.8rem; font-weight: bold; flex: 1; }
+        .key.wide { flex: 1.5; background: #565758; }
 
-        .auth-card { background: #222; padding: 30px; border-radius: 15px; margin-top: 50px; text-align: center; width: 320px; }
-        input { width: 90%; padding: 12px; margin: 10px 0; background: #111; color: white; border: 1px solid #444; border-radius: 5px; }
-        .btn-main { width: 100%; padding: 12px; background: var(--cor-correta); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        /* MOBILE: Ajustes para os anúncios aparecerem */
+        @media (max-width: 1000px) {
+            .coluna-ad { display: none !important; }
+            .tile { width: 45px !important; height: 45px !important; font-size: 1.5rem !important; }
+            #ad-mobile-top { display: block !important; margin-bottom: 15px; }
+        }
+
+        .auth-card { background: #222; padding: 25px; border-radius: 12px; margin-top: 50px; text-align: center; width: 300px; }
+        input { width: 90%; padding: 12px; margin: 10px 0; background: #111; color: white; border: 1px solid #444; }
+        .btn-main { width: 100%; padding: 12px; background: var(--cor-correta); color: white; border: none; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
-        <div id="login-box" class="auth-card">
+        <div class="auth-card">
             <h2>Termo Infinito</h2>
             <input type="text" id="loginNick" placeholder="Seu Nome">
             <input type="password" id="loginPass" placeholder="Sua Senha">
             <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
-            <button onclick="entrarComoConvidado()" style="margin-top:15px; background:none; border:none; color:#aaa; cursor:pointer; text-decoration:underline;">Jogar como Convidado</button>
+            <button onclick="entrarComoConvidado()" style="margin-top:15px; background:none; border:none; color:#aaa; cursor:pointer;">Entrar como Convidado</button>
         </div>
     </div>
 
     <div id="game-container" style="display:none; width: 100%;">
-        
-        <div style="text-align: center; padding: 10px;">
-            <span>👤 <b id="displayNick"></b></span> | <span>🔥 Streak: <b id="streakDisplay">0</b></span>
+        <div style="text-align: center; padding: 10px; background: #1a1a1b;">
+            👤 <span id="displayNick"></span> | 🔥 Streak: <span id="streakDisplay">0</span>
+        </div>
+
+        <div id="ad-mobile-top" style="display:none; text-align:center; width:100%;">
+            <script type="text/javascript">
+                atOptions = {'key' : 'b2c5b5eb74a40bdb1a533534b525704c','format' : 'iframe','height' : 50,'width' : 320,'params' : {}};
+            </script>
+            <script type="text/javascript" src="https://www.highperformanceformat.com/b2c5b5eb74a40bdb1a533534b525704c/invoke.js"></script>
         </div>
 
         <div class="layout-principal">
             <div class="coluna-ad">
-                <script type="text/javascript">
-                    atOptions = {'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1','format' : 'iframe','height' : 600,'width' : 160,'params' : {}};
-                </script>
+                <script type="text/javascript">atOptions = {'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1','format' : 'iframe','height' : 600,'width' : 160,'params' : {}};</script>
                 <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
             </div>
 
@@ -112,25 +78,26 @@
                 <div id="message" style="height: 30px; color: #ffd700; font-weight: bold;"></div>
                 <div id="keyboard"></div>
                 
-                <div style="margin-top: 30px;">
+                <div style="margin-top: 10px; width: 100%; text-align: center;">
                     <script type="text/javascript">
-                        atOptions = {'key' : 'b2c5b5eb74a40bdb1a533534b525704c','format' : 'iframe','height' : 90,'width' : 728,'params' : {}};
+                        // Se for celular, usa 300x250, se for PC usa 728x90
+                        var adWidth = window.innerWidth < 1000 ? 300 : 728;
+                        var adHeight = window.innerWidth < 1000 ? 250 : 90;
+                        atOptions = {'key' : 'b2c5b5eb74a40bdb1a533534b525704c','format' : 'iframe','height' : adHeight,'width' : adWidth,'params' : {}};
                     </script>
                     <script type="text/javascript" src="https://www.highperformanceformat.com/b2c5b5eb74a40bdb1a533534b525704c/invoke.js"></script>
                 </div>
             </div>
 
             <div class="coluna-ad">
-                <script type="text/javascript">
-                    atOptions = {'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1','format' : 'iframe','height' : 600,'width' : 160,'params' : {}};
-                </script>
+                <script type="text/javascript">atOptions = {'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1','format' : 'iframe','height' : 600,'width' : 160,'params' : {}};</script>
                 <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
             </div>
         </div>
     </div>
 
     <script>
-        // Use sua config do Firebase aqui
+        // ... (Mesma lógica do Firebase e do Jogo do código anterior) ...
         const firebaseConfig = {
             apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0",
             authDomain: "termo-rank-5d80d.firebaseapp.com",
@@ -144,24 +111,19 @@
 
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
         let tentativaArray = ["", "", "", "", ""]; let focadoIndex = 0;
+        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER"];
 
-        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "TENRA", "SUTIL", "VIGOR", "AUREA", "SANAR"];
-
-        function entrarComoConvidado() { nickAtual = "Convidado"; streak = 0; mostrarJogo(); }
-
+        function entrarComoConvidado() { nickAtual = "Convidado"; mostrarJogo(); }
         async function fazerLogin() {
             const nick = document.getElementById('loginNick').value.trim();
             const pass = document.getElementById('loginPass').value;
             const fakeEmail = nick.toLowerCase() + "@termo.com";
-            try { await auth.signInWithEmailAndPassword(fakeEmail, pass); } catch (e) { alert("Erro no acesso!"); }
+            try { await auth.signInWithEmailAndPassword(fakeEmail, pass); } catch (e) { alert("Erro!"); }
         }
-
         auth.onAuthStateChanged(user => {
             if (user) {
                 db.ref('users/' + user.uid).once('value').then(snap => {
-                    nickAtual = snap.val().nick;
-                    streak = snap.val().streak || 0;
-                    mostrarJogo();
+                    nickAtual = snap.val().nick; streak = snap.val().streak || 0; mostrarJogo();
                 });
             }
         });
@@ -172,6 +134,12 @@
             document.getElementById('displayNick').innerText = nickAtual;
             document.getElementById('streakDisplay').innerText = streak;
             novoJogo(); criarTeclado();
+            
+            window.addEventListener('keydown', (e) => {
+                if(e.key === 'Enter') digitar('ENTER');
+                else if(e.key === 'Backspace') digitar('DEL');
+                else if(/^[a-zA-Z]$/.test(e.key)) digitar(e.key.toUpperCase());
+            });
         }
 
         function novoJogo() {
@@ -182,6 +150,7 @@
                 const row = document.createElement('div'); row.className = 'row';
                 for (let j = 0; j < 5; j++) {
                     const tile = document.createElement('div'); tile.className = 'tile';
+                    tile.onclick = () => { if(i === linha) { focadoIndex = j; atualizarVisual(); } };
                     row.appendChild(tile);
                 }
                 grid.appendChild(row);
@@ -194,13 +163,21 @@
             const rows = document.querySelectorAll('.row');
             if(!rows[linha]) return;
             const tiles = rows[linha].querySelectorAll('.tile');
-            tiles.forEach((t, i) => { t.innerText = tentativaArray[i]; });
+            tiles.forEach((t, i) => { 
+                t.innerText = tentativaArray[i]; 
+                t.classList.toggle('selected', i === focadoIndex);
+            });
         }
 
         function digitar(k) {
             if(k === 'ENTER') { if(tentativaArray.filter(l => l!=="").length === 5) verificar(); return; }
-            if(k === 'DEL') { if(focadoIndex > 0) focadoIndex--; tentativaArray[focadoIndex] = ""; }
-            else if(focadoIndex < 5) { tentativaArray[focadoIndex] = k; focadoIndex++; }
+            if(k === 'DEL') {
+                tentativaArray[focadoIndex] = "";
+                if(focadoIndex > 0) focadoIndex--;
+            } else {
+                tentativaArray[focadoIndex] = k;
+                if(focadoIndex < 4) focadoIndex++;
+            }
             atualizarVisual();
         }
 
@@ -213,13 +190,15 @@
                 else tiles[i].classList.add('absent');
             }
             if(acertos === 5) { 
-                document.getElementById('message').innerText = "VITORIA!"; 
+                document.getElementById('message').innerText = "GANHOU!"; 
+                if(nickAtual !== "Convidado") {
+                    streak++;
+                    db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
+                    document.getElementById('streakDisplay').innerText = streak;
+                }
                 setTimeout(novoJogo, 2000); 
             }
-            else if(linha === 5) { 
-                document.getElementById('message').innerText = "ERA: " + segredo; 
-                setTimeout(novoJogo, 3000); 
-            }
+            else if(linha === 5) { document.getElementById('message').innerText = "ERA: " + segredo; setTimeout(novoJogo, 3000); }
             else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); }
         }
 
