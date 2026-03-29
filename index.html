@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Verbete Online</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -14,76 +14,74 @@
 
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
-        * { box-sizing: border-box; touch-action: manipulation; }
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         
-        body { 
+        html, body { 
             background-color: var(--preto); color: white; font-family: sans-serif; 
-            margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw;
-            display: flex; flex-direction: column; position: fixed; /* Evita scroll que quebra o teclado */
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; position: fixed;
         }
 
-        .game-column { width: 100%; max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; height: 100%; position: relative; }
+        .game-column { 
+            width: 100%; max-width: 450px; margin: 0 auto; 
+            display: flex; flex-direction: column; height: 100%;
+        }
 
         /* Telas Iniciais */
-        #auth-screen, #rank-screen, #register-screen, #out-of-lives { position: absolute; inset: 0; background: var(--preto); display: flex; justify-content: center; align-items: center; z-index: 100; }
+        #auth-screen, #out-of-lives { position: absolute; inset: 0; background: var(--preto); display: flex; justify-content: center; align-items: center; z-index: 100; }
         .card { background: #222; padding: 20px; border-radius: 12px; width: 90%; text-align: center; border: 1px solid #333; }
-        
-        input { width: 100%; padding: 10px; margin-bottom: 8px; background: #111; color: white; border: 1px solid #444; border-radius: 5px; }
-        .btn-main { width: 100%; padding: 12px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; }
-        
-        .extra-buttons { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
-        .btn-sub { background: none; border: 1px solid #444; color: #bbb; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
+        input { width: 100%; padding: 12px; margin-bottom: 8px; background: #111; color: white; border: 1px solid #444; border-radius: 5px; font-size: 16px; }
+        .btn-main { width: 100%; padding: 12px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 5px; }
 
-        /* Jogo - Ajustado para não cortar */
-        #game-container { display: none; flex-direction: column; height: 100%; width: 100%; justify-content: space-between; }
-        .header-jogo { display: flex; justify-content: space-between; align-items: center; padding: 5px 12px; background: #1a1a1b; height: 45px; }
+        /* Jogo */
+        #game-container { display: none; flex-direction: column; height: 100%; }
+        .header-jogo { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #1a1a1b; min-height: 50px; }
         
-        #game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
-        #grid { display: grid; gap: 4px; padding: 10px; }
+        #game-area { 
+            flex: 1; /* Ocupa o espaço que sobrar */
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+        }
+
+        #grid { display: grid; gap: 4px; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
         
-        /* Blocos menores para caber o teclado em telas pequenas */
+        /* Ajuste de tamanho dinâmico para os blocos */
         .tile { 
-            width: 12vw; height: 12vw; max-width: 50px; max-height: 50px;
+            width: 11vw; height: 11vw; max-width: 50px; max-height: 50px;
             border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; 
-            font-size: 1.4rem; font-weight: bold; text-transform: uppercase; cursor: pointer;
+            font-size: 1.4rem; font-weight: bold; text-transform: uppercase;
         }
         .tile.selected { border-color: #818384; background: #222; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        /* Teclado Visual Compacto */
-        #keyboard { padding: 5px; background: var(--preto); padding-bottom: env(safe-area-inset-bottom); }
-        .kb-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 4px; }
-        .key { height: 45px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.8rem; font-weight: bold; flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        /* Teclado fixo na base */
+        #keyboard { padding: 5px; padding-bottom: 10px; }
+        .kb-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 5px; }
+        .key { height: 48px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.8rem; font-weight: bold; flex: 1; display: flex; align-items: center; justify-content: center; }
         .key.wide { flex: 1.5; background: #565758; }
 
-        .btn-hint { background: #c9b458; color: black; border: none; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; cursor: pointer; margin-right: 5px; }
-        .btn-skip { background: #4a90e2; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; cursor: pointer; }
+        .btn-hint { background: #c9b458; color: black; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 10px; }
+        .btn-skip { background: #4a90e2; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 10px; margin-left: 5px; }
     </style>
 </head>
-<body onkeydown="tecladoFisico(event)">
+<body>
 
-    <div class="game-column">
+    <div class="game-column" id="main-column">
         <div id="auth-screen">
             <div class="card">
-                <h2 style="margin:0 0 15px 0">Verbete Online</h2>
+                <h2>Verbete Online</h2>
                 <input type="text" id="loginNick" placeholder="Nome">
                 <input type="password" id="loginPass" placeholder="Senha">
                 <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
-                <div class="extra-buttons">
-                    <button class="btn-sub" onclick="mostrarRegistro()">Criar Nova Conta</button>
-                    <button class="btn-sub" onclick="entrarComoConvidado()">Jogar como Visitante</button>
-                    <button class="btn-sub" onclick="abrirRanking()">Ver Ranking</button>
-                </div>
+                <button onclick="entrarComoConvidado()" style="background:none; border:none; color:#777; margin-top:15px; cursor:pointer;">Jogar como Visitante</button>
             </div>
         </div>
 
         <div id="out-of-lives" style="display:none;">
             <div class="card">
                 <h3>Vidas Esgotadas!</h3>
-                <p style="color:#bbb; font-size:14px; margin-bottom: 15px;">Você atingiu o limite de 3 partidas.</p>
                 <button class="btn-main" onclick="abrirAnuncioVida()" style="background:#4a90e2">Ganhar +1 Vida (Anúncio)</button>
             </div>
         </div>
@@ -98,14 +96,24 @@
             </div>
             <div id="game-area">
                 <div id="grid"></div>
-                <div id="message" style="height:20px; color:#ffd700; font-size:13px; margin-top:8px;"></div>
+                <div id="message" style="height:20px; color:#ffd700; font-size:13px; margin-top:10px;"></div>
             </div>
             <div id="keyboard"></div>
         </div>
     </div>
 
     <script>
-        // Configurações e Chaves (Manter suas configurações aqui)
+        // --- AJUSTE DE VIEWPORT MOBILE ---
+        function adjustHeight() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+            document.getElementById('main-column').style.height = window.innerHeight + 'px';
+        }
+        window.addEventListener('resize', adjustHeight);
+        window.addEventListener('orientationchange', adjustHeight);
+        adjustHeight();
+
+        // --- SEU SMARTLINK ---
         const SMARTLINK = "https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072";
         
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
@@ -113,10 +121,9 @@
         let vidas = 3; let dicasRestantes = 2;
         const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA"];
 
-        // Função para abrir anúncio sem erro de "Conexão Recusada"
         function dispararAnuncio() {
             const win = window.open(SMARTLINK, '_blank');
-            if (!win) { window.location.href = SMARTLINK; } // Plano B: Abre na mesma aba
+            if (!win) { window.location.href = SMARTLINK; }
         }
 
         function usarDica() {
@@ -126,21 +133,12 @@
                 dicasRestantes--;
                 document.getElementById('hintsDisplay').innerText = dicasRestantes;
                 atualizarVisual();
-            } else { alert("Limite de 2 dicas!"); }
+            }
         }
 
-        function pularPalavra() {
-            dispararAnuncio();
-            novoJogo();
-        }
+        function pularPalavra() { dispararAnuncio(); novoJogo(); }
+        function abrirAnuncioVida() { dispararAnuncio(); vidas = 1; mostrarJogo(); }
 
-        function abrirAnuncioVida() {
-            dispararAnuncio();
-            vidas = 1;
-            mostrarJogo();
-        }
-
-        // --- LÓGICA DO JOGO IGUAL A VERSÃO ANTERIOR ---
         function novoJogo() {
             if (vidas <= 0) {
                 document.getElementById('game-container').style.display = 'none';
@@ -169,11 +167,12 @@
             document.getElementById('displayNick').innerText = nickAtual;
             document.getElementById('livesDisplay').innerText = vidas;
             novoJogo(); criarTecladoVisual();
+            adjustHeight();
         }
 
         function digitar(k) {
             if(k === 'ENTER') { if(tentativaArray.join('').length === 5) verificar(); return; }
-            if(k === 'DEL' || k === 'BACKSPACE') { 
+            if(k === 'DEL') { 
                 tentativaArray[focadoIndex] = "";
                 if(focadoIndex > 0) focadoIndex--;
             } else { 
@@ -229,8 +228,6 @@
 
         function entrarComoConvidado() { nickAtual = "Visitante"; mostrarJogo(); }
         function fazerLogin() { mostrarJogo(); }
-        function mostrarRegistro() { document.getElementById('auth-screen').style.display = 'none'; }
-        function abrirRanking() { /* logica ranking */ }
     </script>
 </body>
 </html>
