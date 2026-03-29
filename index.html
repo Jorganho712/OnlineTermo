@@ -13,16 +13,16 @@
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
         body { background-color: var(--preto); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
 
+        /* Cabeçalho do Jogo */
+        .header-jogo { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 500px; padding: 10px; background: #1a1a1b; box-sizing: border-box; }
+        .btn-logout { background: #ce3a3a; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+
         .layout-principal { display: flex; justify-content: center; width: 100%; margin-top: 10px; }
         .coluna-ad { width: 160px; flex-shrink: 0; }
         .area-jogo { flex: 1; max-width: 500px; display: flex; flex-direction: column; align-items: center; }
 
-        /* Mobile Adjustments */
-        #ad-mobile-top { display: none; text-align: center; width: 100%; margin: 10px 0; }
-        
         @media (max-width: 1000px) {
             .coluna-ad { display: none !important; }
-            #ad-mobile-top { display: block !important; } /* Ativa o anúncio no celular */
             .tile { width: 45px !important; height: 45px !important; font-size: 1.5rem !important; }
         }
 
@@ -39,39 +39,38 @@
         .key { padding: 15px 6px; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.8rem; font-weight: bold; flex: 1; }
         .key.wide { flex: 1.5; background: #565758; }
 
-        .auth-card { background: #222; padding: 25px; border-radius: 12px; margin-top: 50px; text-align: center; width: 300px; }
-        input { width: 90%; padding: 12px; margin: 10px 0; background: #111; color: white; border: 1px solid #444; }
-        .btn-main { width: 100%; padding: 12px; background: var(--cor-correta); color: white; border: none; border-radius: 5px; cursor: pointer; }
+        /* Telas de Acesso */
+        .auth-card { background: #222; padding: 25px; border-radius: 12px; margin-top: 50px; text-align: center; width: 300px; border: 1px solid #444; }
+        input { width: 90%; padding: 12px; margin: 10px 0; background: #111; color: white; border: 1px solid #444; border-radius: 5px; }
+        .btn-main { width: 100%; padding: 12px; background: var(--cor-correta); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .link-auth { color: #aaa; font-size: 0.8rem; margin-top: 15px; cursor: pointer; display: block; text-decoration: underline; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
-        <div class="auth-card">
-            <h2>Termo Infinito</h2>
+        <div id="login-box" class="auth-card">
+            <h2>Entrar</h2>
             <input type="text" id="loginNick" placeholder="Seu Nome">
             <input type="password" id="loginPass" placeholder="Sua Senha">
-            <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
-            <button onclick="entrarComoConvidado()" style="margin-top:15px; background:none; border:none; color:#aaa; cursor:pointer;">Entrar como Convidado</button>
+            <button class="btn-main" onclick="fazerLogin()">JOGAR</button>
+            <span class="link-auth" onclick="alternarTela('signup-box')">Não tem conta? Criar conta</span>
+            <button onclick="entrarComoConvidado()" style="margin-top:15px; background:none; border:none; color:#666; cursor:pointer;">Entrar como Convidado</button>
+        </div>
+
+        <div id="signup-box" class="auth-card" style="display:none">
+            <h2>Criar Conta</h2>
+            <input type="text" id="userNick" placeholder="Escolha um Nome">
+            <input type="password" id="userPass" placeholder="Crie uma Senha (mín. 6)">
+            <button class="btn-main" style="background:#4a90e2" onclick="criarConta()">CADASTRAR E JOGAR</button>
+            <span class="link-auth" onclick="alternarTela('login-box')">Já tenho conta. Voltar</span>
         </div>
     </div>
 
     <div id="game-container" style="display:none; width: 100%;">
-        <div style="text-align: center; padding: 10px; background: #1a1a1b;">
-            👤 <span id="displayNick"></span> | 🔥 Streak: <span id="streakDisplay">0</span>
-        </div>
-
-        <div id="ad-mobile-top">
-            <script type="text/javascript">
-                atOptions = {
-                    'key' : '06eee4bace60b9e3d155aa2f08f93474',
-                    'format' : 'iframe',
-                    'height' : 50,
-                    'width' : 320,
-                    'params' : {}
-                };
-            </script>
-            <script type="text/javascript" src="https://www.highperformanceformat.com/06eee4bace60b9e3d155aa2f08f93474/invoke.js"></script>
+        <div class="header-jogo">
+            <div>👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span></div>
+            <button class="btn-logout" onclick="logout()">SAIR</button>
         </div>
 
         <div class="layout-principal">
@@ -81,23 +80,27 @@
             </div>
 
             <div class="area-jogo">
+                <div id="ad-top-mobile" style="margin-bottom:10px">
+                    <script type="text/javascript">
+                        if(window.innerWidth < 1000) {
+                            atOptions = {'key' : '06eee4bace60b9e3d155aa2f08f93474','format' : 'iframe','height' : 50,'width' : 320,'params' : {}};
+                            document.write('<script type="text/javascript" src="https://www.highperformanceformat.com/06eee4bace60b9e3d155aa2f08f93474/invoke.js"><\/script>');
+                        }
+                    </script>
+                </div>
+
                 <div id="grid"></div>
                 <div id="message" style="height: 30px; color: #ffd700; font-weight: bold;"></div>
                 <div id="keyboard"></div>
                 
-                <div style="margin-top: 10px; width: 100%; text-align: center;">
+                <div style="margin-top: 10px;">
                     <script type="text/javascript">
-                        // Se for PC usa 728x90, se for celular ele tenta o máximo possível
-                        var isMobile = window.innerWidth < 1000;
-                        atOptions = {
-                            'key' : 'b2c5b5eb74a40bdb1a533534b525704c',
-                            'format' : 'iframe',
-                            'height' : isMobile ? 50 : 90,
-                            'width' : isMobile ? 320 : 728,
-                            'params' : {}
-                        };
+                        var adKey = window.innerWidth < 1000 ? '06eee4bace60b9e3d155aa2f08f93474' : 'b2c5b5eb74a40bdb1a533534b525704c';
+                        var adH = window.innerWidth < 1000 ? 50 : 90;
+                        var adW = window.innerWidth < 1000 ? 320 : 728;
+                        atOptions = {'key' : adKey, 'format' : 'iframe', 'height' : adH, 'width' : adW, 'params' : {}};
+                        document.write('<script type="text/javascript" src="https://www.highperformanceformat.com/' + adKey + '/invoke.js"><\/script>');
                     </script>
-                    <script type="text/javascript" src="https://www.highperformanceformat.com/b2c5b5eb74a40bdb1a533534b525704c/invoke.js"></script>
                 </div>
             </div>
 
@@ -109,7 +112,6 @@
     </div>
 
     <script>
-        // Config do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0",
             authDomain: "termo-rank-5d80d.firebaseapp.com",
@@ -123,15 +125,36 @@
 
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
         let tentativaArray = ["", "", "", "", ""]; let focadoIndex = 0;
-        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "TENRA", "SUTIL", "VIGOR", "AUREA", "SANAR"];
+        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER"];
 
-        function entrarComoConvidado() { nickAtual = "Convidado"; mostrarJogo(); }
+        function alternarTela(id) {
+            document.getElementById('login-box').style.display = 'none';
+            document.getElementById('signup-box').style.display = 'none';
+            document.getElementById(id).style.display = 'block';
+        }
+
+        async function criarConta() {
+            const nick = document.getElementById('userNick').value.trim();
+            const pass = document.getElementById('userPass').value;
+            if(!nick || pass.length < 6) return alert("Nome vazio ou senha curta!");
+            const email = nick.toLowerCase() + "@termo.com";
+            try {
+                const res = await auth.createUserWithEmailAndPassword(email, pass);
+                await db.ref('users/' + res.user.uid).set({ nick: nick, streak: 0 });
+            } catch (e) { alert("Este nome já pode estar em uso."); }
+        }
+
         async function fazerLogin() {
             const nick = document.getElementById('loginNick').value.trim();
             const pass = document.getElementById('loginPass').value;
-            const fakeEmail = nick.toLowerCase() + "@termo.com";
-            try { await auth.signInWithEmailAndPassword(fakeEmail, pass); } catch (e) { alert("Erro!"); }
+            if(!nick || !pass) return alert("Preencha tudo!");
+            try { await auth.signInWithEmailAndPassword(nick.toLowerCase() + "@termo.com", pass); } 
+            catch (e) { alert("Nome ou senha incorretos."); }
         }
+
+        function entrarComoConvidado() { nickAtual = "Convidado"; mostrarJogo(); }
+        function logout() { auth.signOut().then(() => location.reload()); }
+
         auth.onAuthStateChanged(user => {
             if (user) {
                 db.ref('users/' + user.uid).once('value').then(snap => {
@@ -146,12 +169,13 @@
             document.getElementById('displayNick').innerText = nickAtual;
             document.getElementById('streakDisplay').innerText = streak;
             novoJogo(); criarTeclado();
-            
-            window.addEventListener('keydown', (e) => {
-                if(e.key === 'Enter') digitar('ENTER');
-                else if(e.key === 'Backspace') digitar('DEL');
-                else if(/^[a-zA-Z]$/.test(e.key)) digitar(e.key.toUpperCase());
-            });
+            window.addEventListener('keydown', handlePhysKey);
+        }
+
+        function handlePhysKey(e) {
+            if(e.key === 'Enter') digitar('ENTER');
+            else if(e.key === 'Backspace') digitar('DEL');
+            else if(/^[a-zA-Z]$/.test(e.key)) digitar(e.key.toUpperCase());
         }
 
         function novoJogo() {
@@ -161,8 +185,7 @@
             for (let i = 0; i < 6; i++) {
                 const row = document.createElement('div'); row.className = 'row';
                 for (let j = 0; j < 5; j++) {
-                    const tile = document.createElement('div'); 
-                    tile.className = 'tile';
+                    const tile = document.createElement('div'); tile.className = 'tile';
                     tile.onclick = () => { if(i === linha) { focadoIndex = j; atualizarVisual(); } };
                     row.appendChild(tile);
                 }
@@ -184,13 +207,8 @@
 
         function digitar(k) {
             if(k === 'ENTER') { if(tentativaArray.filter(l => l!=="").length === 5) verificar(); return; }
-            if(k === 'DEL') {
-                tentativaArray[focadoIndex] = "";
-                if(focadoIndex > 0) focadoIndex--;
-            } else {
-                tentativaArray[focadoIndex] = k;
-                if(focadoIndex < 4) focadoIndex++;
-            }
+            if(k === 'DEL') { tentativaArray[focadoIndex] = ""; if(focadoIndex > 0) focadoIndex--; }
+            else { tentativaArray[focadoIndex] = k; if(focadoIndex < 4) focadoIndex++; }
             atualizarVisual();
         }
 
@@ -203,16 +221,16 @@
                 else tiles[i].classList.add('absent');
             }
             if(acertos === 5) { 
-                document.getElementById('message').innerText = "GANHOU!"; 
+                document.getElementById('message').innerText = "VITORIA!"; 
                 if(nickAtual !== "Convidado") {
                     streak++;
                     db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
-                    document.getElementById('streakDisplay').innerText = streak;
                 }
                 setTimeout(novoJogo, 2000); 
-            }
-            else if(linha === 5) { document.getElementById('message').innerText = "ERA: " + segredo; setTimeout(novoJogo, 3000); }
-            else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); }
+            } else if(linha === 5) { 
+                document.getElementById('message').innerText = "PALAVRA: " + segredo; 
+                setTimeout(novoJogo, 3000); 
+            } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); }
         }
 
         function criarTeclado() {
