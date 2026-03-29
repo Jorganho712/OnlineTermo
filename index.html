@@ -28,21 +28,6 @@
             background-color: #0c0c0c;
         }
 
-        /* BANNER FALSO PARA VOCÊ VISUALIZAR O ESPAÇO */
-        .banner-placeholder {
-            width: 160px;
-            height: 600px;
-            background-color: #222;
-            border: 2px dashed #444;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #777;
-            text-align: center;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-
         .game-column { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; z-index: 10; }
 
         @media (max-width: 900px) {
@@ -75,9 +60,17 @@
     <div class="main-layout">
         
         <div class="ad-sidebar">
-            <div class="banner-placeholder">
-                COLE O CÓDIGO DO BANNER 160x600 AQUI
-            </div>
+            <p style="font-size: 10px; color: #444; margin-bottom: 5px;">PUBLICIDADE</p>
+            <script>
+                atOptions = {
+                    'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1',
+                    'format' : 'iframe',
+                    'height' : 600,
+                    'width' : 160,
+                    'params' : {}
+                };
+            </script>
+            <script src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
         </div>
 
         <div class="game-column">
@@ -107,9 +100,17 @@
         </div>
 
         <div class="ad-sidebar">
-            <div class="banner-placeholder">
-                COLE O CÓDIGO DO BANNER 160x600 AQUI
-            </div>
+            <p style="font-size: 10px; color: #444; margin-bottom: 5px;">PUBLICIDADE</p>
+            <script>
+                atOptions = {
+                    'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1',
+                    'format' : 'iframe',
+                    'height' : 600,
+                    'width' : 160,
+                    'params' : {}
+                };
+            </script>
+            <script src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
         </div>
 
     </div>
@@ -199,6 +200,7 @@
                 if(nickAtual !== "Visitante") {
                     streak++;
                     db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
+                    document.getElementById('streakDisplay').innerText = streak;
                 }
                 setTimeout(novoJogo, 2000); 
             } else if(linha === 5) {
