@@ -39,9 +39,13 @@
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
         .shake { animation: shake 0.4s; }
 
-        .key { height: 55px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 1rem; font-weight: bold; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .key.wide { flex: 1.5; background: #565758; }
-        .key.hidden { opacity: 0; pointer-events: none; }
+        /* ESTILO DO TECLADO CORRIGIDO */
+        #keyboard { padding: 10px; width: 100%; }
+        .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 8px; width: 100%; }
+        .key { height: 58px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 1rem; font-weight: bold; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; text-transform: uppercase; }
+        .key.wide { flex: 1.5; background: #565758; font-size: 0.8rem; }
+        .key.hidden { opacity: 0.3; pointer-events: none; background: #222; }
+        
         .list-container { text-align: left; margin: 10px 0; max-height: 250px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #444; }
     </style>
 </head>
@@ -63,9 +67,9 @@
                 <h2>Como Jogar?</h2>
                 <p style="text-align: left; font-size: 14px;">
                     • Descubra a palavra em 6 tentativas.<br>
-                    • <span style="color:var(--cor-correta)">VERDE</span>: Letra certa no lugar certo.<br>
-                    • <span style="color:var(--cor-lugar-errado)">AMARELO</span>: Letra existe no lugar errado.<br>
-                    • <b>DICA</b>: Clique em qualquer quadrado para mudar a letra!
+                    • <span style="color:var(--cor-correta)">VERDE</span>: Lugar certo.<br>
+                    • <span style="color:var(--cor-lugar-errado)">AMARELO</span>: Lugar errado.<br>
+                    • <b>DICA</b>: Clique em qualquer quadrado para editar!
                 </p>
                 <button class="btn-main" onclick="fecharTelas()">Entendi!</button>
             </div>
@@ -74,7 +78,7 @@
         <div id="shop-screen" class="overlay">
             <div class="card">
                 <h2>🛒 Loja</h2>
-                <p>💰 <span id="shopCoinsDisplay">0</span></p>
+                <p>Moedas: 💰 <span id="shopCoinsDisplay">0</span></p>
                 <div id="shop-content" class="list-container"></div>
                 <button class="btn-main" style="background:#333" onclick="fecharTelas()">Sair</button>
             </div>
@@ -82,7 +86,7 @@
 
         <div id="rank-screen" class="overlay">
             <div class="card">
-                <h2>🏆 Top 10</h2>
+                <h2>🏆 Ranking</h2>
                 <div id="rank-content" class="list-container"></div>
                 <button class="btn-main" onclick="fecharTelas()">Voltar</button>
             </div>
@@ -101,7 +105,7 @@
             <div id="grid"></div>
             <div id="message" style="color:#ffd700; font-weight:bold; height:20px; text-align:center; margin-bottom:10px;"></div>
             <div style="padding:0 10px 10px 10px;"><button onclick="pularPalavra()" style="width:100%; padding:12px; background:#4a90e2; border:none; border-radius:6px; color:white; font-weight:bold;">⏭️ PULAR (+1 🔥)</button></div>
-            <div id="keyboard" style="padding: 10px;"></div>
+            <div id="keyboard"></div>
         </div>
     </div>
 
@@ -122,7 +126,6 @@
             const chute = limparTexto(tentativaArray.join("").trim());
             const alvo = limparTexto(segredo);
 
-            // CORREÇÃO: Bloqueia ENTER se não tiver as 5 letras
             if (chute.length < 5) {
                 document.getElementById('message').innerText = "Complete as 5 letras!";
                 document.querySelectorAll('.row')[linha].classList.add('shake');
@@ -182,6 +185,20 @@
             criarTeclado(); atualizarVisual();
         }
 
+        function criarTeclado() {
+            const lay=[["Q","W","E","R","T","Y","U","I","O","P"],["A","S","D","F","G","H","J","K","L"],["DEL","Z","X","C","V","B","N","M","ENTER"]];
+            const kb=document.getElementById('keyboard'); kb.innerHTML="";
+            lay.forEach(r=>{
+                const d=document.createElement('div'); d.className='kb-row';
+                r.forEach(k=>{
+                    const b=document.createElement('button'); b.className=(k.length>1)?'key wide':'key';
+                    if(letrasErradas.has(limparTexto(k))) b.classList.add('hidden');
+                    b.innerText = k; b.onclick = () => digitar(k); d.appendChild(b);
+                });
+                kb.appendChild(d);
+            });
+        }
+
         function abrirRanking() {
             document.getElementById('rank-screen').classList.add('active');
             const list = document.getElementById('rank-content'); list.innerHTML = "Carregando...";
@@ -212,20 +229,6 @@
             let inv = userLocal.inventory || []; inv.push(id);
             await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - preco, inventory: inv });
             abrirLoja();
-        }
-
-        function criarTeclado() {
-            const lay=[["Q","W","E","R","T","Y","U","I","O","P"],["A","S","D","F","G","H","J","K","L"],["DEL","Z","X","C","V","B","N","M","ENTER"]];
-            const kb=document.getElementById('keyboard'); kb.innerHTML="";
-            lay.forEach(r=>{
-                const d=document.createElement('div'); d.className='kb-row';
-                r.forEach(k=>{
-                    const b=document.createElement('button'); b.className=(k.length>1)?'key wide':'key';
-                    if(letrasErradas.has(limparTexto(k))) b.classList.add('hidden');
-                    b.innerText=k; b.onclick=()=>digitar(k); d.appendChild(b);
-                });
-                kb.appendChild(d);
-            });
         }
 
         auth.onAuthStateChanged(user => {
