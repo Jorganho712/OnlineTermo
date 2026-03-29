@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
 
-    <script src="https://pl29010888.profitablecpmratenetwork.com/a4/b5/a8/a4b5a8c3910b3d082855407a6ae50703.js"></script>
+    <script src="//pl29010888.profitablecpmratenetwork.com/a4/b5/a8/a4b5a8c3910b3d082855407a6ae50703.js"></script>
 
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
@@ -28,11 +28,10 @@
         @media (max-width: 800px) {
             .ad-sidebar { display: none !important; }
             .tile { width: 35px !important; height: 35px !important; font-size: 1.1rem !important; }
-            .key { padding: 12px 0 !important; font-size: 0.7rem !important; height: 40px !important; }
-            #grid { gap: 3px !important; }
+            .key { padding: 10px 0 !important; font-size: 0.7rem !important; height: 38px !important; }
         }
 
-        /* Telas */
+        /* Telas Iniciais */
         #auth-screen, #rank-screen, #register-screen { position: absolute; inset: 0; background: var(--preto); display: flex; justify-content: center; align-items: center; z-index: 100; }
         .card { background: #222; padding: 20px; border-radius: 12px; width: 90%; text-align: center; border: 1px solid #333; }
         
@@ -46,19 +45,25 @@
         #game-container { display: none; flex-direction: column; height: 100%; width: 100%; }
         .header-jogo { display: flex; justify-content: space-between; align-items: center; padding: 5px 12px; background: #1a1a1b; height: 40px; }
         
-        #game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0; }
+        #game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5px 0; }
         #grid { display: grid; gap: 4px; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
-        .tile { width: 45px; height: 45px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.4rem; font-weight: bold; text-transform: uppercase; }
+        .tile { 
+            width: 45px; height: 45px; border: 2px solid #3a3a3c; 
+            display: flex; justify-content: center; align-items: center; 
+            font-size: 1.4rem; font-weight: bold; text-transform: uppercase;
+            cursor: pointer;
+        }
+        .tile.selected { border-color: #818384; background: #222; }
         
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        /* Teclado */
+        /* Teclado Visual */
         #keyboard { padding: 5px; background: var(--preto); }
         .kb-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 4px; }
-        .key { height: 45px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.85rem; font-weight: bold; flex: 1; display: flex; align-items: center; justify-content: center; }
+        .key { height: 42px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.85rem; font-weight: bold; flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .key.wide { flex: 1.5; background: #565758; }
 
         #rank-list { text-align: left; margin: 10px 0; max-height: 180px; overflow-y: auto; font-size: 0.9rem; }
@@ -68,7 +73,7 @@
         @media (max-width: 800px) { .mobile-banner { display: block; } }
     </style>
 </head>
-<body>
+<body onkeydown="tecladoFisico(event)">
 
     <div class="main-layout">
         <div class="ad-sidebar">
@@ -84,9 +89,9 @@
                     <input type="password" id="loginPass" placeholder="Senha">
                     <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
                     <div class="extra-buttons">
-                        <button class="btn-sub" onclick="mostrarRegistro()">✨ Criar Nova Conta</button>
-                        <button class="btn-sub" onclick="entrarComoConvidado()">👤 Jogar como Visitante</button>
-                        <button class="btn-sub" onclick="abrirRanking()">🏆 Ver Ranking</button>
+                        <button class="btn-sub" onclick="mostrarRegistro()">Criar Nova Conta</button>
+                        <button class="btn-sub" onclick="entrarComoConvidado()">Jogar como Visitante</button>
+                        <button class="btn-sub" onclick="abrirRanking()">Ver Ranking</button>
                     </div>
                 </div>
             </div>
@@ -103,7 +108,7 @@
 
             <div id="rank-screen" style="display:none;">
                 <div class="card">
-                    <h3>🏆 RANKING GLOBAL</h3>
+                    <h3>RANKING GLOBAL</h3>
                     <div id="rank-list"></div>
                     <button class="btn-main" onclick="fecharRanking()">VOLTAR</button>
                 </div>
@@ -119,7 +124,7 @@
                     <div id="message" style="height:20px; color:#ffd700; font-size:13px; margin-top:8px;"></div>
                 </div>
                 <div id="keyboard"></div>
-                <div class="mobile-banner">ESPAÇO ANÚNCIO</div>
+                <div class="mobile-banner">PUBLICIDADE</div>
             </div>
         </div>
 
@@ -152,7 +157,6 @@
         async function registrar() {
             const nick = document.getElementById('regNick').value.trim();
             const pass = document.getElementById('regPass').value;
-            if(nick.length < 3) return alert("Nome curto!");
             try {
                 const res = await auth.createUserWithEmailAndPassword(nick.toLowerCase() + "@termo.com", pass);
                 await db.ref('users/' + res.user.uid).set({ nick: nick, streak: 0 });
@@ -172,9 +176,7 @@
         auth.onAuthStateChanged(user => {
             if (user) {
                 db.ref('users/' + user.uid).on('value', snap => {
-                    const d = snap.val();
-                    nickAtual = d.nick; streak = d.streak || 0;
-                    mostrarJogo();
+                    if(snap.val()){ nickAtual = snap.val().nick; streak = snap.val().streak || 0; mostrarJogo(); }
                 });
             }
         });
@@ -198,7 +200,7 @@
             document.getElementById('game-container').style.display = 'flex';
             document.getElementById('displayNick').innerText = nickAtual;
             document.getElementById('streakDisplay').innerText = streak;
-            novoJogo(); criarTeclado();
+            novoJogo(); criarTecladoVisual();
         }
 
         function novoJogo() {
@@ -209,21 +211,52 @@
                 const row = document.createElement('div'); row.className = 'row';
                 for (let j = 0; j < 5; j++) {
                     const t = document.createElement('div'); t.className = 'tile';
+                    t.onclick = () => mudarFoco(i, j);
                     row.appendChild(t);
                 }
                 grid.appendChild(row);
+            }
+            atualizarVisual();
+        }
+
+        function mudarFoco(L, C) {
+            if (L === linha) {
+                focadoIndex = C;
+                atualizarVisual();
             }
         }
 
         function digitar(k) {
             if(k === 'ENTER') { if(tentativaArray.join('').length === 5) verificar(); return; }
-            if(k === 'DEL') { 
-                if(focadoIndex > 0) { focadoIndex--; tentativaArray[focadoIndex] = ""; } 
+            if(k === 'DEL' || k === 'BACKSPACE') { 
+                tentativaArray[focadoIndex] = "";
+                if(focadoIndex > 0) focadoIndex--;
             } else { 
-                if(focadoIndex < 5) { tentativaArray[focadoIndex] = k; focadoIndex++; } 
+                if(focadoIndex < 5) { 
+                    tentativaArray[focadoIndex] = k; 
+                    if(focadoIndex < 4) focadoIndex++;
+                } 
             }
-            const tiles = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
-            tiles.forEach((t, i) => { t.innerText = tentativaArray[i]; });
+            atualizarVisual();
+        }
+
+        function tecladoFisico(e) {
+            if(document.getElementById('game-container').style.display !== 'flex') return;
+            const k = e.key.toUpperCase();
+            if(k === 'ENTER') digitar('ENTER');
+            else if(k === 'BACKSPACE') digitar('DEL');
+            else if(k.length === 1 && k.match(/[A-Z]/)) digitar(k);
+        }
+
+        function atualizarVisual() {
+            const rows = document.querySelectorAll('.row');
+            if(!rows[linha]) return;
+            const tiles = rows[linha].querySelectorAll('.tile');
+            tiles.forEach((t, i) => { 
+                t.innerText = tentativaArray[i]; 
+                t.classList.remove('selected');
+                if(i === focadoIndex) t.classList.add('selected');
+            });
         }
 
         function verificar() {
@@ -242,10 +275,13 @@
                 document.getElementById('message').innerText = "ERA: " + segredo;
                 if(nickAtual !== "Visitante") { streak = 0; db.ref('users/' + auth.currentUser.uid).update({ streak: 0 }); }
                 setTimeout(novoJogo, 3000);
-            } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; }
+            } else { 
+                linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; 
+                setTimeout(atualizarVisual, 100);
+            }
         }
 
-        function criarTeclado() {
+        function criarTecladoVisual() {
             const lay = [["Q","W","E","R","T","Y","U","I","O","P"], ["A","S","D","F","G","H","J","K","L"], ["DEL","Z","X","C","V","B","N","M","ENTER"]];
             const kb = document.getElementById('keyboard'); kb.innerHTML = "";
             lay.forEach(r => {
