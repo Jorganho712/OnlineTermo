@@ -14,22 +14,9 @@
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
         
-        body { 
-            background-color: var(--preto); 
-            color: white; 
-            font-family: 'Segoe UI', sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            overflow-x: hidden;
-        }
+        body { background-color: var(--preto); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
 
-        /* Estrutura Principal */
-        .main-layout {
-            display: flex;
-            justify-content: center;
-            width: 100vw;
-            min-height: 100vh;
-        }
+        .main-layout { display: flex; justify-content: center; width: 100vw; min-height: 100vh; }
 
         /* Colunas de Anúncio Laterais (PC) */
         .ad-sidebar {
@@ -38,52 +25,46 @@
             flex-direction: column;
             align-items: center;
             padding-top: 50px;
-            background-color: #0c0c0c; /* Tom levemente diferente para destacar */
+            background-color: #0c0c0c;
         }
 
-        /* Coluna Central (O Jogo) */
-        .game-column {
-            width: 100%;
-            max-width: 500px;
+        /* BANNER FALSO PARA VOCÊ VISUALIZAR O ESPAÇO */
+        .banner-placeholder {
+            width: 160px;
+            height: 600px;
+            background-color: #222;
+            border: 2px dashed #444;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            z-index: 10;
+            color: #777;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: bold;
         }
 
-        /* --- AJUSTE PARA CELULAR --- */
+        .game-column { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; z-index: 10; }
+
         @media (max-width: 900px) {
-            .ad-sidebar { display: none !important; } /* Remove as barras laterais no celular */
+            .ad-sidebar { display: none !important; } 
             .game-column { width: 100vw; max-width: 100%; }
         }
 
-        /* Elementos do Jogo */
         .header-jogo { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 10px 15px; background: #1a1a1b; border-bottom: 1px solid #333; box-sizing: border-box; }
         .btn-logout { background: #ce3a3a; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; }
         
         #grid { display: grid; gap: 4px; margin: 15px 0; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
-        .tile { 
-            width: 52px; height: 52px; 
-            border: 2px solid #3a3a3c; 
-            display: flex; justify-content: center; align-items: center; 
-            font-size: 1.8rem; font-weight: bold; text-transform: uppercase; 
-        }
-
-        /* Teclado Responsivo */
-        #keyboard { display: flex; flex-direction: column; gap: 6px; width: 98%; margin-top: auto; padding-bottom: 15px; }
-        .kb-row { display: flex; justify-content: center; gap: 4px; }
-        .key { 
-            padding: 16px 0; background: #818384; border-radius: 4px; color: white; border: none; 
-            cursor: pointer; font-size: 0.8rem; font-weight: bold; flex: 1; 
-        }
-        .key.wide { flex: 1.5; background: #565758; }
-
+        .tile { width: 52px; height: 52px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        /* Login */
+        #keyboard { display: flex; flex-direction: column; gap: 6px; width: 98%; margin-top: auto; padding-bottom: 15px; }
+        .kb-row { display: flex; justify-content: center; gap: 4px; }
+        .key { padding: 16px 0; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.8rem; font-weight: bold; flex: 1; }
+        .key.wide { flex: 1.5; background: #565758; }
+
         .auth-card { background: #222; padding: 25px; border-radius: 12px; margin-top: 40px; text-align: center; width: 300px; border: 1px solid #444; }
         input { width: 100%; padding: 12px; margin: 8px 0; background: #111; color: white; border: 1px solid #444; border-radius: 6px; box-sizing: border-box; }
         .btn-main { width: 100%; padding: 12px; background: var(--cor-correta); border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
@@ -94,11 +75,12 @@
     <div class="main-layout">
         
         <div class="ad-sidebar">
-            <p style="font-size: 10px; color: #444;">PUBLICIDADE</p>
+            <div class="banner-placeholder">
+                COLE O CÓDIGO DO BANNER 160x600 AQUI
             </div>
+        </div>
 
         <div class="game-column">
-            
             <div id="auth-screen">
                 <div class="auth-card">
                     <h2 style="margin-top:0">Termo Infinito</h2>
@@ -122,17 +104,17 @@
 
                 <div id="keyboard"></div>
             </div>
-
         </div>
 
         <div class="ad-sidebar">
-            <p style="font-size: 10px; color: #444;">PUBLICIDADE</p>
+            <div class="banner-placeholder">
+                COLE O CÓDIGO DO BANNER 160x600 AQUI
             </div>
+        </div>
 
     </div>
 
     <script>
-        // FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0",
             authDomain: "termo-rank-5d80d.firebaseapp.com",
