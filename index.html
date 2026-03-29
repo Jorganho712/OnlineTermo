@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Termo Infinito - Oficial</title>
+    <title>Termo Infinito</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -11,35 +11,74 @@
     
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
-        body { background-color: var(--preto); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 15px; min-height: 100vh; overflow-x: hidden; }
         
-        .auth-card { background: #222; padding: 25px; border-radius: 15px; border: 1px solid #444; width: 300px; text-align: center; margin-top: 30px; }
-        input { width: 90%; padding: 12px; margin: 8px 0; border-radius: 5px; border: 1px solid #444; background: #111; color: white; outline: none; }
-        button.btn-main { width: 100%; padding: 12px; background: var(--cor-correta); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        button.btn-guest { width: 100%; padding: 10px; background: #444; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-        
-        /* Layout com Anúncios Laterais */
-        .game-layout-container { display: flex; justify-content: center; align-items: flex-start; gap: 20px; width: 100%; max-width: 1300px; margin-top: 15px; }
-        .side-ad { width: 160px; min-height: 600px; }
-        @media (max-width: 1000px) { .side-ad { display: none; } }
+        /* Ajuste do fundo para cobrir tudo */
+        body { 
+            background-color: var(--preto); 
+            color: white; 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-        #central-game-area { display: flex; flex-direction: column; align-items: center; flex: 1; }
-        #grid { display: grid; gap: 5px; margin-bottom: 15px; }
+        /* Container Principal que organiza as colunas */
+        .layout-principal {
+            display: flex;
+            justify-content: space-between; /* Empurra os anúncios para as pontas */
+            align-items: flex-start;
+            width: 100%;
+            max-width: 1400px;
+            margin-top: 20px;
+        }
+
+        /* Colunas de Anúncio Lateral */
+        .coluna-ad {
+            width: 160px;
+            min-height: 600px;
+            flex-shrink: 0; /* Impede o anúncio de achatar */
+        }
+
+        /* Área Central do Jogo */
+        .area-jogo {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        /* Esconde anúncios laterais no celular para não quebrar o layout */
+        @media (max-width: 1000px) {
+            .coluna-ad { display: none; }
+        }
+
+        /* Estilos do Termo */
+        #grid { display: grid; gap: 5px; margin-bottom: 20px; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { width: 48px; height: 48px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.7rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
-        .tile.selected { border-color: #ffd700; background: #2a2a2e; }
+        .tile { 
+            width: 55px; height: 55px; border: 2px solid #3a3a3c; 
+            display: flex; justify-content: center; align-items: center; 
+            font-size: 2rem; font-weight: bold; text-transform: uppercase; 
+        }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        #keyboard { display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; width: 100%; }
-        .kb-row { display: flex; justify-content: center; gap: 4px; }
-        .key { padding: 15px 8px; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.8rem; font-weight: bold; min-width: 32px; }
-        .key.wide { min-width: 50px; background: #565758; }
+        #keyboard { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 500px; }
+        .kb-row { display: flex; justify-content: center; gap: 5px; }
+        .key { 
+            padding: 18px 10px; background: #818384; border-radius: 4px; 
+            color: white; border: none; cursor: pointer; font-weight: bold; 
+        }
+        .key.wide { min-width: 65px; }
 
-        #ad-bottom { margin: 20px 0; min-height: 90px; width: 100%; text-align: center; }
-        #leaderboard { width: 100%; max-width: 300px; background: #1a1a1b; padding: 15px; border-radius: 10px; border: 1px solid #333; margin-top: 10px; }
-        .rank-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #333; font-size: 0.9rem; }
+        .auth-card { background: #222; padding: 30px; border-radius: 15px; margin-top: 50px; text-align: center; width: 320px; }
+        input { width: 90%; padding: 12px; margin: 10px 0; background: #111; color: white; border: 1px solid #444; border-radius: 5px; }
+        .btn-main { width: 100%; padding: 12px; background: var(--cor-correta); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -47,69 +86,51 @@
     <div id="auth-screen">
         <div id="login-box" class="auth-card">
             <h2>Termo Infinito</h2>
-            <input type="text" id="loginNick" placeholder="Seu Nome/Nick">
-            <input type="password" id="loginPass" placeholder="Senha">
+            <input type="text" id="loginNick" placeholder="Seu Nome">
+            <input type="password" id="loginPass" placeholder="Sua Senha">
             <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
-            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #444;">
-            <input type="text" id="guestNickInput" placeholder="Nick de Convidado">
-            <button class="btn-guest" onclick="entrarComoConvidado()">JOGAR COMO CONVIDADO</button>
-            <p style="font-size: 0.8rem; color: #aaa; margin-top: 15px; cursor: pointer;" onclick="alternarTelas('signup-box')">Criar nova conta com Nome</p>
-        </div>
-
-        <div id="signup-box" class="auth-card" style="display:none">
-            <h2>Nova Conta</h2>
-            <input type="text" id="userNick" placeholder="Escolha um Nome">
-            <input type="password" id="userPass" placeholder="Senha (mín. 6 letras)">
-            <button class="btn-main" onclick="criarConta()">CADASTRAR E JOGAR</button>
-            <p style="font-size: 0.8rem; color: #aaa; margin-top: 15px; cursor: pointer;" onclick="alternarTelas('login-box')">Voltar ao Login</p>
+            <button onclick="entrarComoConvidado()" style="margin-top:15px; background:none; border:none; color:#aaa; cursor:pointer; text-decoration:underline;">Jogar como Convidado</button>
         </div>
     </div>
 
-    <div id="game-container" style="display:none">
-        <div style="width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span>👤 <b id="displayNick"></b></span>
-            <span>🔥 Streak: <b id="streak">0</b></span>
-        </div>
-
-        <div class="game-layout-container">
-            <div class="side-ad">
-                <script type="text/javascript">
-                    atOptions = {'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {}};
-                </script>
-                <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
-            </div>
-
-            <div id="central-game-area">
-                <div id="grid"></div>
-                <div id="message" style="color: #ffd700; font-weight: bold; margin-bottom: 10px; height: 20px;"></div>
-                <div id="keyboard"></div>
-            </div>
-
-            <div class="side-ad">
-                <script type="text/javascript">
-                    atOptions = {'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {}};
-                </script>
-                <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
-            </div>
-        </div>
-
-        <div id="ad-bottom">
-            <script type="text/javascript">
-                atOptions = {'key' : 'b2c5b5eb74a40bdb1a533534b525704c', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {}};
-            </script>
-            <script type="text/javascript" src="https://www.highperformanceformat.com/b2c5b5eb74a40bdb1a533534b525704c/invoke.js"></script>
-        </div>
-
-        <div id="leaderboard">
-            <h4 style="margin: 0 0 10px 0; text-align: center; color: var(--cor-lugar-errado);">🏆 RANKING</h4>
-            <div id="rank-list"></div>
-        </div>
+    <div id="game-container" style="display:none; width: 100%;">
         
-        <button onclick="location.reload()" style="margin-top: 20px; background: transparent; color: #666; border: none; cursor: pointer;">Sair / Logout</button>
+        <div style="text-align: center; padding: 10px;">
+            <span>👤 <b id="displayNick"></b></span> | <span>🔥 Streak: <b id="streakDisplay">0</b></span>
+        </div>
+
+        <div class="layout-principal">
+            <div class="coluna-ad">
+                <script type="text/javascript">
+                    atOptions = {'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1','format' : 'iframe','height' : 600,'width' : 160,'params' : {}};
+                </script>
+                <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
+            </div>
+
+            <div class="area-jogo">
+                <div id="grid"></div>
+                <div id="message" style="height: 30px; color: #ffd700; font-weight: bold;"></div>
+                <div id="keyboard"></div>
+                
+                <div style="margin-top: 30px;">
+                    <script type="text/javascript">
+                        atOptions = {'key' : 'b2c5b5eb74a40bdb1a533534b525704c','format' : 'iframe','height' : 90,'width' : 728,'params' : {}};
+                    </script>
+                    <script type="text/javascript" src="https://www.highperformanceformat.com/b2c5b5eb74a40bdb1a533534b525704c/invoke.js"></script>
+                </div>
+            </div>
+
+            <div class="coluna-ad">
+                <script type="text/javascript">
+                    atOptions = {'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1','format' : 'iframe','height' : 600,'width' : 160,'params' : {}};
+                </script>
+                <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Config do Firebase baseada no seu print
+        // Use sua config do Firebase aqui
         const firebaseConfig = {
             apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0",
             authDomain: "termo-rank-5d80d.firebaseapp.com",
@@ -122,44 +143,17 @@
         const db = firebase.database();
 
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
-        let tentativaArray = ["", "", "", "", ""]; let focadoIndex = 0; let logado = false;
+        let tentativaArray = ["", "", "", "", ""]; let focadoIndex = 0;
 
-        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "TENRA", "SUTIL", "VIGOR", "AUREA", "SANAR", "PODER", "AUDAS", "IDEIA", "CERNE", "MUITO", "MORAL", "SOBRE", "JUSTO", "HONRA", "MUNDO"];
+        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "TENRA", "SUTIL", "VIGOR", "AUREA", "SANAR"];
 
-        function alternarTelas(id) {
-            document.getElementById('login-box').style.display = 'none';
-            document.getElementById('signup-box').style.display = 'none';
-            document.getElementById(id).style.display = 'block';
-        }
+        function entrarComoConvidado() { nickAtual = "Convidado"; streak = 0; mostrarJogo(); }
 
-        // Função de Convidado (Voltou a funcionar!)
-        function entrarComoConvidado() {
-            const nick = document.getElementById('guestNickInput').value.trim();
-            if(nick.length < 3) return alert("Escolha um Nick maior!");
-            nickAtual = nick;
-            logado = false;
-            iniciarInterfaceJogo();
-        }
-
-        // Criar conta usando apenas Nome
-        async function criarConta() {
-            const nick = document.getElementById('userNick').value.trim();
-            const pass = document.getElementById('userPass').value;
-            if(!nick || pass.length < 6) return alert("Nick curto ou senha menor que 6 caracteres!");
-            
-            const fakeEmail = nick.toLowerCase().replace(/\s/g, '') + "@termo.com";
-            try {
-                const res = await auth.createUserWithEmailAndPassword(fakeEmail, pass);
-                await db.ref('users/' + res.user.uid).set({ nick: nick, streak: 0 });
-            } catch (e) { alert("Este nome já pode estar em uso ou erro no sistema."); }
-        }
-
-        // Login usando apenas Nome
         async function fazerLogin() {
             const nick = document.getElementById('loginNick').value.trim();
             const pass = document.getElementById('loginPass').value;
-            const fakeEmail = nick.toLowerCase().replace(/\s/g, '') + "@termo.com";
-            try { await auth.signInWithEmailAndPassword(fakeEmail, pass); } catch (e) { alert("Nome ou senha incorretos!"); }
+            const fakeEmail = nick.toLowerCase() + "@termo.com";
+            try { await auth.signInWithEmailAndPassword(fakeEmail, pass); } catch (e) { alert("Erro no acesso!"); }
         }
 
         auth.onAuthStateChanged(user => {
@@ -167,18 +161,17 @@
                 db.ref('users/' + user.uid).once('value').then(snap => {
                     nickAtual = snap.val().nick;
                     streak = snap.val().streak || 0;
-                    logado = true;
-                    iniciarInterfaceJogo();
+                    mostrarJogo();
                 });
             }
         });
 
-        function iniciarInterfaceJogo() {
+        function mostrarJogo() {
             document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('game-container').style.display = 'flex';
+            document.getElementById('game-container').style.display = 'block';
             document.getElementById('displayNick').innerText = nickAtual;
-            document.getElementById('streak').innerText = streak;
-            carregarRank(); novoJogo(); criarTeclado();
+            document.getElementById('streakDisplay').innerText = streak;
+            novoJogo(); criarTeclado();
         }
 
         function novoJogo() {
@@ -189,11 +182,11 @@
                 const row = document.createElement('div'); row.className = 'row';
                 for (let j = 0; j < 5; j++) {
                     const tile = document.createElement('div'); tile.className = 'tile';
-                    tile.onclick = () => { if(i === linha) { focadoIndex = j; atualizarVisual(); } };
                     row.appendChild(tile);
                 }
                 grid.appendChild(row);
             }
+            document.getElementById('message').innerText = "";
             atualizarVisual();
         }
 
@@ -201,70 +194,33 @@
             const rows = document.querySelectorAll('.row');
             if(!rows[linha]) return;
             const tiles = rows[linha].querySelectorAll('.tile');
-            tiles.forEach((t, i) => {
-                t.innerText = tentativaArray[i];
-                t.classList.toggle('selected', i === focadoIndex);
-            });
+            tiles.forEach((t, i) => { t.innerText = tentativaArray[i]; });
         }
 
         function digitar(k) {
             if(k === 'ENTER') { if(tentativaArray.filter(l => l!=="").length === 5) verificar(); return; }
-            if(k === 'DEL') {
-                tentativaArray[focadoIndex] = "";
-                if(focadoIndex > 0) focadoIndex--;
-            } else if(/^[A-Z]$/.test(k)) {
-                tentativaArray[focadoIndex] = k;
-                if(focadoIndex < 4) focadoIndex++;
-            }
+            if(k === 'DEL') { if(focadoIndex > 0) focadoIndex--; tentativaArray[focadoIndex] = ""; }
+            else if(focadoIndex < 5) { tentativaArray[focadoIndex] = k; focadoIndex++; }
             atualizarVisual();
         }
 
         function verificar() {
             const tiles = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
             let acertos = 0;
-            const count = {};
-            for(let l of segredo) count[l] = (count[l] || 0) + 1;
-            const estados = new Array(5).fill('absent');
-
             for(let i=0; i<5; i++) {
-                if(tentativaArray[i] === segredo[i]) { estados[i] = 'correct'; acertos++; count[tentativaArray[i]]--; }
+                if(tentativaArray[i] === segredo[i]) { tiles[i].classList.add('correct'); acertos++; }
+                else if(segredo.includes(tentativaArray[i])) tiles[i].classList.add('present');
+                else tiles[i].classList.add('absent');
             }
-            for(let i=0; i<5; i++) {
-                if(estados[i] === 'correct') continue;
-                if(segredo.includes(tentativaArray[i]) && count[tentativaArray[i]] > 0) { 
-                    estados[i] = 'present'; count[tentativaArray[i]]--; 
-                }
+            if(acertos === 5) { 
+                document.getElementById('message').innerText = "VITORIA!"; 
+                setTimeout(novoJogo, 2000); 
             }
-            for(let i=0; i<5; i++) { tiles[i].classList.add(estados[i]); }
-
-            if(acertos === 5) {
-                if(logado) {
-                    streak++;
-                    db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
-                    db.ref('ranking/' + nickAtual).set({ nome: nickAtual, streak: streak });
-                    document.getElementById('streak').innerText = streak;
-                }
-                document.getElementById('message').innerText = "VITORIA!";
-                setTimeout(novoJogo, 2000);
-            } else if(linha === 5) {
-                document.getElementById('message').innerText = "PALAVRA: " + segredo;
-                if(logado) {
-                    streak = 0;
-                    db.ref('users/' + auth.currentUser.uid).update({ streak: 0 });
-                    document.getElementById('streak').innerText = 0;
-                }
-                setTimeout(novoJogo, 3000);
-            } else { linha++; tentativaArray = ["","","","",""]; focadoIndex = 0; atualizarVisual(); }
-        }
-
-        function carregarRank() {
-            db.ref('ranking').orderByChild('streak').limitToLast(5).on('value', snap => {
-                const list = document.getElementById('rank-list'); list.innerHTML = "";
-                let d = []; snap.forEach(c => { d.push(c.val()); });
-                d.reverse().forEach((p, i) => { 
-                    list.innerHTML += `<div class="rank-item"><span>${i+1}º ${p.nome}</span> <b>${p.streak}</b></div>`; 
-                });
-            });
+            else if(linha === 5) { 
+                document.getElementById('message').innerText = "ERA: " + segredo; 
+                setTimeout(novoJogo, 3000); 
+            }
+            else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); }
         }
 
         function criarTeclado() {
@@ -273,8 +229,7 @@
             lay.forEach(r => {
                 const div = document.createElement('div'); div.className = 'kb-row';
                 r.forEach(k => {
-                    const b = document.createElement('button'); 
-                    b.className = (k === 'ENTER' || k === 'DEL') ? 'key wide' : 'key';
+                    const b = document.createElement('button'); b.className = (k.length > 1) ? 'key wide' : 'key';
                     b.innerText = k; b.onclick = () => digitar(k); div.appendChild(b);
                 });
                 kb.appendChild(div);
