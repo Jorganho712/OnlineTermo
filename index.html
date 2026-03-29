@@ -20,26 +20,30 @@
         .card { background: #222; padding: 20px; border-radius: 12px; width: 100%; max-width: 380px; text-align: center; border: 1px solid #333; }
         .btn-main { width: 100%; padding: 12px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 8px; text-transform: uppercase; }
         
-        .list-container { text-align: left; margin: 10px 0; max-height: 250px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #444; }
-        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #333; font-size: 14px; }
-        .buy-btn { background: #4a90e2; border: none; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
-        
         .rank-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; font-family: monospace; }
         .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; height: 100%; position: relative; }
         .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
         
         #grid { display: grid; gap: 5px; padding: 10px; margin: auto; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { width: 60px; height: 60px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
+        .tile { width: 60px; height: 60px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: transform 0.1s; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
+        /* Animação de Tremer */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        .shake { animation: shake 0.4s; }
+
         #keyboard { padding: 10px; }
         .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 6px; }
-        .key { height: 55px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 1rem; font-weight: bold; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s, transform 0.2s; }
+        .key { height: 55px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 1rem; font-weight: bold; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s; }
         .key.wide { flex: 1.5; background: #565758; }
-        .key.hidden { opacity: 0; pointer-events: none; transform: scale(0.8); }
+        .key.hidden { opacity: 0; pointer-events: none; }
 
         @media (max-width: 400px) { .tile { width: 15vw; height: 15vw; } }
     </style>
@@ -59,17 +63,8 @@
         <div id="rank-screen" class="overlay">
             <div class="card">
                 <h2>🏆 Top 10 Global</h2>
-                <div id="rank-content" class="list-container">Carregando...</div>
+                <div id="rank-content" style="text-align: left; margin: 10px 0; max-height: 250px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px;">Carregando...</div>
                 <button class="btn-main" onclick="fecharTelas()">Voltar</button>
-            </div>
-        </div>
-
-        <div id="shop-screen" class="overlay">
-            <div class="card">
-                <h2>🛒 Loja</h2>
-                <p>💰 <span id="shopCoinsDisplay">0</span></p>
-                <div id="shop-content" class="list-container"></div>
-                <button class="btn-main" style="background: #333;" onclick="fecharTelas()">Sair</button>
             </div>
         </div>
 
@@ -77,7 +72,6 @@
             <div class="top-nav">
                 <div style="font-weight:bold; font-size: 13px;">🔥 <span id="streakDisplay">0</span> | 💰 <span id="coinsDisplay">0</span></div>
                 <div style="display:flex; gap:12px;">
-                    <button onclick="abrirLoja()" style="background:none; border:none; color:white; cursor:pointer; font-size:20px;">🛒</button>
                     <button onclick="abrirRanking()" style="background:none; border:none; color:white; cursor:pointer; font-size:20px;">🏆</button>
                     <button onclick="fazerLogout()" style="background:none; border:none; color:white; cursor:pointer; font-size:20px;">🚪</button>
                 </div>
@@ -93,23 +87,18 @@
         const firebaseConfig = { apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0", authDomain: "termo-rank-5d80d.firebaseapp.com", databaseURL: "https://termo-rank-5d80d-default-rtdb.firebaseio.com", projectId: "termo-rank-5d80d", storageBucket: "termo-rank-5d80d.firebasestorage.app" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.database();
-        const SEGREDO_POOL = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO"];
+        const SMARTLINK = "https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072";
+        
+        // LISTA AMPLIADA PARA EVITAR ERRO DE PALAVRA INVÁLIDA
+        const SEGREDO_POOL = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO", "COCOS", "CASAS", "PORTA", "MESA", "LIVRO", "FOGO", "AGUA", "VENTO", "TERRA", "AREIA", "PLANO", "SORTE", "FESTA", "NOITE", "VIDAS", "AREIA", "AVIAO", "CARRO", "BANCO", "PEDRA"];
 
         let userLocal = {}; let segredo = ""; let linha = 0; let focadoIndex = 0;
         let tentativaArray = ["","","","",""];
         let letrasErradas = new Set();
 
-        // FUNÇÃO PARA REMOVER ACENTOS
-        function limparTexto(str) {
-            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
-        }
-
-        window.revelar = () => alert("Palavra: " + segredo);
-        window.setCoins = (v) => db.ref('users/'+auth.currentUser.uid).update({ coins: parseInt(v) });
-
+        function limparTexto(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(); }
         function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
         function abrirRanking() { document.getElementById('rank-screen').classList.add('active'); carregarRank(); }
-        function abrirLoja() { document.getElementById('shop-screen').classList.add('active'); carregarLoja(); }
 
         async function carregarRank() {
             const list = document.getElementById('rank-content'); list.innerHTML = "Carregando...";
@@ -117,37 +106,10 @@
                 let arr = []; s.forEach(c => { let d = c.val(); d.streak = Number(d.streak)||0; arr.push(d); });
                 arr.sort((a,b) => b.streak - a.streak);
                 let h = ""; arr.slice(0, 10).forEach((p, idx) => {
-                    const cor = p.selectedColor || '#fff';
-                    const tag = p.selectedTitle ? `<span style="font-size:10px; opacity:0.6;">${p.selectedTitle}</span> ` : "";
-                    h += `<div class="rank-item"><span style="color:${cor}">${idx+1}º ${tag}${p.nick}</span><span>🔥 ${p.streak}</span></div>`;
+                    h += `<div class="rank-item"><span>${idx+1}º ${p.nick}</span><span>🔥 ${p.streak}</span></div>`;
                 });
                 list.innerHTML = h || "Vazio.";
             });
-        }
-
-        function carregarLoja() {
-            const list = document.getElementById('shop-content');
-            document.getElementById('shopCoinsDisplay').innerText = userLocal.coins || 0;
-            const items = [{id:'c1',tipo:'cor',nome:'Azul',valor:20,css:'#00d4ff'},{id:'c2',tipo:'cor',nome:'Dourado',valor:50,css:'#ffd700'},{id:'t1',tipo:'titulo',nome:'Tag [PRO]',valor:30,txt:'[PRO]'}];
-            let h = ""; items.forEach(it => {
-                const jaTem = userLocal.inventory && userLocal.inventory.includes(it.id);
-                const usando = (it.tipo === 'cor' && userLocal.selectedColor === it.css) || (it.tipo === 'titulo' && userLocal.selectedTitle === it.txt);
-                h += `<div class="item-row"><span style="color:${it.css||'#fff'}">${it.nome}</span><button class="buy-btn" ${usando?'disabled':''} onclick="comprarOuEquipar('${it.id}')">${jaTem?'EQUIPAR':`💰 ${it.valor}`}</button></div>`;
-            });
-            list.innerHTML = h;
-        }
-
-        async function comprarOuEquipar(id) {
-            const items = [{id:'c1',tipo:'cor',css:'#00d4ff',valor:20},{id:'c2',tipo:'cor',css:'#ffd700',valor:50},{id:'t1',tipo:'titulo',txt:'[PRO]',valor:30}];
-            const it = items.find(i => i.id === id); const inv = userLocal.inventory || [];
-            if(inv.includes(id)) {
-                let up = {}; if(it.tipo === 'cor') up.selectedColor = it.css; else up.selectedTitle = it.txt;
-                await db.ref('users/'+auth.currentUser.uid).update(up);
-            } else if(userLocal.coins >= it.valor) {
-                inv.push(id); let up = { coins: userLocal.coins - it.valor, inventory: inv };
-                if(it.tipo === 'cor') up.selectedColor = it.css; else up.selectedTitle = it.txt;
-                await db.ref('users/'+auth.currentUser.uid).update(up);
-            }
         }
 
         auth.onAuthStateChanged(user => {
@@ -177,19 +139,30 @@
         }
 
         async function verificar() {
-            const chuteRaw = tentativaArray.join("");
-            const chute = limparTexto(chuteRaw);
+            const chute = limparTexto(tentativaArray.join(""));
             const alvo = limparTexto(segredo);
 
-            const res = await fetch(`https://api.dicionario-aberto.net/word/${chute.toLowerCase()}`);
-            const data = await res.json();
-            if(data.length === 0 && !["ETICA", "AREIA", "AVIAO", "AMAGO", "EXITO"].includes(chute)) { 
-                document.getElementById('message').innerText = "Inválida!"; return; 
+            // VALIDAÇÃO LOCAL + API
+            let valida = SEGREDO_POOL.includes(chute);
+            if(!valida) {
+                try {
+                    const res = await fetch(`https://api.dicionario-aberto.net/word/${chute.toLowerCase()}`);
+                    const data = await res.json();
+                    if(data.length > 0) valida = true;
+                } catch(e) { valida = true; } 
             }
 
+            if(!valida) {
+                document.getElementById('message').innerText = "Inválida!";
+                const row = document.querySelectorAll('.row')[linha];
+                row.classList.add('shake');
+                setTimeout(() => row.classList.remove('shake'), 400);
+                return;
+            }
+
+            document.getElementById('message').innerText = "";
             const ts = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
             let acertos = 0;
-            
             for(let i=0; i<5; i++) {
                 const letra = chute[i];
                 if(letra === alvo[i]) { ts[i].classList.add('correct'); acertos++; }
@@ -199,16 +172,16 @@
 
             if(acertos === 5) {
                 let ganho = (userLocal.streak >= 4) ? 2 * Math.pow(2, (userLocal.streak - 3)) : 2;
-                await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0) + 1, coins: (userLocal.coins||0) + ganho });
+                await db.ref('users/'+auth.currentUser.uid).update({ 
+                    streak: (userLocal.streak||0) + 1, 
+                    coins: (userLocal.coins||0) + ganho 
+                });
                 setTimeout(novoJogo, 2000);
             } else if(linha === 5) {
                 document.getElementById('message').innerText = "Era: " + segredo;
                 await db.ref('users/'+auth.currentUser.uid).update({ streak: 0 });
                 setTimeout(novoJogo, 3000);
-            } else { 
-                linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; 
-                atualizarVisual(); criarTeclado(); 
-            }
+            } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); criarTeclado(); }
         }
 
         function digitar(k) {
@@ -246,7 +219,7 @@
             }
         });
 
-        async function pularPalavra() { if(!userLocal.skipUsed) { await db.ref('users/'+auth.currentUser.uid).update({ skipUsed: true, streak: (userLocal.streak||0)+1 }); novoJogo(); } }
+        async function pularPalavra() { window.open(SMARTLINK); await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0)+1 }); novoJogo(); }
         function fazerLogout() { auth.signOut().then(() => location.reload()); }
         async function fazerLogin() {
             const n = document.getElementById('loginNick').value.trim(); const p = document.getElementById('loginPass').value;
@@ -254,7 +227,7 @@
             try { await auth.signInWithEmailAndPassword(n.toLowerCase()+"@termo.com", p); } 
             catch(e) { 
                 const res = await auth.createUserWithEmailAndPassword(n.toLowerCase()+"@termo.com", p);
-                await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, inventory:[], selectedColor:'#fff', selectedTitle:''});
+                await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0});
             }
         }
     </script>
