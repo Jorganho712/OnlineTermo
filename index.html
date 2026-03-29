@@ -11,91 +11,96 @@
 
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
-        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; touch-action: manipulation; }
         
-        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; overflow: hidden; position: fixed; width: 100%; height: 100%; }
+        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; overflow: hidden; width: 100%; height: 100%; }
 
         .game-column { width: 100%; max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; height: 100dvh; position: relative; }
 
-        /* MENU SUPERIOR */
+        /* AJUSTE DOS BOTÕES ESTICADOS */
+        .card { background: #222; padding: 25px; border-radius: 12px; width: 90%; max-width: 350px; text-align: center; border: 1px solid #333; }
+        .btn-main { width: 100%; max-width: 280px; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin: 8px auto; display: block; }
+        .input-auth { width: 100%; max-width: 280px; padding: 12px; margin-bottom: 8px; background: #111; color: white; border: 1px solid #444; border-radius: 5px; }
+
+        /* TOP NAV */
         .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
         .nav-icons { display: flex; gap: 15px; }
         .nav-btn { background: none; border: none; color: #ccc; font-size: 18px; cursor: pointer; }
 
+        /* GRID E TILES */
         #game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #grid { display: grid; gap: 4px; padding: 5px; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
-        .tile { width: 11vw; height: 11vw; max-width: 45px; max-height: 45px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.3rem; font-weight: bold; text-transform: uppercase; }
+        .tile { width: 11vw; height: 11vw; max-width: 45px; max-height: 45px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; font-weight: bold; text-transform: uppercase; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        .hint-panel { text-align: center; color: #ffd700; font-size: 14px; font-weight: bold; min-height: 20px; }
-        .action-bar { display: flex; justify-content: center; gap: 10px; padding: 8px; }
-        .btn-action { flex: 1; max-width: 120px; padding: 10px; border: none; border-radius: 6px; color: white; font-weight: bold; font-size: 11px; cursor: pointer; text-transform: uppercase; }
-
-        #keyboard { padding: 5px; padding-bottom: max(15px, env(safe-area-inset-bottom)); }
+        /* TECLADO */
+        #keyboard { padding: 5px; padding-bottom: 20px; }
         .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 5px; }
         .key { height: 45px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.8rem; font-weight: bold; flex: 1; cursor: pointer; }
         .key.absent { background: #1a1a1b !important; color: #3a3a3c !important; pointer-events: none; }
         .key.wide { flex: 1.5; }
 
-        /* TELAS E TUTORIAL */
-        #auth-screen, #rank-screen, #out-of-lives, #how-to-play { position: absolute; inset: 0; background: var(--preto); display: flex; justify-content: center; align-items: center; z-index: 100; }
-        .card { background: #222; padding: 25px; border-radius: 12px; width: 90%; text-align: center; border: 1px solid #333; max-height: 90vh; overflow-y: auto; }
-        .btn-main { width: 100%; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-        
-        .tutorial-box { text-align: left; font-size: 14px; line-height: 1.4; }
-        .exemplo { display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; font-weight: bold; border-radius: 4px; margin-right: 5px; }
+        /* ANÚNCIOS LATERAIS (DESKTOP) */
+        .side-ad { position: fixed; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; z-index: 1; }
+        .ad-left { left: calc(50% - 400px); }
+        .ad-right { right: calc(50% - 400px); }
+
+        @media (max-width: 900px) { .side-ad { display: none; } }
+
+        /* TELAS */
+        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 100; }
     </style>
 </head>
 <body>
 
+    <div class="side-ad ad-left">
+        <script type="text/javascript">atOptions = { 'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };</script>
+        <script src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
+    </div>
+
     <div class="game-column">
-        <div id="auth-screen">
+        <div style="min-height:50px; text-align:center; padding-top:5px;">
+            <script type="text/javascript">atOptions = { 'key' : '06eee4bace60b9e3d155aa2f08f93474', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };</script>
+            <script src="https://www.highperformanceformat.com/06eee4bace60b9e3d155aa2f08f93474/invoke.js"></script>
+        </div>
+
+        <div id="auth-screen" class="overlay">
             <div class="card">
-                <h2>Verbete Online</h2>
-                <input type="text" id="loginNick" style="width:100%; padding:10px; margin-bottom:8px; background:#111; color:white; border:1px solid #444;" placeholder="Nome">
-                <input type="password" id="loginPass" style="width:100%; padding:10px; background:#111; color:white; border:1px solid #444;" placeholder="Senha">
-                <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
-                <button style="background:none; border:none; color:#888; margin-top:15px; cursor:pointer;" onclick="mostrarTutorial()">Como Jogar?</button>
-                <button style="background:none; border:none; color:#aaa; margin-top:10px; cursor:pointer;" onclick="entrarComoConvidado()">Jogar como Visitante</button>
+                <h2 style="margin-top:0;">Verbete Online</h2>
+                <input type="text" id="loginNick" class="input-auth" placeholder="Nome">
+                <input type="password" id="loginPass" class="input-auth" placeholder="Senha">
+                <button class="btn-main" onclick="fazerLogin()">ENTRAR / CRIAR</button>
+                <button class="btn-main" style="background:#4a90e2;" onclick="mostrarTutorial()">COMO JOGAR?</button>
+                <button style="background:none; border:none; color:#777; margin-top:10px; cursor:pointer;" onclick="entrarComoConvidado()">Entrar como Visitante</button>
             </div>
         </div>
 
-        <div id="how-to-play" style="display:none;">
-            <div class="card">
-                <h3>Como Jogar</h3>
-                <div class="tutorial-box">
-                    <p>Adivinhe a palavra em 6 tentativas.</p>
-                    <p><span class="exemplo" style="background:var(--cor-correta)">T</span> A letra faz parte da palavra e está na posição correta.</p>
-                    <p><span class="exemplo" style="background:var(--cor-lugar-errado)">E</span> A letra faz parte da palavra, mas em outra posição.</p>
-                    <p><span class="exemplo" style="background:var(--cor-errada)">R</span> A letra não faz parte da palavra.</p>
-                </div>
-                <button class="btn-main" onclick="fecharTutorial()">ENTENDI</button>
+        <div id="how-to-play" class="overlay" style="display:none;">
+            <div class="card" style="text-align:left;">
+                <h3 style="text-align:center;">Como Jogar</h3>
+                <p>Adivinhe a palavra em 6 tentativas.</p>
+                <p>🟢 <b>VERDE:</b> Letra correta no lugar certo.</p>
+                <p>🟡 <b>AMARELO:</b> Letra existe, mas lugar errado.</p>
+                <p>⚫ <b>CINZA:</b> Letra não existe na palavra.</p>
+                <button class="btn-main" onclick="fecharTutorial()">ENTENDI!</button>
             </div>
         </div>
 
-        <div id="rank-screen" style="display:none;">
+        <div id="out-of-lives" class="overlay" style="display:none;">
             <div class="card">
-                <h3>🏆 Ranking Global</h3>
-                <div id="rank-list">Carregando...</div>
-                <button class="btn-main" onclick="fecharRanking()">VOLTAR</button>
-            </div>
-        </div>
-
-        <div id="out-of-lives" style="display:none;">
-            <div class="card">
-                <h3>Limite de Jogos Diários!</h3>
-                <p>Você atingiu 3 partidas. Quer continuar?</p>
-                <button class="btn-main" onclick="assistirAnuncioReset()" style="background:#4a90e2">🎬 Ver Anúncio (+3 Jogos)</button>
-                <button style="background:none; border:none; color:#888; margin-top:15px; cursor:pointer;" onclick="fazerLogout()">Sair</button>
+                <h3>Limite Diário (3/3)</h3>
+                <p>Você atingiu o limite de hoje.</p>
+                <button class="btn-main" onclick="assistirAnuncioReset()" style="background:#4a90e2;">🎬 VER ANÚNCIO (+3 JOGOS)</button>
+                <button class="btn-main" style="background:#333;" onclick="fazerLogout()">TROCAR CONTA</button>
             </div>
         </div>
 
         <div id="game-container" style="display:none; flex-direction:column; height:100%;">
             <div class="top-nav">
-                <div style="font-size:12px; font-weight:bold;">👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span></div>
+                <div style="font-size:12px;">👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span></div>
                 <div class="nav-icons">
                     <button class="nav-btn" onclick="abrirRanking()">🏆</button>
                     <button class="nav-btn" onclick="fazerLogout()">🚪</button>
@@ -104,13 +109,13 @@
             
             <div id="game-area">
                 <div id="grid"></div>
-                <div id="message" style="color:#ffd700; margin-top:10px; height:20px; font-weight:bold;"></div>
+                <div id="message" style="color:#ffd700; height:20px; font-weight:bold; margin-top:10px;"></div>
             </div>
 
-            <div id="hint-display" class="hint-panel"></div>
-            <div class="action-bar">
-                <button class="btn-action" onclick="usarDica()" style="background:#c9b458;">💡 Dica</button>
-                <button id="btn-skip" class="btn-action" onclick="pularPalavra()" style="background:#4a90e2;">⏭️ Pular</button>
+            <div id="hint-display" style="text-align:center; color:#ffd700; font-size:14px; min-height:20px;"></div>
+            <div style="display:flex; justify-content:center; gap:10px; padding:10px;">
+                <button onclick="usarDica()" style="flex:1; padding:10px; background:#c9b458; border:none; border-radius:5px; color:white; font-weight:bold;">💡 DICA</button>
+                <button onclick="pularPalavra()" style="flex:1; padding:10px; background:#4a90e2; border:none; border-radius:5px; color:white; font-weight:bold;">⏭️ PULAR</button>
             </div>
             <div id="keyboard"></div>
         </div>
@@ -122,25 +127,30 @@
         const auth = firebase.auth(); const db = firebase.database();
         const SMARTLINK = "https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072";
         
+        const DICIONARIO = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO", "PLANO", "LIVRO", "CORPO", "MENTE"];
+
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
         let tentativaArray = ["","","","",""]; let focadoIndex = 0;
         let partidasHj = 0; let letrasErradas = new Set();
-        
-        // LISTA DE PALAVRAS VÁLIDAS (SÓ ACEITA ESTAS)
-        const DICIONARIO = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO", "PLANO", "LIVRO", "CORPO", "MENTE"];
 
-        window.revelar = () => { console.log("Segredo: " + segredo); return "OK"; };
-        window.liberar = async () => { if(auth.currentUser) await db.ref('users/'+auth.currentUser.uid).update({ gamesToday: 0 }); location.reload(); };
+        // COMANDOS
+        window.revelar = () => { console.log("A palavra é: " + segredo); return "Shhh!"; };
 
         function mostrarTutorial() { document.getElementById('how-to-play').style.display='flex'; }
         function fecharTutorial() { document.getElementById('how-to-play').style.display='none'; }
-        function abrirRanking() { document.getElementById('rank-screen').style.display='flex'; carregarRank(); }
-        function fecharRanking() { document.getElementById('rank-screen').style.display='none'; }
         function fazerLogout() { auth.signOut().then(() => location.reload()); }
 
         async function fazerLogin() {
             const n = document.getElementById('loginNick').value.trim(); const p = document.getElementById('loginPass').value;
-            try { await auth.signInWithEmailAndPassword(n.toLowerCase()+"@termo.com", p); } catch(e){ alert("Erro no acesso!"); }
+            if(!n || !p) return alert("Preencha os campos!");
+            try { 
+                await auth.signInWithEmailAndPassword(n.toLowerCase()+"@termo.com", p); 
+            } catch(e){
+                try { 
+                    const res = await auth.createUserWithEmailAndPassword(n.toLowerCase()+"@termo.com", p);
+                    await db.ref('users/'+res.user.uid).set({nick:n, streak:0, gamesToday:0});
+                } catch(err) { alert("Erro no login!"); }
+            }
         }
 
         function entrarComoConvidado() { nickAtual = "Visitante"; partidasHj = 0; mostrarJogo(); }
@@ -148,16 +158,14 @@
         auth.onAuthStateChanged(user => {
             if(user) {
                 db.ref('users/'+user.uid).on('value', async s => {
-                    const data = s.val() || {};
-                    nickAtual = data.nick || "Jogador";
-                    streak = data.streak || 0;
-                    const hoje = new Date().toLocaleDateString();
-                    if(data.lastDate !== hoje) {
-                        await db.ref('users/'+user.uid).update({ lastDate: hoje, gamesToday: 0 });
+                    const d = s.val() || {};
+                    nickAtual = d.nick || "Jogador";
+                    streak = d.streak || 0;
+                    const hj = new Date().toLocaleDateString();
+                    if(d.lastDate !== hj) {
+                        await db.ref('users/'+user.uid).update({ lastDate: hj, gamesToday: 0 });
                         partidasHj = 0;
-                    } else {
-                        partidasHj = data.gamesToday || 0;
-                    }
+                    } else { partidasHj = d.gamesToday || 0; }
                     mostrarJogo();
                 });
             }
@@ -169,7 +177,7 @@
                 document.getElementById('out-of-lives').style.display='flex';
                 return;
             }
-            document.querySelectorAll('#auth-screen, #out-of-lives').forEach(x => x.style.display='none');
+            document.querySelectorAll('.overlay').forEach(x => x.style.display='none');
             document.getElementById('game-container').style.display='flex';
             document.getElementById('displayNick').innerText = nickAtual;
             document.getElementById('streakDisplay').innerText = streak;
@@ -177,20 +185,16 @@
         }
 
         async function assistirAnuncioReset() {
-            window.open(SMARTLINK);
-            if(auth.currentUser) {
-                await db.ref('users/'+auth.currentUser.uid).update({ gamesToday: 0 });
-            } else {
-                partidasHj = 0;
-            }
+            window.open(SMARTLINK, '_blank');
+            if(auth.currentUser) await db.ref('users/'+auth.currentUser.uid).update({ gamesToday: 0 });
+            else partidasHj = 0;
             mostrarJogo();
         }
 
         function novoJogo() {
-            let disponiveis = DICIONARIO.filter(p => p !== segredo);
-            segredo = disponiveis[Math.floor(Math.random()*disponiveis.length)];
+            let d = DICIONARIO.filter(p => p !== segredo);
+            segredo = d[Math.floor(Math.random()*d.length)];
             linha=0; tentativaArray=["","","","",""]; focadoIndex=0; letrasErradas.clear();
-            document.getElementById('hint-display').innerText = "";
             document.getElementById('message').innerText = "";
             const g = document.getElementById('grid'); g.innerHTML="";
             for(let i=0;i<6;i++){
@@ -208,11 +212,9 @@
                 const d=document.createElement('div'); d.className='kb-row';
                 r.forEach(k=>{
                     const b=document.createElement('button');
-                    b.className = (k.length>1) ? 'key wide' : 'key';
-                    b.id = "key-" + k; b.innerText = k;
+                    b.className=(k.length>1)?'key wide':'key'; b.id="key-"+k; b.innerText=k;
                     if(letrasErradas.has(k)) b.classList.add('absent');
-                    b.onclick = () => digitar(k);
-                    d.appendChild(b);
+                    b.onclick=()=>digitar(k); d.appendChild(b);
                 });
                 kb.appendChild(d);
             });
@@ -227,61 +229,40 @@
 
         async function verificar() {
             const chute = tentativaArray.join('');
-            if(!DICIONARIO.includes(chute)) {
-                document.getElementById('message').innerText = "Palavra inválida!";
-                return;
-            }
-
+            if(!DICIONARIO.includes(chute)) { document.getElementById('message').innerText="Palavra inválida!"; return; }
             const ts = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
             let acertos = 0;
             for(let i=0; i<5; i++) {
-                const letra = tentativaArray[i];
-                if(letra === segredo[i]) { ts[i].classList.add('correct'); acertos++; }
-                else if(segredo.includes(letra)) { ts[i].classList.add('present'); }
-                else { 
-                    ts[i].classList.add('absent'); 
-                    letrasErradas.add(letra);
-                    document.getElementById("key-"+letra)?.classList.add('absent');
-                }
+                const l = tentativaArray[i];
+                if(l === segredo[i]) { ts[i].classList.add('correct'); acertos++; }
+                else if(segredo.includes(l)) { ts[i].classList.add('present'); }
+                else { ts[i].classList.add('absent'); letrasErradas.add(l); document.getElementById("key-"+l)?.classList.add('absent'); }
             }
             if(acertos === 5) {
-                streak++; await salvarProgresso(true);
+                streak++; await salvar(true);
                 document.getElementById('message').innerText = "Venceu!";
-                setTimeout(mostrarJogo, 2000);
+                setTimeout(mostrarJogo, 1500);
             } else if(linha === 5) {
-                streak = 0; await salvarProgresso(true);
+                streak = 0; await salvar(true);
                 document.getElementById('message').innerText = "Era: " + segredo;
                 setTimeout(mostrarJogo, 3000);
             } else { linha++; focadoIndex=0; tentativaArray=["","","","",""]; atualizarVisual(); }
         }
 
-        async function salvarProgresso(contarJogo) {
-            if(nickAtual !== "Visitante") {
-                const userRef = db.ref('users/'+auth.currentUser.uid);
-                await userRef.update({ streak: streak, gamesToday: (partidasHj + (contarJogo ? 1 : 0)) });
+        async function salvar(contar) {
+            if(auth.currentUser) {
+                await db.ref('users/'+auth.currentUser.uid).update({ streak: streak, gamesToday: (partidasHj + (contar?1:0)) });
             }
         }
 
-        function carregarRank() {
-            const list = document.getElementById('rank-list');
-            db.ref('users').orderByChild('streak').limitToLast(10).once('value', s => {
-                list.innerHTML = "";
-                let arr = []; s.forEach(c => arr.push(c.val()));
-                arr.reverse().forEach((u, i) => {
-                    list.innerHTML += `<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #333;"><span>${i+1}º ${u.nick}</span> <span>🔥 ${u.streak || 0}</span></div>`;
-                });
-            });
-        }
-
         function atualizarVisual() {
-            const row = document.querySelectorAll('.row')[linha];
+            const row = document.querySelectorAll('.row')[linha]; if(!row) return;
             const ts = row.querySelectorAll('.tile');
             ts.forEach((t, i) => { t.innerText = tentativaArray[i]; t.style.borderColor = (i === focadoIndex) ? "#818384" : "#3a3a3c"; });
-            document.getElementById('message').innerText = "";
         }
 
-        function usarDica() { window.open(SMARTLINK); document.getElementById('hint-display').innerText = "Letra: " + segredo[Math.floor(Math.random()*5)]; }
-        function pularPalavra() { if(nickAtual === "Visitante") return; window.open(SMARTLINK); streak++; salvarProgresso(true); }
+        function usarDica() { window.open(SMARTLINK); document.getElementById('hint-display').innerText = "Dica: Tem a letra " + segredo[Math.floor(Math.random()*5)]; }
+        function pularPalavra() { window.open(SMARTLINK); streak++; salvar(true); }
     </script>
 </body>
 </html>
