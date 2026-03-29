@@ -13,45 +13,40 @@
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
         * { box-sizing: border-box; touch-action: manipulation; }
         
-        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; overflow: hidden; width: 100%; height: 100%; }
+        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; overflow-x: hidden; width: 100%; height: 100%; }
 
-        .game-column { width: 100%; max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; height: 100dvh; position: relative; }
+        .game-column { width: 100%; max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; height: 100dvh; position: relative; z-index: 10; }
 
-        /* AJUSTE DOS BOTÕES ESTICADOS */
+        /* CORREÇÃO DOS ANÚNCIOS LATERAIS */
+        .side-ad { position: fixed; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; z-index: 1; }
+        .ad-left { left: 20px; }
+        .ad-right { right: 20px; }
+
+        /* TELAS E BOTÕES */
+        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 100; }
         .card { background: #222; padding: 25px; border-radius: 12px; width: 90%; max-width: 350px; text-align: center; border: 1px solid #333; }
         .btn-main { width: 100%; max-width: 280px; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin: 8px auto; display: block; }
-        .input-auth { width: 100%; max-width: 280px; padding: 12px; margin-bottom: 8px; background: #111; color: white; border: 1px solid #444; border-radius: 5px; }
+        .input-auth { width: 100%; max-width: 280px; padding: 12px; margin-bottom: 8px; background: #111; color: white; border: 1px solid #444; border-radius: 5px; display: block; margin-left: auto; margin-right: auto; }
 
-        /* TOP NAV */
+        /* RANKING LIST */
+        #rank-list { text-align: left; margin: 15px 0; max-height: 250px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; }
+        .rank-item { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #333; font-size: 14px; }
+
+        /* JOGO */
         .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
-        .nav-icons { display: flex; gap: 15px; }
-        .nav-btn { background: none; border: none; color: #ccc; font-size: 18px; cursor: pointer; }
-
-        /* GRID E TILES */
-        #game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #grid { display: grid; gap: 4px; padding: 5px; }
+        #grid { display: grid; gap: 4px; padding: 5px; margin: 20px auto; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
-        .tile { width: 11vw; height: 11vw; max-width: 45px; max-height: 45px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; font-weight: bold; text-transform: uppercase; }
+        .tile { width: 12vw; height: 12vw; max-width: 50px; max-height: 50px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: bold; text-transform: uppercase; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        /* TECLADO */
         #keyboard { padding: 5px; padding-bottom: 20px; }
         .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 5px; }
         .key { height: 45px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.8rem; font-weight: bold; flex: 1; cursor: pointer; }
         .key.absent { background: #1a1a1b !important; color: #3a3a3c !important; pointer-events: none; }
-        .key.wide { flex: 1.5; }
 
-        /* ANÚNCIOS LATERAIS (DESKTOP) */
-        .side-ad { position: fixed; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; z-index: 1; }
-        .ad-left { left: calc(50% - 400px); }
-        .ad-right { right: calc(50% - 400px); }
-
-        @media (max-width: 900px) { .side-ad { display: none; } }
-
-        /* TELAS */
-        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 100; }
+        @media (max-width: 1000px) { .side-ad { display: none; } }
     </style>
 </head>
 <body>
@@ -61,15 +56,15 @@
         <script src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
     </div>
 
-    <div class="game-column">
-        <div style="min-height:50px; text-align:center; padding-top:5px;">
-            <script type="text/javascript">atOptions = { 'key' : '06eee4bace60b9e3d155aa2f08f93474', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };</script>
-            <script src="https://www.highperformanceformat.com/06eee4bace60b9e3d155aa2f08f93474/invoke.js"></script>
-        </div>
+    <div class="side-ad ad-right">
+        <script type="text/javascript">atOptions = { 'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };</script>
+        <script src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
+    </div>
 
+    <div class="game-column">
         <div id="auth-screen" class="overlay">
             <div class="card">
-                <h2 style="margin-top:0;">Verbete Online</h2>
+                <h2>Verbete Online</h2>
                 <input type="text" id="loginNick" class="input-auth" placeholder="Nome">
                 <input type="password" id="loginPass" class="input-auth" placeholder="Senha">
                 <button class="btn-main" onclick="fazerLogin()">ENTRAR / CRIAR</button>
@@ -78,44 +73,52 @@
             </div>
         </div>
 
+        <div id="rank-screen" class="overlay" style="display:none;">
+            <div class="card">
+                <h3>🏆 Ranking Global</h3>
+                <div id="rank-list">Carregando jogadores...</div>
+                <button class="btn-main" onclick="fecharRanking()">VOLTAR</button>
+            </div>
+        </div>
+
         <div id="how-to-play" class="overlay" style="display:none;">
             <div class="card" style="text-align:left;">
                 <h3 style="text-align:center;">Como Jogar</h3>
                 <p>Adivinhe a palavra em 6 tentativas.</p>
                 <p>🟢 <b>VERDE:</b> Letra correta no lugar certo.</p>
-                <p>🟡 <b>AMARELO:</b> Letra existe, mas lugar errado.</p>
-                <p>⚫ <b>CINZA:</b> Letra não existe na palavra.</p>
+                <p>🟡 <b>AMARELO:</b> Letra existe, lugar errado.</p>
+                <p>⚫ <b>CINZA:</b> Letra não existe.</p>
                 <button class="btn-main" onclick="fecharTutorial()">ENTENDI!</button>
             </div>
         </div>
 
         <div id="out-of-lives" class="overlay" style="display:none;">
             <div class="card">
-                <h3>Limite Diário (3/3)</h3>
-                <p>Você atingiu o limite de hoje.</p>
+                <h3>Limite Atingido!</h3>
+                <p>Você jogou 3 partidas hoje.</p>
                 <button class="btn-main" onclick="assistirAnuncioReset()" style="background:#4a90e2;">🎬 VER ANÚNCIO (+3 JOGOS)</button>
-                <button class="btn-main" style="background:#333;" onclick="fazerLogout()">TROCAR CONTA</button>
+                <button style="background:none; border:none; color:#888; margin-top:10px; cursor:pointer;" onclick="fazerLogout()">Sair</button>
             </div>
         </div>
 
         <div id="game-container" style="display:none; flex-direction:column; height:100%;">
             <div class="top-nav">
                 <div style="font-size:12px;">👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span></div>
-                <div class="nav-icons">
-                    <button class="nav-btn" onclick="abrirRanking()">🏆</button>
-                    <button class="nav-btn" onclick="fazerLogout()">🚪</button>
+                <div style="display:flex; gap:15px;">
+                    <button style="background:none; border:none; color:white; cursor:pointer; font-size:18px;" onclick="abrirRanking()">🏆</button>
+                    <button style="background:none; border:none; color:white; cursor:pointer; font-size:18px;" onclick="fazerLogout()">🚪</button>
                 </div>
             </div>
             
             <div id="game-area">
                 <div id="grid"></div>
-                <div id="message" style="color:#ffd700; height:20px; font-weight:bold; margin-top:10px;"></div>
+                <div id="message" style="color:#ffd700; height:20px; font-weight:bold; text-align:center;"></div>
             </div>
 
-            <div id="hint-display" style="text-align:center; color:#ffd700; font-size:14px; min-height:20px;"></div>
-            <div style="display:flex; justify-content:center; gap:10px; padding:10px;">
-                <button onclick="usarDica()" style="flex:1; padding:10px; background:#c9b458; border:none; border-radius:5px; color:white; font-weight:bold;">💡 DICA</button>
-                <button onclick="pularPalavra()" style="flex:1; padding:10px; background:#4a90e2; border:none; border-radius:5px; color:white; font-weight:bold;">⏭️ PULAR</button>
+            <div id="hint-display" style="text-align:center; color:#ffd700; font-size:14px; min-height:20px; margin-bottom:5px;"></div>
+            <div style="display:flex; justify-content:center; gap:10px; padding:0 10px 10px 10px;">
+                <button onclick="usarDica()" style="flex:1; padding:12px; background:#c9b458; border:none; border-radius:5px; color:white; font-weight:bold; cursor:pointer;">💡 DICA</button>
+                <button onclick="pularPalavra()" style="flex:1; padding:12px; background:#4a90e2; border:none; border-radius:5px; color:white; font-weight:bold; cursor:pointer;">⏭️ PULAR</button>
             </div>
             <div id="keyboard"></div>
         </div>
@@ -126,16 +129,14 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.database();
         const SMARTLINK = "https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072";
-        
         const DICIONARIO = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO", "PLANO", "LIVRO", "CORPO", "MENTE"];
 
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
         let tentativaArray = ["","","","",""]; let focadoIndex = 0;
         let partidasHj = 0; let letrasErradas = new Set();
 
-        // COMANDOS
-        window.revelar = () => { console.log("A palavra é: " + segredo); return "Shhh!"; };
-
+        function abrirRanking() { document.getElementById('rank-screen').style.display='flex'; carregarRank(); }
+        function fecharRanking() { document.getElementById('rank-screen').style.display='none'; }
         function mostrarTutorial() { document.getElementById('how-to-play').style.display='flex'; }
         function fecharTutorial() { document.getElementById('how-to-play').style.display='none'; }
         function fazerLogout() { auth.signOut().then(() => location.reload()); }
@@ -149,7 +150,7 @@
                 try { 
                     const res = await auth.createUserWithEmailAndPassword(n.toLowerCase()+"@termo.com", p);
                     await db.ref('users/'+res.user.uid).set({nick:n, streak:0, gamesToday:0});
-                } catch(err) { alert("Erro no login!"); }
+                } catch(err) { alert("Erro ao entrar!"); }
             }
         }
 
@@ -182,13 +183,6 @@
             document.getElementById('displayNick').innerText = nickAtual;
             document.getElementById('streakDisplay').innerText = streak;
             novoJogo();
-        }
-
-        async function assistirAnuncioReset() {
-            window.open(SMARTLINK, '_blank');
-            if(auth.currentUser) await db.ref('users/'+auth.currentUser.uid).update({ gamesToday: 0 });
-            else partidasHj = 0;
-            mostrarJogo();
         }
 
         function novoJogo() {
@@ -240,7 +234,7 @@
             }
             if(acertos === 5) {
                 streak++; await salvar(true);
-                document.getElementById('message').innerText = "Venceu!";
+                document.getElementById('message').innerText = "Acertou!";
                 setTimeout(mostrarJogo, 1500);
             } else if(linha === 5) {
                 streak = 0; await salvar(true);
@@ -255,14 +249,27 @@
             }
         }
 
+        function carregarRank() {
+            const list = document.getElementById('rank-list');
+            db.ref('users').orderByChild('streak').limitToLast(10).once('value', s => {
+                list.innerHTML = "";
+                let arr = []; s.forEach(c => arr.push(c.val()));
+                arr.reverse().forEach((u, i) => {
+                    list.innerHTML += `<div class="rank-item"><span>${i+1}º ${u.nick}</span> <span>🔥 ${u.streak || 0}</span></div>`;
+                });
+            });
+        }
+
         function atualizarVisual() {
             const row = document.querySelectorAll('.row')[linha]; if(!row) return;
             const ts = row.querySelectorAll('.tile');
             ts.forEach((t, i) => { t.innerText = tentativaArray[i]; t.style.borderColor = (i === focadoIndex) ? "#818384" : "#3a3a3c"; });
+            document.getElementById('message').innerText = "";
         }
 
-        function usarDica() { window.open(SMARTLINK); document.getElementById('hint-display').innerText = "Dica: Tem a letra " + segredo[Math.floor(Math.random()*5)]; }
-        function pularPalavra() { window.open(SMARTLINK); streak++; salvar(true); }
+        function usarDica() { window.open(SMARTLINK); document.getElementById('hint-display').innerText = "Letra: " + segredo[Math.floor(Math.random()*5)]; }
+        function pularPalavra() { if(nickAtual === "Visitante") return; window.open(SMARTLINK); streak++; salvar(true); }
+        async function assistirAnuncioReset() { window.open(SMARTLINK); if(auth.currentUser) await db.ref('users/'+auth.currentUser.uid).update({ gamesToday: 0 }); mostrarJogo(); }
     </script>
 </body>
 </html>
