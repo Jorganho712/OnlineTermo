@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
 
-    <script async="async" data-cfasync="false" src="//pl29010888.profitablecpmratenetwork.com/a4/b5/a8/a4b5a8c3910b3d082855407a6ae50703.js"></script>
+    <script src="https://pl29010888.profitablecpmratenetwork.com/a4/b5/a8/a4b5a8c3910b3d082855407a6ae50703.js"></script>
 
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
@@ -18,7 +18,7 @@
 
         .main-layout { display: flex; justify-content: center; width: 100vw; min-height: 100vh; }
 
-        /* Colunas de Anúncio Laterais (PC) */
+        /* Colunas de Anúncio Laterais (Só aparecem no PC) */
         .ad-sidebar {
             flex: 1;
             display: flex;
@@ -30,6 +30,7 @@
 
         .game-column { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; z-index: 10; }
 
+        /* Ajuste para sumir as barras no celular e dar espaço total ao jogo */
         @media (max-width: 900px) {
             .ad-sidebar { display: none !important; } 
             .game-column { width: 100vw; max-width: 100%; }
@@ -47,7 +48,7 @@
 
         #keyboard { display: flex; flex-direction: column; gap: 6px; width: 98%; margin-top: auto; padding-bottom: 15px; }
         .kb-row { display: flex; justify-content: center; gap: 4px; }
-        .key { padding: 16px 0; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.8rem; font-weight: bold; flex: 1; }
+        .key { padding: 18px 0; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.8rem; font-weight: bold; flex: 1; }
         .key.wide { flex: 1.5; background: #565758; }
 
         .auth-card { background: #222; padding: 25px; border-radius: 12px; margin-top: 40px; text-align: center; width: 300px; border: 1px solid #444; }
@@ -80,7 +81,6 @@
                     <input type="text" id="loginNick" placeholder="Nome">
                     <input type="password" id="loginPass" placeholder="Senha">
                     <button class="btn-main" onclick="fazerLogin()">JOGAR</button>
-                    <button onclick="entrarComoConvidado()" style="margin-top:15px; background:none; border:none; color:#666; cursor:pointer; text-decoration: underline;">Modo Convidado</button>
                 </div>
             </div>
 
@@ -116,6 +116,7 @@
     </div>
 
     <script>
+        // CONFIG FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0",
             authDomain: "termo-rank-5d80d.firebaseapp.com",
@@ -129,7 +130,7 @@
 
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
         let tentativaArray = ["", "", "", "", ""]; let focadoIndex = 0;
-        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER"];
+        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "TENRA", "SUTIL", "VIGOR", "AUREA", "SANAR", "PODER", "IDEIA", "MUITO", "VIVER", "JUSTO"];
 
         async function fazerLogin() {
             const nick = document.getElementById('loginNick').value.trim();
@@ -138,7 +139,6 @@
             try { await auth.signInWithEmailAndPassword(nick.toLowerCase() + "@termo.com", pass); } catch (e) { alert("Login Inválido!"); }
         }
 
-        function entrarComoConvidado() { nickAtual = "Visitante"; mostrarJogo(); }
         function logout() { auth.signOut().then(() => location.reload()); }
 
         auth.onAuthStateChanged(user => {
@@ -176,6 +176,7 @@
 
         function atualizarVisual() {
             const rows = document.querySelectorAll('.row');
+            if(!rows[linha]) return;
             const tiles = rows[linha].querySelectorAll('.tile');
             tiles.forEach((t, i) => { t.innerText = tentativaArray[i]; });
         }
@@ -197,11 +198,9 @@
             }
             if(ok === 5) { 
                 document.getElementById('message').innerText = "VENCEU! 🎉"; 
-                if(nickAtual !== "Visitante") {
-                    streak++;
-                    db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
-                    document.getElementById('streakDisplay').innerText = streak;
-                }
+                streak++;
+                db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
+                document.getElementById('streakDisplay').innerText = streak;
                 setTimeout(novoJogo, 2000); 
             } else if(linha === 5) {
                 document.getElementById('message').innerText = "ERA: " + segredo;
