@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Termo Infinito</title>
-    #teste de atualização
+    /* teste */
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -13,19 +13,15 @@
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
         body { background-color: var(--preto); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
 
-        /* Cabeçalho do Jogo */
-        .header-jogo { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 500px; padding: 10px; background: #1a1a1b; box-sizing: border-box; }
-        .btn-logout { background: #ce3a3a; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        /* Cabeçalho */
+        .header-jogo { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 500px; padding: 10px; background: #1a1a1b; box-sizing: border-box; border-bottom: 1px solid #333; }
+        .btn-logout { background: #ce3a3a; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
         .layout-principal { display: flex; justify-content: center; width: 100%; margin-top: 10px; }
         .coluna-ad { width: 160px; flex-shrink: 0; }
         .area-jogo { flex: 1; max-width: 500px; display: flex; flex-direction: column; align-items: center; }
 
-        @media (max-width: 1000px) {
-            .coluna-ad { display: none !important; }
-            .tile { width: 45px !important; height: 45px !important; font-size: 1.5rem !important; }
-        }
-
+        /* Grid e Teclado */
         #grid { display: grid; gap: 5px; margin-bottom: 15px; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
         .tile { width: 55px; height: 55px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
@@ -34,16 +30,24 @@
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        #keyboard { display: flex; flex-direction: column; gap: 6px; width: 95%; margin-bottom: 20px; }
+        #keyboard { display: flex; flex-direction: column; gap: 6px; width: 95%; margin-bottom: 15px; }
         .kb-row { display: flex; justify-content: center; gap: 4px; }
         .key { padding: 15px 6px; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.8rem; font-weight: bold; flex: 1; }
         .key.wide { flex: 1.5; background: #565758; }
 
-        /* Telas de Acesso */
+        /* Mobile Adjustments */
+        @media (max-width: 1000px) {
+            .coluna-ad { display: none !important; }
+            .tile { width: 45px !important; height: 45px !important; font-size: 1.5rem !important; }
+        }
+
+        /* Container de Anúncio Debaixo do Teclado */
+        .ad-container-bottom { width: 320px; height: 50px; margin: 10px 0; background: #1a1a1b; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+
+        /* Telas de Login/Cadastro */
         .auth-card { background: #222; padding: 25px; border-radius: 12px; margin-top: 50px; text-align: center; width: 300px; border: 1px solid #444; }
         input { width: 90%; padding: 12px; margin: 10px 0; background: #111; color: white; border: 1px solid #444; border-radius: 5px; }
         .btn-main { width: 100%; padding: 12px; background: var(--cor-correta); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .link-auth { color: #aaa; font-size: 0.8rem; margin-top: 15px; cursor: pointer; display: block; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -51,19 +55,19 @@
     <div id="auth-screen">
         <div id="login-box" class="auth-card">
             <h2>Entrar</h2>
-            <input type="text" id="loginNick" placeholder="Seu Nome">
+            <input type="text" id="loginNick" placeholder="Nome do Jogador">
             <input type="password" id="loginPass" placeholder="Sua Senha">
-            <button class="btn-main" onclick="fazerLogin()">JOGAR</button>
-            <span class="link-auth" onclick="alternarTela('signup-box')">Não tem conta? Criar conta</span>
-            <button onclick="entrarComoConvidado()" style="margin-top:15px; background:none; border:none; color:#666; cursor:pointer;">Entrar como Convidado</button>
+            <button class="btn-main" onclick="fazerLogin()">JOGAR AGORA</button>
+            <p style="font-size: 0.8rem; color: #aaa; margin-top: 15px; cursor: pointer;" onclick="alternarTela('signup-box')">Novo por aqui? <u>Criar Conta</u></p>
+            <button onclick="entrarComoConvidado()" style="margin-top:10px; background:none; border:none; color:#555; cursor:pointer;">Entrar como Convidado</button>
         </div>
 
         <div id="signup-box" class="auth-card" style="display:none">
             <h2>Criar Conta</h2>
             <input type="text" id="userNick" placeholder="Escolha um Nome">
-            <input type="password" id="userPass" placeholder="Crie uma Senha (mín. 6)">
-            <button class="btn-main" style="background:#4a90e2" onclick="criarConta()">CADASTRAR E JOGAR</button>
-            <span class="link-auth" onclick="alternarTela('login-box')">Já tenho conta. Voltar</span>
+            <input type="password" id="userPass" placeholder="Senha (mín. 6 dígitos)">
+            <button class="btn-main" style="background:#4a90e2" onclick="criarConta()">CADASTRAR</button>
+            <p style="font-size: 0.8rem; color: #aaa; margin-top: 15px; cursor: pointer;" onclick="alternarTela('login-box')">Já tem conta? <u>Voltar ao Login</u></p>
         </div>
     </div>
 
@@ -80,27 +84,21 @@
             </div>
 
             <div class="area-jogo">
-                <div id="ad-top-mobile" style="margin-bottom:10px">
-                    <script type="text/javascript">
-                        if(window.innerWidth < 1000) {
-                            atOptions = {'key' : '06eee4bace60b9e3d155aa2f08f93474','format' : 'iframe','height' : 50,'width' : 320,'params' : {}};
-                            document.write('<script type="text/javascript" src="https://www.highperformanceformat.com/06eee4bace60b9e3d155aa2f08f93474/invoke.js"><\/script>');
-                        }
-                    </script>
-                </div>
-
                 <div id="grid"></div>
-                <div id="message" style="height: 30px; color: #ffd700; font-weight: bold;"></div>
+                <div id="message" style="height: 30px; color: #ffd700; font-weight: bold; font-size: 1.2rem;"></div>
                 <div id="keyboard"></div>
                 
-                <div style="margin-top: 10px;">
+                <div class="ad-container-bottom">
                     <script type="text/javascript">
-                        var adKey = window.innerWidth < 1000 ? '06eee4bace60b9e3d155aa2f08f93474' : 'b2c5b5eb74a40bdb1a533534b525704c';
-                        var adH = window.innerWidth < 1000 ? 50 : 90;
-                        var adW = window.innerWidth < 1000 ? 320 : 728;
-                        atOptions = {'key' : adKey, 'format' : 'iframe', 'height' : adH, 'width' : adW, 'params' : {}};
-                        document.write('<script type="text/javascript" src="https://www.highperformanceformat.com/' + adKey + '/invoke.js"><\/script>');
+                        atOptions = {
+                            'key' : '06eee4bace60b9e3d155aa2f08f93474',
+                            'format' : 'iframe',
+                            'height' : 50,
+                            'width' : 320,
+                            'params' : {}
+                        };
                     </script>
+                    <script type="text/javascript" src="https://www.highperformanceformat.com/06eee4bace60b9e3d155aa2f08f93474/invoke.js"></script>
                 </div>
             </div>
 
@@ -125,7 +123,7 @@
 
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
         let tentativaArray = ["", "", "", "", ""]; let focadoIndex = 0;
-        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER"];
+        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "TENRA", "SUTIL", "VIGOR", "AUREA", "SANAR"];
 
         function alternarTela(id) {
             document.getElementById('login-box').style.display = 'none';
@@ -136,24 +134,24 @@
         async function criarConta() {
             const nick = document.getElementById('userNick').value.trim();
             const pass = document.getElementById('userPass').value;
-            if(!nick || pass.length < 6) return alert("Nome vazio ou senha curta!");
+            if(!nick || pass.length < 6) return alert("Preencha o nome e a senha (mín. 6 dígitos)");
             const email = nick.toLowerCase() + "@termo.com";
             try {
                 const res = await auth.createUserWithEmailAndPassword(email, pass);
                 await db.ref('users/' + res.user.uid).set({ nick: nick, streak: 0 });
-            } catch (e) { alert("Este nome já pode estar em uso."); }
+            } catch (e) { alert("Erro: Nome em uso ou problema na rede."); }
         }
 
         async function fazerLogin() {
             const nick = document.getElementById('loginNick').value.trim();
             const pass = document.getElementById('loginPass').value;
-            if(!nick || !pass) return alert("Preencha tudo!");
+            if(!nick) return alert("Digite seu nome!");
             try { await auth.signInWithEmailAndPassword(nick.toLowerCase() + "@termo.com", pass); } 
             catch (e) { alert("Nome ou senha incorretos."); }
         }
 
-        function entrarComoConvidado() { nickAtual = "Convidado"; mostrarJogo(); }
         function logout() { auth.signOut().then(() => location.reload()); }
+        function entrarComoConvidado() { nickAtual = "Convidado"; mostrarJogo(); }
 
         auth.onAuthStateChanged(user => {
             if (user) {
@@ -169,13 +167,11 @@
             document.getElementById('displayNick').innerText = nickAtual;
             document.getElementById('streakDisplay').innerText = streak;
             novoJogo(); criarTeclado();
-            window.addEventListener('keydown', handlePhysKey);
-        }
-
-        function handlePhysKey(e) {
-            if(e.key === 'Enter') digitar('ENTER');
-            else if(e.key === 'Backspace') digitar('DEL');
-            else if(/^[a-zA-Z]$/.test(e.key)) digitar(e.key.toUpperCase());
+            window.addEventListener('keydown', (e) => {
+                if(e.key === 'Enter') digitar('ENTER');
+                else if(e.key === 'Backspace') digitar('DEL');
+                else if(/^[a-zA-Z]$/.test(e.key)) digitar(e.key.toUpperCase());
+            });
         }
 
         function novoJogo() {
@@ -191,8 +187,7 @@
                 }
                 grid.appendChild(row);
             }
-            document.getElementById('message').innerText = "";
-            atualizarVisual();
+            document.getElementById('message').innerText = ""; atualizarVisual();
         }
 
         function atualizarVisual() {
@@ -225,6 +220,7 @@
                 if(nickAtual !== "Convidado") {
                     streak++;
                     db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
+                    document.getElementById('streakDisplay').innerText = streak;
                 }
                 setTimeout(novoJogo, 2000); 
             } else if(linha === 5) { 
