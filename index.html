@@ -12,8 +12,8 @@
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
         body { background-color: var(--preto); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
-/* teste */
-        /* Cabeçalho do Jogo */
+/* ttte */
+        /* Header */
         .header-jogo { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 500px; padding: 12px; background: #1a1a1b; border-bottom: 1px solid #333; box-sizing: border-box; }
         .btn-logout { background: #ce3a3a; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.7rem; }
 
@@ -21,7 +21,7 @@
         .coluna-ad { width: 160px; flex-shrink: 0; }
         .area-jogo { flex: 1; max-width: 500px; display: flex; flex-direction: column; align-items: center; }
 
-        /* Grid de Letras */
+        /* Grid */
         #grid { display: grid; gap: 5px; margin-bottom: 15px; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
         .tile { width: 55px; height: 55px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
@@ -30,20 +30,30 @@
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        /* Teclado Virtual */
-        #keyboard { display: flex; flex-direction: column; gap: 6px; width: 95%; margin-bottom: 10px; }
+        /* Teclado */
+        #keyboard { display: flex; flex-direction: column; gap: 6px; width: 95%; margin-bottom: 15px; }
         .kb-row { display: flex; justify-content: center; gap: 4px; }
         .key { padding: 15px 4px; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.8rem; font-weight: bold; flex: 1; }
         .key.wide { flex: 1.5; background: #565758; }
 
-        /* Telas de Autenticação */
+        /* CONTAINER DO ANÚNCIO (Ajustado) */
+        .ad-footer-mobile { 
+            width: 320px; 
+            height: 50px; 
+            background: #222; /* Volta a barra cinza se falhar */
+            margin: 20px auto; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        /* Auth Cards */
         .auth-card { background: #222; padding: 25px; border-radius: 12px; margin-top: 40px; text-align: center; width: 300px; border: 1px solid #444; }
         input { width: 90%; padding: 12px; margin: 10px 0; background: #111; color: white; border: 1px solid #444; border-radius: 5px; }
         .btn-main { width: 100%; padding: 12px; background: var(--cor-correta); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
         .link-auth { color: #aaa; font-size: 0.8rem; margin-top: 15px; cursor: pointer; display: block; text-decoration: underline; }
-
-        /* Container de Anúncio */
-        .ad-bottom-wrapper { width: 320px; height: 50px; margin-top: 15px; display: flex; justify-content: center; align-items: center; }
 
         @media (max-width: 1000px) {
             .coluna-ad { display: none !important; }
@@ -75,7 +85,7 @@
     <div id="game-container" style="display:none; width: 100%;">
         <div class="header-jogo">
             <div>👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span></div>
-            <button class="btn-logout" onclick="logout()">SAIR (LOGOUT)</button>
+            <button class="btn-logout" onclick="logout()">SAIR</button>
         </div>
 
         <div class="layout-principal">
@@ -89,7 +99,7 @@
                 <div id="message" style="height: 30px; color: #ffd700; font-weight: bold; margin-bottom: 5px;"></div>
                 <div id="keyboard"></div>
                 
-                <div class="ad-bottom-wrapper">
+                <div class="ad-footer-mobile">
                     <script type="text/javascript">
                         atOptions = {
                             'key' : '06eee4bace60b9e3d155aa2f08f93474',
@@ -99,7 +109,7 @@
                             'params' : {}
                         };
                     </script>
-                    <script type="text/javascript" src="https://www.highperformanceformat.com/06eee4bace60b9e3d155aa2f08f93474/invoke.js"></script>
+                    <script type="text/javascript" src="//www.highperformanceformat.com/06eee4bace60b9e3d155aa2f08f93474/invoke.js"></script>
                 </div>
             </div>
 
@@ -135,12 +145,11 @@
         async function criarConta() {
             const nick = document.getElementById('userNick').value.trim();
             const pass = document.getElementById('userPass').value;
-            if(!nick || pass.length < 6) return alert("Preencha o nome e a senha (mín. 6 letras)");
-            const email = nick.toLowerCase() + "@termo.com";
+            if(!nick || pass.length < 6) return alert("Nome vazio ou senha curta!");
             try {
-                const res = await auth.createUserWithEmailAndPassword(email, pass);
+                const res = await auth.createUserWithEmailAndPassword(nick.toLowerCase() + "@termo.com", pass);
                 await db.ref('users/' + res.user.uid).set({ nick: nick, streak: 0 });
-            } catch (e) { alert("Nome em uso ou erro de rede."); }
+            } catch (e) { alert("Erro ao criar conta."); }
         }
 
         async function fazerLogin() {
@@ -170,13 +179,11 @@
             document.getElementById('displayNick').innerText = nickAtual;
             document.getElementById('streakDisplay').innerText = streak;
             novoJogo(); criarTeclado();
-            window.addEventListener('keydown', handleKey);
-        }
-
-        function handleKey(e) {
-            if(e.key === 'Enter') digitar('ENTER');
-            else if(e.key === 'Backspace') digitar('DEL');
-            else if(/^[a-zA-Z]$/.test(e.key)) digitar(e.key.toUpperCase());
+            window.addEventListener('keydown', (e) => {
+                if(e.key === 'Enter') digitar('ENTER');
+                else if(e.key === 'Backspace') digitar('DEL');
+                else if(/^[a-zA-Z]$/.test(e.key)) digitar(e.key.toUpperCase());
+            });
         }
 
         function novoJogo() {
@@ -192,8 +199,7 @@
                 }
                 grid.appendChild(row);
             }
-            document.getElementById('message').innerText = "";
-            atualizarVisual();
+            document.getElementById('message').innerText = ""; atualizarVisual();
         }
 
         function atualizarVisual() {
