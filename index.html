@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-   <meta name="monetag" content="ecb4314ab31c0303ae951ea7628b02a7">
-
-    <title>Termo Infinito - Pro</title>
+    <title>Termo Infinito - Oficial</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -14,79 +11,99 @@
     
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
-        body { background-color: var(--preto); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 15px; min-height: 100vh; }
+        body { background-color: var(--preto); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 15px; min-height: 100vh; overflow-x: hidden; }
         
+        /* Telas de Auth */
         .auth-card { background: #222; padding: 25px; border-radius: 15px; border: 1px solid #444; width: 300px; text-align: center; margin-top: 50px; }
         input { width: 90%; padding: 12px; margin: 8px 0; border-radius: 5px; border: 1px solid #444; background: #111; color: white; outline: none; }
-        button.btn-main { width: 100%; padding: 12px; background: var(--cor-correta); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        button.btn-guest { width: 100%; padding: 10px; background: #444; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-        button.btn-link { background: transparent; color: #aaa; border: none; text-decoration: underline; font-size: 0.8rem; cursor: pointer; margin-top: 15px; }
-
-        #game-container { display: none; flex-direction: column; align-items: center; width: 100%; padding-bottom: 50px; }
+        button.btn-main { width: 100%; padding: 12px; background: var(--cor-correta); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        
+        /* Container do Jogo */
+        #game-container { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 500px; }
         #grid { display: grid; gap: 5px; margin: 15px 0; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { width: 45px; height: 45px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.6rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
-        .tile.selected { border-color: #ffd700; transform: scale(1.05); }
+        .tile { width: 50px; height: 50px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; cursor: pointer; user-select: none; }
+        .tile.selected { border-color: #ffd700; background: #2a2a2e; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        #keyboard { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
-        .kb-row { display: flex; justify-content: center; gap: 4px; }
-        .key { padding: 14px 8px; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
-        
-        #leaderboard { width: 280px; background: #1a1a1b; padding: 15px; border-radius: 10px; margin-top: 20px; border: 1px solid #333; }
-        .rank-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #333; font-size: 0.9rem; }
+        /* Teclado Virtual */
+        #keyboard { display: flex; flex-direction: column; gap: 8px; margin: 15px 0; width: 100%; }
+        .kb-row { display: flex; justify-content: center; gap: 5px; }
+        .key { padding: 15px 10px; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.9rem; font-weight: bold; min-width: 30px; }
+        .key.wide { padding: 15px 15px; background: #565758; }
 
-        /* ESPAÇO PARA ANÚNCIO MONETAG */
-        #ad-slot { margin-top: 20px; min-height: 50px; width: 100%; text-align: center; }
+        /* ESPAÇO DO ANÚNCIO ADSTERRA */
+        #ad-container { 
+            margin: 25px 0; 
+            min-height: 95px; 
+            width: 100%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        /* Ranking */
+        #leaderboard { width: 100%; max-width: 300px; background: #1a1a1b; padding: 15px; border-radius: 10px; border: 1px solid #333; margin-top: 10px; }
+        .rank-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; }
+        #message { color: #ffd700; font-weight: bold; height: 25px; margin: 5px 0; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div id="login-box" class="auth-card">
-            <h2>Termo Infinito</h2>
+            <h2 style="margin-bottom:20px;">Termo Infinito</h2>
             <input type="email" id="loginEmail" placeholder="E-mail">
             <input type="password" id="loginPass" placeholder="Senha">
-            <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
-            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #444;">
-            <input type="text" id="guestNick" placeholder="Nick (Convidado)">
-            <button class="btn-guest" onclick="entrarComoConvidado()">JOGAR SEM SALVAR</button>
-            <button class="btn-link" onclick="alternarTelas('signup-box')">Criar nova conta</button>
+            <button class="btn-main" onclick="fazerLogin()">ENTRAR NO JOGO</button>
+            <p style="font-size: 0.8rem; color: #aaa; margin-top: 20px; cursor: pointer;" onclick="alternarTelas('signup-box')">Não tem conta? Criar agora</p>
         </div>
-
         <div id="signup-box" class="auth-card" style="display:none">
-            <h2>Nova Conta</h2>
+            <h2>Criar Conta</h2>
             <input type="text" id="userNick" placeholder="Seu Nick">
             <input type="email" id="userEmail" placeholder="E-mail">
-            <input type="password" id="userPass" placeholder="Senha (mín. 6 letras)">
+            <input type="password" id="userPass" placeholder="Senha (mín. 6 caracteres)">
             <button class="btn-main" onclick="criarConta()">CADASTRAR</button>
-            <button class="btn-link" onclick="alternarTelas('login-box')">Voltar ao Login</button>
+            <p style="font-size: 0.8rem; color: #aaa; margin-top: 20px; cursor: pointer;" onclick="alternarTelas('login-box')">Voltar ao Login</p>
         </div>
     </div>
 
     <div id="game-container">
-        <div style="width: 300px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <span>👤 <b id="displayNick"></b></span>
-            <button onclick="logout()" style="padding: 5px; font-size: 0.7rem; background: #444; color: white; border: none;">SAIR</button>
+            <span>🔥 Streak: <b id="streak">0</b></span>
         </div>
-        <div>🔥 Sequência: <span id="streak">0</span></div>
-        
+
         <div id="grid"></div>
-        <div id="message" style="color: #ffd700; height: 20px; font-weight: bold; margin: 10px 0;"></div>
+        <div id="message"></div>
         <div id="keyboard"></div>
 
-        <div id="ad-slot">
-            </div>
+        <div id="ad-container">
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : 'b2c5b5eb74a40bdb1a533534b525704c',
+                    'format' : 'iframe',
+                    'height' : 90,
+                    'width' : 728,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="https://www.highperformanceformat.com/b2c5b5eb74a40bdb1a533534b525704c/invoke.js"></script>
+        </div>
 
         <div id="leaderboard">
-            <h4>🏆 TOP 5 RANKING</h4>
+            <h4 style="margin: 0 0 10px 0; text-align: center; color: var(--cor-lugar-errado);">🏆 RANKING GLOBAL</h4>
             <div id="rank-list">Carregando...</div>
         </div>
+        
+        <button onclick="logout()" style="margin-top: 20px; background: transparent; color: #666; border: none; cursor: pointer; text-decoration: underline;">Sair da conta</button>
     </div>
 
     <script>
+        // Configurações do seu Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0",
             authDomain: "termo-rank-5d80d.firebaseapp.com",
@@ -99,10 +116,9 @@
         const db = firebase.database();
 
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
-        let tentativaArray = ["", "", "", "", ""]; 
-        let focadoIndex = 0; let logado = false;
+        let tentativaArray = ["", "", "", "", ""]; let focadoIndex = 0;
 
-        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "TENRA", "SUTIL", "VIGOR", "AUREA", "SANAR", "PODER", "AUDAS", "IDEIA", "CERNE", "MUITO", "MORAL", "SOBRE", "JUSTO", "HONRA", "MUNDO", "QUERER", "AREIA", "CARTA", "LIVRO", "FESTA", "NOITE", "PORTA", "CHAVE", "PEIXE", "CARRO", "PLANO", "FORTE", "SABOR", "PEDRA", "COBRA", "BRASIL", "TEMPO", "AMIGO", "FOGO", "AGUA", "VENTO", "TERRA"];
+        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "TENRA", "SUTIL", "VIGOR", "AUREA", "SANAR", "PODER", "AUDAS", "IDEIA", "CERNE", "MUITO", "MORAL", "SOBRE", "JUSTO", "HONRA", "MUNDO"];
 
         function alternarTelas(id) {
             document.getElementById('login-box').style.display = 'none';
@@ -110,44 +126,36 @@
             document.getElementById(id).style.display = 'block';
         }
 
-        function abrirJogo(nick, isAuth) {
-            nickAtual = nick; logado = isAuth;
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('game-container').style.display = 'flex';
-            document.getElementById('displayNick').innerText = nickAtual;
-            carregarRank(); novoJogo(); criarTeclado();
-        }
-
-        async function entrarComoConvidado() {
-            const nick = document.getElementById('guestNick').value.trim();
-            if(nick.length < 3) return alert("Nick curto!");
-            abrirJogo(nick, false);
-        }
-
         async function criarConta() {
             const nick = document.getElementById('userNick').value.trim();
             const email = document.getElementById('userEmail').value;
             const pass = document.getElementById('userPass').value;
+            if(!nick || !email || pass.length < 6) return alert("Preencha todos os campos corretamente!");
             try {
                 const res = await auth.createUserWithEmailAndPassword(email, pass);
                 await db.ref('users/' + res.user.uid).set({ nick: nick, streak: 0 });
-            } catch (e) { alert(e.message); }
+            } catch (e) { alert("Erro: " + e.message); }
         }
 
         async function fazerLogin() {
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
-            try { await auth.signInWithEmailAndPassword(email, pass); } catch (e) { alert(e.message); }
+            try { await auth.signInWithEmailAndPassword(email, pass); } catch (e) { alert("Erro no login!"); }
         }
 
-        function logout() { location.reload(); }
+        function logout() { auth.signOut().then(() => location.reload()); }
 
         auth.onAuthStateChanged(user => {
             if (user) {
                 db.ref('users/' + user.uid).once('value').then(snap => {
-                    streak = snap.val().streak || 0;
+                    const data = snap.val();
+                    nickAtual = data.nick;
+                    streak = data.streak || 0;
+                    document.getElementById('auth-screen').style.display = 'none';
+                    document.getElementById('game-container').style.display = 'flex';
+                    document.getElementById('displayNick').innerText = nickAtual;
                     document.getElementById('streak').innerText = streak;
-                    abrirJogo(snap.val().nick, true);
+                    carregarRank(); novoJogo(); criarTeclado();
                 });
             }
         });
@@ -155,8 +163,7 @@
         function novoJogo() {
             segredo = PALAVRAS[Math.floor(Math.random() * PALAVRAS.length)].toUpperCase();
             linha = 0; tentativaArray = ["", "", "", "", ""]; focadoIndex = 0;
-            document.getElementById('grid').innerHTML = "";
-            document.getElementById('message').innerText = "";
+            const grid = document.getElementById('grid'); grid.innerHTML = "";
             for (let i = 0; i < 6; i++) {
                 const row = document.createElement('div'); row.className = 'row';
                 for (let j = 0; j < 5; j++) {
@@ -164,8 +171,9 @@
                     tile.onclick = () => { if(i === linha) { focadoIndex = j; atualizarVisual(); } };
                     row.appendChild(tile);
                 }
-                document.getElementById('grid').appendChild(row);
+                grid.appendChild(row);
             }
+            document.getElementById('message').innerText = "";
             atualizarVisual();
         }
 
@@ -181,7 +189,7 @@
 
         function digitar(k) {
             if(k === 'ENTER') { if(tentativaArray.filter(l => l!=="").length === 5) verificar(); return; }
-            if(k === 'APAGAR') {
+            if(k === 'DEL') {
                 tentativaArray[focadoIndex] = "";
                 if(focadoIndex > 0) focadoIndex--;
             } else if(/^[A-Z]$/.test(k)) {
@@ -198,27 +206,37 @@
             for(let l of segredo) count[l] = (count[l] || 0) + 1;
             const estados = new Array(5).fill('absent');
 
+            // Passada 1: Corretas
             for(let i=0; i<5; i++) {
-                if(tentativaArray[i] === segredo[i]) { estados[i] = 'correct'; acertos++; count[tentativaArray[i]]--; }
+                if(tentativaArray[i] === segredo[i]) { 
+                    estados[i] = 'correct'; acertos++; count[tentativaArray[i]]--; 
+                }
             }
+            // Passada 2: Lugar errado
             for(let i=0; i<5; i++) {
                 if(estados[i] === 'correct') continue;
-                if(segredo.includes(tentativaArray[i]) && count[tentativaArray[i]] > 0) { estados[i] = 'present'; count[tentativaArray[i]]--; }
+                if(segredo.includes(tentativaArray[i]) && count[tentativaArray[i]] > 0) { 
+                    estados[i] = 'present'; count[tentativaArray[i]]--; 
+                }
             }
-            for(let i=0; i<5; i++) { tiles[i].classList.remove('selected'); tiles[i].classList.add(estados[i]); }
+            
+            for(let i=0; i<5; i++) { 
+                tiles[i].classList.remove('selected'); 
+                tiles[i].classList.add(estados[i]); 
+            }
 
             if(acertos === 5) {
-                streak++; document.getElementById('streak').innerText = streak;
-                if(logado) {
-                    db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
-                    db.ref('ranking/' + nickAtual).set({ nome: nickAtual, streak: streak });
-                }
-                document.getElementById('message').innerText = "CERTO!";
-                setTimeout(novoJogo, 1500);
+                streak++;
+                db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
+                db.ref('ranking/' + nickAtual).set({ nome: nickAtual, streak: streak });
+                document.getElementById('streak').innerText = streak;
+                document.getElementById('message').innerText = "VITORIA! 🎉";
+                setTimeout(novoJogo, 2000);
             } else if(linha === 5) {
                 document.getElementById('message').innerText = "ERA: " + segredo;
-                streak = 0; document.getElementById('streak').innerText = streak;
-                if(logado) db.ref('users/' + auth.currentUser.uid).update({ streak: 0 });
+                streak = 0;
+                db.ref('users/' + auth.currentUser.uid).update({ streak: 0 });
+                document.getElementById('streak').innerText = 0;
                 setTimeout(novoJogo, 3000);
             } else { linha++; tentativaArray = ["","","","",""]; focadoIndex = 0; atualizarVisual(); }
         }
@@ -227,17 +245,23 @@
             db.ref('ranking').orderByChild('streak').limitToLast(5).on('value', snap => {
                 const list = document.getElementById('rank-list'); list.innerHTML = "";
                 let d = []; snap.forEach(c => { d.push(c.val()); });
-                d.reverse().forEach((p, i) => { list.innerHTML += `<div class="rank-item"><span>${i+1}º ${p.nome}</span> <b>${p.streak}</b></div>`; });
+                d.reverse().forEach((p, i) => { 
+                    list.innerHTML += `<div class="rank-item">
+                        <span>${i+1}º ${p.nome}</span> <b>${p.streak}</b>
+                    </div>`; 
+                });
             });
         }
 
         function criarTeclado() {
-            const lay = [["Q","W","E","R","T","Y","U","I","O","P"], ["A","S","D","F","G","H","J","K","L"], ["APAGAR","Z","X","C","V","B","N","M","ENTER"]];
+            const lay = [["Q","W","E","R","T","Y","U","I","O","P"], ["A","S","D","F","G","H","J","K","L"], ["DEL","Z","X","C","V","B","N","M","ENTER"]];
             const kb = document.getElementById('keyboard'); kb.innerHTML = "";
             lay.forEach(r => {
                 const div = document.createElement('div'); div.className = 'kb-row';
                 r.forEach(k => {
-                    const b = document.createElement('button'); b.className = 'key'; b.innerText = k;
+                    const b = document.createElement('button'); 
+                    b.className = (k === 'ENTER' || k === 'DEL') ? 'key wide' : 'key';
+                    b.innerText = k;
                     b.onclick = () => digitar(k); div.appendChild(b);
                 });
                 kb.appendChild(div);
@@ -245,12 +269,11 @@
         }
         window.addEventListener('keydown', e => {
             let k = e.key.toUpperCase();
-            if(k === "BACKSPACE") k = "APAGAR";
+            if(k === "BACKSPACE") k = "DEL";
             if(k === "ARROWLEFT" && focadoIndex > 0) { focadoIndex--; atualizarVisual(); }
             if(k === "ARROWRIGHT" && focadoIndex < 4) { focadoIndex++; atualizarVisual(); }
-            digitar(k);
+            if(k === "ENTER" || k === "DEL" || /^[A-Z]$/.test(k)) digitar(k);
         });
-
     </script>
 </body>
 </html>
