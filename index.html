@@ -13,52 +13,59 @@
 
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
-        * { box-sizing: border-box; }
-        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw; display: flex; flex-direction: column; }
+        * { box-sizing: border-box; touch-action: manipulation; }
+        
+        body { 
+            background-color: var(--preto); color: white; font-family: sans-serif; 
+            margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw;
+            display: flex; flex-direction: column;
+        }
 
-        /* Layout */
         .main-layout { display: flex; justify-content: center; height: 100%; width: 100%; }
         .ad-sidebar { flex: 1; display: flex; flex-direction: column; align-items: center; padding-top: 20px; background: #000; min-width: 160px; }
         .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; height: 100%; position: relative; }
 
         @media (max-width: 800px) {
             .ad-sidebar { display: none !important; }
-            .tile { width: 38px !important; height: 38px !important; font-size: 1.2rem !important; }
-            .key { padding: 12px 0 !important; font-size: 0.7rem !important; }
+            .tile { width: 35px !important; height: 35px !important; font-size: 1.1rem !important; }
+            .key { padding: 12px 0 !important; font-size: 0.7rem !important; height: 40px !important; }
+            #grid { gap: 3px !important; }
         }
 
         /* Telas */
         #auth-screen, #rank-screen, #register-screen { position: absolute; inset: 0; background: var(--preto); display: flex; justify-content: center; align-items: center; z-index: 100; }
-        .card { background: #222; padding: 25px; border-radius: 12px; width: 88%; text-align: center; border: 1px solid #333; }
+        .card { background: #222; padding: 20px; border-radius: 12px; width: 90%; text-align: center; border: 1px solid #333; }
         
-        input { width: 100%; padding: 12px; margin-bottom: 10px; background: #111; color: white; border: 1px solid #444; border-radius: 6px; }
-        .btn-main { width: 100%; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 1rem; }
+        input { width: 100%; padding: 10px; margin-bottom: 8px; background: #111; color: white; border: 1px solid #444; border-radius: 5px; }
+        .btn-main { width: 100%; padding: 12px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; }
         
-        /* Container dos 3 botões */
-        .extra-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-        .btn-sub { background: none; border: 1px solid #444; color: #bbb; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: 0.3s; }
-        .btn-sub:hover { background: #333; color: white; }
+        .extra-buttons { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
+        .btn-sub { background: none; border: 1px solid #444; color: #bbb; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
 
         /* Jogo */
         #game-container { display: none; flex-direction: column; height: 100%; width: 100%; }
-        .header-jogo { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; background: #1a1a1b; height: 45px; border-bottom: 1px solid #333; }
-        #game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .header-jogo { display: flex; justify-content: space-between; align-items: center; padding: 5px 12px; background: #1a1a1b; height: 40px; }
+        
+        #game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0; }
         #grid { display: grid; gap: 4px; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
-        .tile { width: 48px; height: 48px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: bold; text-transform: uppercase; }
+        .tile { width: 45px; height: 45px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.4rem; font-weight: bold; text-transform: uppercase; }
+        
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
         /* Teclado */
-        #keyboard { padding: 5px; padding-bottom: 15px; }
-        .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 4px; }
-        .key { padding: 16px 0; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.8rem; font-weight: bold; flex: 1; cursor: pointer; }
+        #keyboard { padding: 5px; background: var(--preto); }
+        .kb-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 4px; }
+        .key { height: 45px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.85rem; font-weight: bold; flex: 1; display: flex; align-items: center; justify-content: center; }
         .key.wide { flex: 1.5; background: #565758; }
 
-        /* Ranking */
-        #rank-list { text-align: left; margin: 15px 0; max-height: 250px; overflow-y: auto; }
-        .rank-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; }
+        #rank-list { text-align: left; margin: 10px 0; max-height: 180px; overflow-y: auto; font-size: 0.9rem; }
+        .rank-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #333; }
+        
+        .mobile-banner { height: 50px; background: #000; display: none; text-align: center; line-height: 50px; font-size: 10px; color: #444; }
+        @media (max-width: 800px) { .mobile-banner { display: block; } }
     </style>
 </head>
 <body>
@@ -70,18 +77,16 @@
         </div>
 
         <div class="game-column">
-            
             <div id="auth-screen">
                 <div class="card">
-                    <h2 style="margin:0 0 20px 0">Termo Infinito</h2>
+                    <h2 style="margin:0 0 15px 0">Termo Infinito</h2>
                     <input type="text" id="loginNick" placeholder="Nome">
                     <input type="password" id="loginPass" placeholder="Senha">
                     <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
-                    
                     <div class="extra-buttons">
                         <button class="btn-sub" onclick="mostrarRegistro()">✨ Criar Nova Conta</button>
-                        <button class="btn-sub" onclick="entrarComoConvidado()">👤 Entrar como Visitante</button>
-                        <button class="btn-sub" onclick="abrirRanking()">🏆 Ranking Global</button>
+                        <button class="btn-sub" onclick="entrarComoConvidado()">👤 Jogar como Visitante</button>
+                        <button class="btn-sub" onclick="abrirRanking()">🏆 Ver Ranking</button>
                     </div>
                 </div>
             </div>
@@ -89,17 +94,17 @@
             <div id="register-screen" style="display:none;">
                 <div class="card">
                     <h3>Criar Conta</h3>
-                    <input type="text" id="regNick" placeholder="Escolha um Nome">
-                    <input type="password" id="regPass" placeholder="Escolha uma Senha">
-                    <button class="btn-main" onclick="registrar()">CADASTRAR E JOGAR</button>
+                    <input type="text" id="regNick" placeholder="Nome">
+                    <input type="password" id="regPass" placeholder="Senha">
+                    <button class="btn-main" onclick="registrar()">CADASTRAR</button>
                     <button class="btn-sub" onclick="voltarLogin()" style="margin-top:10px; width:100%;">Voltar</button>
                 </div>
             </div>
 
             <div id="rank-screen" style="display:none;">
                 <div class="card">
-                    <h3>🏆 TOP 10 MELHORES</h3>
-                    <div id="rank-list">Carregando...</div>
+                    <h3>🏆 RANKING GLOBAL</h3>
+                    <div id="rank-list"></div>
                     <button class="btn-main" onclick="fecharRanking()">VOLTAR</button>
                 </div>
             </div>
@@ -107,13 +112,14 @@
             <div id="game-container">
                 <div class="header-jogo">
                     <div style="font-size:12px;">👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span></div>
-                    <button onclick="logout()" style="background:#ce3a3a; color:white; border:none; padding:4px 10px; border-radius:4px; font-size:11px; font-weight:bold;">SAIR</button>
+                    <button onclick="logout()" style="background:#ce3a3a; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:11px;">SAIR</button>
                 </div>
                 <div id="game-area">
                     <div id="grid"></div>
-                    <div id="message" style="height:20px; color:#ffd700; font-size:13px; margin-top:5px; font-weight:bold;"></div>
+                    <div id="message" style="height:20px; color:#ffd700; font-size:13px; margin-top:8px;"></div>
                 </div>
                 <div id="keyboard"></div>
+                <div class="mobile-banner">ESPAÇO ANÚNCIO</div>
             </div>
         </div>
 
@@ -137,9 +143,8 @@
 
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
         let tentativaArray = ["", "", "", "", ""]; let focadoIndex = 0;
-        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "MUITO", "VIVER", "JUSTO", "IDEIA"];
+        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA"];
 
-        // FUNÇÕES DE TELA
         function mostrarRegistro() { document.getElementById('auth-screen').style.display = 'none'; document.getElementById('register-screen').style.display = 'flex'; }
         function voltarLogin() { document.getElementById('register-screen').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; }
         function fecharRanking() { document.getElementById('rank-screen').style.display = 'none'; }
@@ -147,12 +152,12 @@
         async function registrar() {
             const nick = document.getElementById('regNick').value.trim();
             const pass = document.getElementById('regPass').value;
-            if(nick.length < 3) return alert("Nome muito curto!");
+            if(nick.length < 3) return alert("Nome curto!");
             try {
                 const res = await auth.createUserWithEmailAndPassword(nick.toLowerCase() + "@termo.com", pass);
                 await db.ref('users/' + res.user.uid).set({ nick: nick, streak: 0 });
                 location.reload();
-            } catch (e) { alert("Erro ao criar conta: " + e.message); }
+            } catch (e) { alert("Erro ao criar!"); }
         }
 
         async function fazerLogin() {
@@ -208,19 +213,17 @@
                 }
                 grid.appendChild(row);
             }
-            atualizarVisual();
-        }
-
-        function atualizarVisual() {
-            const tiles = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
-            tiles.forEach((t, i) => { t.innerText = tentativaArray[i]; });
         }
 
         function digitar(k) {
             if(k === 'ENTER') { if(tentativaArray.join('').length === 5) verificar(); return; }
-            if(k === 'DEL') { if(focadoIndex > 0) { focadoIndex--; tentativaArray[focadoIndex] = ""; } }
-            else { if(focadoIndex < 5) { tentativaArray[focadoIndex] = k; focadoIndex++; } }
-            atualizarVisual();
+            if(k === 'DEL') { 
+                if(focadoIndex > 0) { focadoIndex--; tentativaArray[focadoIndex] = ""; } 
+            } else { 
+                if(focadoIndex < 5) { tentativaArray[focadoIndex] = k; focadoIndex++; } 
+            }
+            const tiles = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
+            tiles.forEach((t, i) => { t.innerText = tentativaArray[i]; });
         }
 
         function verificar() {
@@ -233,16 +236,13 @@
             }
             if(ok === 5) { 
                 document.getElementById('message').innerText = "VENCEU! 🎉"; 
-                if(nickAtual !== "Visitante") {
-                    streak++;
-                    db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
-                }
+                if(nickAtual !== "Visitante") { streak++; db.ref('users/' + auth.currentUser.uid).update({ streak: streak }); }
                 setTimeout(novoJogo, 2000); 
             } else if(linha === 5) {
                 document.getElementById('message').innerText = "ERA: " + segredo;
                 if(nickAtual !== "Visitante") { streak = 0; db.ref('users/' + auth.currentUser.uid).update({ streak: 0 }); }
                 setTimeout(novoJogo, 3000);
-            } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); }
+            } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; }
         }
 
         function criarTeclado() {
