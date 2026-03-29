@@ -13,38 +13,100 @@
 
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
-        body { background-color: var(--preto); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
+        
+        /* Reset para centralizar tudo */
+        body { 
+            background-color: var(--preto); 
+            color: white; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-        /* Cabeçalho */
-        .header-jogo { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 500px; padding: 12px; background: #1a1a1b; border-bottom: 1px solid #333; box-sizing: border-box; }
-        .btn-logout { background: #ce3a3a; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.7rem; }
+        /* Header fixo no topo */
+        .header-jogo { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            width: 100%; 
+            max-width: 500px; 
+            padding: 15px; 
+            background: #1a1a1b; 
+            border-bottom: 1px solid #333; 
+            box-sizing: border-box;
+        }
 
-        .area-jogo { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; margin-top: 20px; }
+        .btn-logout { background: #ce3a3a; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
 
-        /* Grid */
+        /* Container do Jogo centralizado */
+        #game-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .area-jogo { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        /* Grid de Letras */
         #grid { display: grid; gap: 5px; margin-bottom: 20px; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { width: 55px; height: 55px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
+        .tile { 
+            width: 58px; height: 58px; 
+            border: 2px solid #3a3a3c; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 2rem; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            user-select: none;
+        }
         .tile.selected { border-color: #ffd700; background-color: #2a2a2e; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
         /* Teclado */
-        #keyboard { display: flex; flex-direction: column; gap: 8px; width: 95%; margin-bottom: 30px; }
-        .kb-row { display: flex; justify-content: center; gap: 5px; }
-        .key { padding: 18px 4px; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.85rem; font-weight: bold; flex: 1; }
-        .key.wide { flex: 1.6; background: #565758; }
+        #keyboard { display: flex; flex-direction: column; gap: 8px; width: 95%; max-width: 500px; margin-top: 10px; padding-bottom: 20px; }
+        .kb-row { display: flex; justify-content: center; gap: 5px; width: 100%; }
+        .key { 
+            padding: 20px 0; 
+            background: #818384; 
+            border-radius: 4px; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 0.9rem; 
+            font-weight: bold; 
+            flex: 1; 
+            transition: background 0.1s;
+        }
+        .key.wide { flex: 1.5; background: #565758; }
+        .key:active { background: #666; }
 
-        /* Telas de Login/Cadastro */
-        .auth-card { background: #222; padding: 30px; border-radius: 12px; margin-top: 50px; text-align: center; width: 320px; border: 1px solid #444; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        input { width: 90%; padding: 14px; margin: 10px 0; background: #111; color: white; border: 1px solid #444; border-radius: 6px; font-size: 1rem; }
+        /* Login/Cadastro centralizado */
+        #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; }
+        .auth-card { background: #222; padding: 30px; border-radius: 12px; text-align: center; width: 320px; border: 1px solid #444; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        input { width: 100%; padding: 14px; margin: 10px 0; background: #111; color: white; border: 1px solid #444; border-radius: 6px; font-size: 1rem; box-sizing: border-box; }
         .btn-main { width: 100%; padding: 14px; background: var(--cor-correta); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; }
         .link-auth { color: #aaa; font-size: 0.85rem; margin-top: 20px; cursor: pointer; display: block; text-decoration: underline; }
 
+        /* Mobile Adjustments */
         @media (max-width: 600px) {
-            .tile { width: 48px; height: 48px; font-size: 1.5rem; }
-            .key { padding: 15px 2px; font-size: 0.75rem; }
+            .tile { width: 50px; height: 50px; font-size: 1.6rem; }
+            .key { padding: 18px 0; font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -52,26 +114,26 @@
 
     <div id="auth-screen">
         <div id="login-box" class="auth-card">
-            <h2 style="margin-top:0">Termo Infinito</h2>
+            <h1 style="margin-top:0; font-size: 1.5rem;">Termo Infinito</h1>
             <input type="text" id="loginNick" placeholder="Seu Nome">
             <input type="password" id="loginPass" placeholder="Sua Senha">
             <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
-            <span class="link-auth" onclick="alternarTela('signup-box')">Ainda não tem conta? Criar conta</span>
+            <span class="link-auth" onclick="alternarTela('signup-box')">Não tem conta? Criar conta</span>
             <button onclick="entrarComoConvidado()" style="margin-top:20px; background:none; border:none; color:#555; cursor:pointer;">Entrar como Convidado</button>
         </div>
 
         <div id="signup-box" class="auth-card" style="display:none">
-            <h2 style="margin-top:0">Criar Nova Conta</h2>
-            <input type="text" id="userNick" placeholder="Escolha um Nome">
+            <h1 style="margin-top:0; font-size: 1.5rem;">Novo Cadastro</h1>
+            <input type="text" id="userNick" placeholder="Nome de Usuário">
             <input type="password" id="userPass" placeholder="Senha (mín. 6 letras)">
-            <button class="btn-main" style="background:#4a90e2" onclick="criarConta()">CADASTRAR E JOGAR</button>
-            <span class="link-auth" onclick="alternarTela('login-box')">Já tem conta? Voltar ao Login</span>
+            <button class="btn-main" style="background:#4a90e2" onclick="criarConta()">CADASTRAR</button>
+            <span class="link-auth" onclick="alternarTela('login-box')">Já tem conta? Entrar</span>
         </div>
     </div>
 
-    <div id="game-container" style="display:none; width: 100%;">
+    <div id="game-container">
         <div class="header-jogo">
-            <div>👤 <span id="displayNick" style="font-weight: bold;"></span> | 🔥 Streak: <span id="streakDisplay">0</span></div>
+            <div>👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span></div>
             <button class="btn-logout" onclick="logout()">SAIR</button>
         </div>
 
@@ -83,6 +145,7 @@
     </div>
 
     <script>
+        // CONFIGURAÇÕES FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0",
             authDomain: "termo-rank-5d80d.firebaseapp.com",
@@ -96,7 +159,7 @@
 
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
         let tentativaArray = ["", "", "", "", ""]; let focadoIndex = 0;
-        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "TENRA", "SUTIL", "VIGOR", "AUREA", "SANAR"];
+        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "TENRA", "SUTIL", "VIGOR", "AUREA", "SANAR", "PODER", "IDEIA", "MUITO", "VIVER", "JUSTO"];
 
         function alternarTela(id) {
             document.getElementById('login-box').style.display = 'none';
@@ -107,12 +170,11 @@
         async function criarConta() {
             const nick = document.getElementById('userNick').value.trim();
             const pass = document.getElementById('userPass').value;
-            if(!nick || pass.length < 6) return alert("Preencha o nome e senha (mín. 6 letras)");
-            const fakeEmail = nick.toLowerCase() + "@termo.com";
+            if(!nick || pass.length < 6) return alert("Preencha o nome e senha corretamente!");
             try {
-                const res = await auth.createUserWithEmailAndPassword(fakeEmail, pass);
+                const res = await auth.createUserWithEmailAndPassword(nick.toLowerCase() + "@termo.com", pass);
                 await db.ref('users/' + res.user.uid).set({ nick: nick, streak: 0 });
-            } catch (e) { alert("Nome em uso ou erro na conexão."); }
+            } catch (e) { alert("Erro ao criar conta. Nome pode já estar em uso."); }
         }
 
         async function fazerLogin() {
@@ -120,7 +182,7 @@
             const pass = document.getElementById('loginPass').value;
             if(!nick) return alert("Digite seu nome!");
             try { await auth.signInWithEmailAndPassword(nick.toLowerCase() + "@termo.com", pass); } 
-            catch (e) { alert("Dados incorretos!"); }
+            catch (e) { alert("Usuário ou senha incorretos!"); }
         }
 
         function logout() { auth.signOut().then(() => location.reload()); }
@@ -138,17 +200,15 @@
 
         function mostrarJogo() {
             document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('game-container').style.display = 'block';
+            document.getElementById('game-container').style.display = 'flex';
             document.getElementById('displayNick').innerText = nickAtual;
             document.getElementById('streakDisplay').innerText = streak;
             novoJogo(); criarTeclado();
-            window.addEventListener('keydown', handleGlobalKey);
-        }
-
-        function handleGlobalKey(e) {
-            if(e.key === 'Enter') digitar('ENTER');
-            else if(e.key === 'Backspace') digitar('DEL');
-            else if(/^[a-zA-Z]$/.test(e.key)) digitar(e.key.toUpperCase());
+            window.addEventListener('keydown', (e) => {
+                if(e.key === 'Enter') digitar('ENTER');
+                else if(e.key === 'Backspace') digitar('DEL');
+                else if(/^[a-zA-Z]$/.test(e.key)) digitar(e.key.toUpperCase());
+            });
         }
 
         function novoJogo() {
@@ -193,7 +253,7 @@
                 else tiles[i].classList.add('absent');
             }
             if(acertos === 5) { 
-                document.getElementById('message').innerText = "VENCEU! PARABÉNS!"; 
+                document.getElementById('message').innerText = "VENCEU! 🎉"; 
                 if(nickAtual !== "Convidado") {
                     streak++;
                     db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
@@ -201,7 +261,7 @@
                 }
                 setTimeout(novoJogo, 2000); 
             } else if(linha === 5) { 
-                document.getElementById('message').innerText = "A PALAVRA ERA: " + segredo; 
+                document.getElementById('message').innerText = "ERA: " + segredo; 
                 setTimeout(novoJogo, 3000); 
             } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); }
         }
