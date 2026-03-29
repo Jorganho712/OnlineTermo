@@ -14,47 +14,57 @@
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; }
         
-        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw; }
+        * { box-sizing: border-box; }
+        body { 
+            background-color: var(--preto); color: white; font-family: sans-serif; 
+            margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw;
+            display: flex; flex-direction: column;
+        }
 
-        .main-layout { display: flex; justify-content: center; width: 100%; height: 100%; }
+        /* Layout Principal */
+        .main-layout { display: flex; justify-content: center; height: 100%; width: 100%; }
+        
+        /* Sidebars apenas para PC */
+        .ad-sidebar { flex: 1; display: flex; flex-direction: column; align-items: center; padding-top: 20px; background: #000; min-width: 160px; }
+        
+        .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; height: 100%; position: relative; }
 
-        /* Laterais PC */
-        .ad-sidebar { flex: 1; display: flex; flex-direction: column; align-items: center; padding-top: 50px; background-color: #0c0c0c; }
-        .game-column { width: 100%; max-width: 500px; display: flex; flex-direction: column; position: relative; height: 100%; }
-
-        @media (max-width: 900px) { 
-            .ad-sidebar { display: none !important; } 
-            .tile { width: 42px !important; height: 42px !important; font-size: 1.2rem !important; } /* Diminui o grid no celular */
-            .key { padding: 12px 0 !important; font-size: 0.7rem !important; } /* Diminui o teclado no celular */
+        @media (max-width: 800px) {
+            .ad-sidebar { display: none !important; }
+            .tile { width: 38px !important; height: 38px !important; font-size: 1.2rem !important; }
+            .key { padding: 12px 0 !important; font-size: 0.7rem !important; }
+            #grid { gap: 3px !important; }
         }
 
         /* Telas */
-        #auth-screen { position: absolute; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: var(--preto); z-index: 100; }
-        .auth-card { background: #222; padding: 20px; border-radius: 12px; text-align: center; width: 80%; border: 1px solid #333; }
-        
-        #game-container { display: none; flex-direction: column; height: 100%; width: 100%; justify-content: space-between; }
+        #auth-screen { position: absolute; inset: 0; background: var(--preto); display: flex; justify-content: center; align-items: center; z-index: 100; }
+        .auth-card { background: #222; padding: 20px; border-radius: 10px; width: 85%; text-align: center; border: 1px solid #333; }
 
-        .header-jogo { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #1a1a1b; border-bottom: 1px solid #333; height: 50px; box-sizing: border-box; }
-        
-        /* Área Central */
-        #game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
-        #grid { display: grid; gap: 4px; }
-        .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
-        .tile { width: 55px; height: 55px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; }
+        #game-container { display: none; flex-direction: column; height: 100%; width: 100%; }
+
+        /* Header reduzido para ganhar espaço */
+        .header-jogo { display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; background: #1a1a1b; height: 40px; }
+        .btn-logout { background: #ce3a3a; color: white; border: none; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+
+        /* Área do Jogo */
+        #game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5px; }
+        #grid { display: grid; gap: 5px; }
+        .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+        .tile { width: 50px; height: 50px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.6rem; font-weight: bold; text-transform: uppercase; }
         
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        /* Teclado na base */
-        #keyboard { padding: 5px; margin-bottom: 5px; }
-        .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 5px; }
-        .key { padding: 18px 0; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.85rem; font-weight: bold; flex: 1; }
-        .key.wide { flex: 1.5; background: #565758; }
+        /* Teclado - O segredo está no padding-bottom */
+        #keyboard { padding: 4px; padding-bottom: env(safe-area-inset-bottom, 15px); }
+        .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 4px; }
+        .key { padding: 16px 0; background: #818384; border-radius: 4px; color: white; border: none; cursor: pointer; font-size: 0.85rem; font-weight: bold; flex: 1; }
+        .key.wide { flex: 1.6; background: #565758; }
 
-        /* Espaço para Banner Mobile no rodapé */
-        .mobile-ad-footer { display: none; width: 100%; height: 50px; background: #000; text-align: center; }
-        @media (max-width: 900px) { .mobile-ad-footer { display: block; } }
+        /* Espaço garantido para anúncio mobile */
+        .mobile-banner { height: 50px; width: 100%; background: #000; display: none; text-align: center; }
+        @media (max-width: 800px) { .mobile-banner { display: block; } }
     </style>
 </head>
 <body>
@@ -68,28 +78,29 @@
         <div class="game-column">
             <div id="auth-screen">
                 <div class="auth-card">
-                    <h2>Termo Infinito</h2>
-                    <input type="text" id="loginNick" placeholder="Nome" style="width:100%; padding:10px; margin:5px 0; background:#111; color:white; border:1px solid #444;">
-                    <input type="password" id="loginPass" placeholder="Senha" style="width:100%; padding:10px; margin:5px 0; background:#111; color:white; border:1px solid #444;">
-                    <button onclick="fazerLogin()" style="width:100%; padding:12px; background:var(--cor-correta); border:none; color:white; font-weight:bold; cursor:pointer; margin-top:10px;">JOGAR</button>
+                    <h2 style="margin:0 0 15px 0">Termo Infinito</h2>
+                    <input type="text" id="loginNick" placeholder="Nome" style="width:100%; padding:10px; margin-bottom:10px; background:#111; color:white; border:1px solid #444; border-radius:5px;">
+                    <input type="password" id="loginPass" placeholder="Senha" style="width:100%; padding:10px; margin-bottom:15px; background:#111; color:white; border:1px solid #444; border-radius:5px;">
+                    <button onclick="fazerLogin()" style="width:100%; padding:12px; background:var(--cor-correta); border:none; color:white; font-weight:bold; border-radius:5px; cursor:pointer;">JOGAR</button>
+                    <button onclick="entrarComoConvidado()" style="background:none; border:none; color:#666; margin-top:15px; cursor:pointer; text-decoration:underline;">Entrar como Visitante</button>
                 </div>
             </div>
 
             <div id="game-container">
                 <div class="header-jogo">
-                    <div style="font-size: 14px;">👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span></div>
-                    <button onclick="logout()" style="background:#ce3a3a; border:none; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">SAIR</button>
+                    <div style="font-size:12px;">👤 <span id="displayNick"></span> | 🔥 <span id="streakDisplay">0</span></div>
+                    <button class="btn-logout" onclick="logout()">SAIR</button>
                 </div>
                 
                 <div id="game-area">
                     <div id="grid"></div>
-                    <div id="message" style="height:20px; color:#ffd700; margin-top:10px; font-weight:bold;"></div>
+                    <div id="message" style="height:20px; color:#ffd700; font-size:13px; margin-top:5px; font-weight:bold;"></div>
                 </div>
 
                 <div id="keyboard"></div>
 
-                <div class="mobile-ad-footer">
-                    <span style="font-size:10px; color:#444;">ANÚNCIO</span>
+                <div class="mobile-banner">
+                    <span style="font-size:9px; color:#333;">PUBLICIDADE</span>
                 </div>
             </div>
         </div>
@@ -101,6 +112,7 @@
     </div>
 
     <script>
+        // Configurações do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0",
             authDomain: "termo-rank-5d80d.firebaseapp.com",
@@ -114,15 +126,16 @@
 
         let nickAtual = ""; let streak = 0; let segredo = ""; let linha = 0; 
         let tentativaArray = ["", "", "", "", ""]; let focadoIndex = 0;
-        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "JUSTO", "VIVER", "IDEIA", "SUTIL"];
+        const PALAVRAS = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "MUITO", "VIVER", "JUSTO", "IDEIA", "SUTIL", "VIGOR", "AUREA"];
 
         async function fazerLogin() {
             const nick = document.getElementById('loginNick').value.trim();
             const pass = document.getElementById('loginPass').value;
             if(!nick) return;
-            try { await auth.signInWithEmailAndPassword(nick.toLowerCase() + "@termo.com", pass); } catch (e) { alert("Erro no Login!"); }
+            try { await auth.signInWithEmailAndPassword(nick.toLowerCase() + "@termo.com", pass); } catch (e) { alert("Dados incorretos!"); }
         }
 
+        function entrarComoConvidado() { nickAtual = "Visitante"; mostrarJogo(); }
         function logout() { auth.signOut().then(() => location.reload()); }
 
         auth.onAuthStateChanged(user => {
@@ -181,9 +194,11 @@
             }
             if(ok === 5) { 
                 document.getElementById('message').innerText = "VENCEU! 🎉"; 
-                streak++;
-                db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
-                document.getElementById('streakDisplay').innerText = streak;
+                if(nickAtual !== "Visitante") {
+                    streak++;
+                    db.ref('users/' + auth.currentUser.uid).update({ streak: streak });
+                    document.getElementById('streakDisplay').innerText = streak;
+                }
                 setTimeout(novoJogo, 2000); 
             } else if(linha === 5) {
                 document.getElementById('message').innerText = "ERA: " + segredo;
