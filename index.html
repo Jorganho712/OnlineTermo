@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Verbete Online - Especial de Páscoa</title>
+    <title>Verbete Online - Pro Fix</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -13,51 +13,75 @@
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; --selecionado: #ffd700; --azul-ads: #4a90e2; --laranja-dica: #e67e22; }
         * { box-sizing: border-box; touch-action: manipulation; }
-        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; overflow: hidden; height: 100dvh; display: flex; align-items: center; justify-content: center; }
+        
+        body { 
+            background-color: var(--preto); 
+            color: white; 
+            font-family: sans-serif; 
+            margin: 0; 
+            overflow: hidden; 
+            height: 100dvh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
 
-        /* ADS LATERAIS */
+        /* ADS LATERAIS - PADRÃO DESKTOP */
         .ad-side { position: fixed; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; background: #000; border: 1px solid #333; z-index: 100; }
-        .ad-left { left: 10px; } .ad-right { right: 10px; }
+        .ad-left { left: 20px; } 
+        .ad-right { right: 20px; }
 
-        @media (max-width: 800px) {
-            .ad-right { display: none; }
+        /* --- CONFIGURAÇÃO EXCLUSIVA MOBILE --- */
+        @media (max-width: 850px) {
+            .ad-right { display: none !important; }
             body { flex-direction: row; justify-content: flex-start; align-items: stretch; }
-            .ad-left { position: relative; left: 0; top: 0; transform: none; width: 115px; min-width: 115px; height: 100vh; background: #000; overflow: hidden; border-right: 1px solid #333; }
+            .ad-left { 
+                position: relative; left: 0; top: 0; transform: none; 
+                width: 115px; min-width: 115px; height: 100vh; 
+                overflow: hidden; border-right: 1px solid #333; 
+            }
             .ad-left iframe, .ad-left div { transform: scale(0.72); transform-origin: top left; }
-            .game-column { flex: 1; height: 100vh; padding: 5px; justify-content: space-between; }
+            .game-column { flex: 1; max-width: none; padding: 5px; justify-content: space-between; }
             .tile { width: 42px; height: 42px; font-size: 1.4rem; }
             .key { height: 42px; font-size: 0.7rem; }
         }
 
-        .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; position: relative; z-index: 10; height: 100%; }
+        /* --- CONFIGURAÇÃO DESKTOP --- */
+        @media (min-width: 851px) {
+            .game-column { width: 450px; height: 95vh; display: flex; flex-direction: column; }
+        }
+
+        .game-column { display: flex; flex-direction: column; position: relative; z-index: 10; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
         .overlay.active { display: flex; }
         .card { background: #222; padding: 20px; border-radius: 15px; width: 100%; max-width: 420px; text-align: center; border: 1px solid #333; }
         
         .btn-main { width: 100%; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
         
-        /* BANNER DE PÁSCOA */
-        #pascoa-overlay { z-index: 3000; background: rgba(0,0,0,0.98); }
-        .pascoa-img { width: 100%; max-width: 300px; border-radius: 15px; border: 3px solid #ff69b4; margin-bottom: 15px; }
-        .pascoa-text { color: #ff69b4; font-size: 1.5rem; font-weight: bold; margin-bottom: 20px; text-shadow: 2px 2px #000; }
-
-        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #1a1a1b; border-bottom: 1px solid #333; }
-        #grid { display: grid; gap: 5px; padding: 5px; margin: auto; }
+        /* BANNER PÁSCOA */
+        .pascoa-img { width: 100%; max-width: 280px; border-radius: 12px; border: 2px solid #ff69b4; margin: 15px 0; }
+        
+        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #1a1a1b; border-bottom: 1px solid #333; border-radius: 8px 8px 0 0; }
+        #grid { display: grid; gap: 5px; padding: 10px; margin: auto; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-weight: bold; text-transform: uppercase; }
+        .tile { border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-weight: bold; text-transform: uppercase; border-radius: 4px; }
         .tile.focused { border-color: var(--selecionado) !important; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        .controls-area { display: flex; gap: 8px; padding: 5px; }
-        .btn-control { flex: 1; padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .btn-hint { background: var(--laranja-dica); box-shadow: 0 3px 0 #a04a00; }
-        .btn-skip { background: var(--azul-ads); box-shadow: 0 3px 0 #2a60a0; }
+        .controls-area { display: flex; gap: 8px; padding: 5px 10px; }
+        .btn-control { flex: 1; padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
+        .btn-hint { background: var(--laranja-dica); }
+        .btn-skip { background: var(--azul-ads); }
 
-        .kb-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 6px; }
-        .key { background: #818384; border-radius: 4px; color: white; border: none; font-weight: bold; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .kb-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 5px; }
+        .key { background: #818384; border-radius: 4px; color: white; border: none; font-weight: bold; flex: 1; height: 50px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .key.wide { flex: 1.5; background: #565758; }
+        
+        .nav-btns { display: flex; gap: 5px; }
+        .btn-nav { background: #333; border: 1px solid #444; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 1.1rem; }
+        .btn-logout { background: #8e2424; border: none; font-size: 0.8rem; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -74,10 +98,11 @@
 
     <div id="pascoa-overlay" class="overlay">
         <div class="card">
-            <div class="pascoa-text">🐰 COMPRE NOSSOS OVOS DE PÁSCOA! 🍫</div>
-            <img src="https://raw.githubusercontent.com/Jorganho712/OnlineTermo/refs/heads/main/WhatsApp%20Image%202026-03-30%20at%2019.06.07.jpeg" class="pascoa-img" alt="Ovos de Páscoa">
-            <button class="btn-main" onclick="fecharPascoa()">QUERO COMPRAR! 🛒</button>
-            <button class="btn-main" style="background:#444; font-size:0.7rem;" onclick="fecharPascoa()">Agora não</button>
+            <h2 style="color:#ff69b4">🐰 PÁSCOA VERBETE 🍫</h2>
+            <p>Compre nossos deliciosos ovos de Páscoa!</p>
+            <img src="https://raw.githubusercontent.com/Jorganho712/OnlineTermo/refs/heads/main/WhatsApp%20Image%202026-03-30%20at%2019.06.07.jpeg" class="pascoa-img">
+            <button class="btn-main" onclick="fecharPascoa()">QUERO VER PREÇOS! 🛒</button>
+            <button class="btn-main" style="background:#444" onclick="fecharPascoa()">Agora não</button>
         </div>
     </div>
 
@@ -92,59 +117,89 @@
             </div>
         </div>
 
-        <div id="game-container" style="display:none; flex-direction:column; height:100%;">
+        <div id="game-container" style="display:none; flex-direction:column; flex:1;">
             <div class="top-nav">
                 <div>🔥 <span id="streakDisplay">0</span> | 💰 <span id="coinsDisplay">0</span></div>
-                <div>
-                    <button onclick="abrirLoja()" style="background:#333; border:none; color:white; padding:5px 8px; border-radius:4px;">🛒</button>
-                    <button onclick="abrirRanking()" style="background:#333; border:none; color:white; padding:5px 8px; border-radius:4px; margin-left:5px;">🏆</button>
+                <div class="nav-btns">
+                    <button class="btn-nav" onclick="abrirLoja()">🛒</button>
+                    <button class="btn-nav" onclick="abrirRanking()">🏆</button>
+                    <button class="btn-nav btn-logout" onclick="fazerLogout()">SAIR</button>
                 </div>
             </div>
             
             <div id="grid"></div>
             
-            <div id="message" style="color:var(--selecionado); text-align:center; height:15px; font-weight:bold; font-size: 0.7rem; margin: 5px 0;"></div>
+            <div id="message" style="color:var(--selecionado); text-align:center; height:20px; font-weight:bold; font-size: 0.8rem; margin: 5px;"></div>
 
             <div class="controls-area">
                 <button class="btn-control btn-hint" onclick="revelarLetra()">🔍 DICA</button>
-                <button class="btn-control btn-skip" onclick="proximoNivelAds()">⏭️ PULAR</button>
+                <button class="btn-control btn-skip" onclick="gerenciarTransicao()">⏭️ PULAR</button>
             </div>
 
-            <div id="keyboard" style="padding: 5px;"></div>
+            <div id="keyboard" style="padding: 10px;"></div>
         </div>
     </div>
 
     <div id="ad-screen" class="overlay"><div class="card"><h2 id="ad-status"></h2><p id="ad-msg"></p><button class="btn-main" onclick="gerenciarTransicao()">PRÓXIMO ⏭️</button></div></div>
+    <div id="shop-screen" class="overlay"><div class="card"><h2>🛒 LOJA</h2><div id="shop-content"></div><button class="btn-main" onclick="fecharTelas()">VOLTAR</button></div></div>
+    <div id="rank-screen" class="overlay"><div class="card"><h2>🏆 RANKING</h2><div id="rank-content"></div><button class="btn-main" onclick="fecharTelas()">VOLTAR</button></div></div>
 
     <script>
-        // ... (Configurações do Firebase permanecem as mesmas)
         const firebaseConfig = { apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0", authDomain: "termo-rank-5d80d.firebaseapp.com", databaseURL: "https://termo-rank-5d80d-default-rtdb.firebaseio.com", projectId: "termo-rank-5d80d", storageBucket: "termo-rank-5d80d.firebasestorage.app" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.database();
         const LINK_SMART = "https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072";
 
-        // LÓGICA DE TRANSIÇÃO COM CHANCE DE ANÚNCIO DE PÁSCOA
-        function gerenciarTransicao() {
-            const chance = Math.random(); // Gera número entre 0 e 1
-            if (chance < 0.35) { // 35% de chance de mostrar o seu banner de ovos
-                document.getElementById('ad-screen').classList.remove('active');
-                document.getElementById('pascoa-overlay').classList.add('active');
-            } else {
-                proximoNivelAds();
-            }
-        }
-
-        function fecharPascoa() {
-            document.getElementById('pascoa-overlay').classList.remove('active');
-            proximoNivelAds();
-        }
-
-        // ... (Resto das funções: verificar(), novoJogo(), etc seguem a mesma lógica anterior)
         let segredo = ""; let linha = 0; let focadoIndex = 0;
         let tentativaArray = ["","","","",""]; let letrasErradas = new Set();
         let userLocal = {};
 
-        function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
+        // LOGIN E LOGOUT
+        async function fazerLogin() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; auth.signInWithEmailAndPassword(n+"@termo.com", p).catch(() => alert("Dados incorretos!")); }
+        async function criarConta() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; if(!n || p.length < 6) return alert("Senha mínima 6 dígitos!"); const res = await auth.createUserWithEmailAndPassword(n+"@termo.com", p); await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, inventory:[], titulo:'Novato', cor:'#ffffff'}); }
+        function fazerLogout() { auth.signOut().then(() => location.reload()); }
+
+        auth.onAuthStateChanged(user => {
+            if(user) {
+                db.ref('users/'+user.uid).on('value', s => {
+                    userLocal = s.val() || {};
+                    document.getElementById('auth-screen').classList.remove('active');
+                    document.getElementById('game-container').style.display='flex';
+                    document.getElementById('streakDisplay').innerText = userLocal.streak || 0;
+                    document.getElementById('coinsDisplay').innerText = userLocal.coins || 0;
+                    if(!segredo) novoJogo();
+                });
+            }
+        });
+
+        // TRANSIÇÃO DE ADS E PÁSCOA
+        function gerenciarTransicao() {
+            if(Math.random() < 0.3) {
+                fecharTelas();
+                document.getElementById('pascoa-overlay').classList.add('active');
+            } else {
+                window.open(LINK_SMART, '_blank');
+                fecharTelas();
+                novoJogo();
+            }
+        }
+        function fecharPascoa() { document.getElementById('pascoa-overlay').classList.remove('active'); novoJogo(); }
+
+        // LOGICA DO JOGO
+        function novoJogo() {
+            const SEGREDO_POOL = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO"];
+            segredo = SEGREDO_POOL[Math.floor(Math.random()*SEGREDO_POOL.length)];
+            linha = 0; focadoIndex = 0; tentativaArray = ["","","","",""]; letrasErradas.clear();
+            document.getElementById('message').innerText = "";
+            const g = document.getElementById('grid'); g.innerHTML = "";
+            for(let i=0; i<6; i++) {
+                const r = document.createElement('div'); r.className = 'row';
+                for(let j=0; j<5; j++) { const t = document.createElement('div'); t.className = 'tile'; t.onclick = () => { if(linha === i) { focadoIndex = j; atualizarVisual(); } }; r.appendChild(t); }
+                g.appendChild(r);
+            }
+            criarTeclado(); atualizarVisual();
+        }
+
         function digitar(k) {
             if(k === "DEL") { tentativaArray[focadoIndex] = ""; if(focadoIndex > 0) focadoIndex--; }
             else { tentativaArray[focadoIndex] = k; if(focadoIndex < 4) focadoIndex++; }
@@ -152,7 +207,7 @@
         }
 
         async function verificar() {
-            const chute = tentativaArray.join("").toUpperCase();
+            const chute = tentativaArray.join("");
             if (chute.length < 5) return;
             const ts = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
             let acertos = 0;
@@ -162,25 +217,14 @@
                 else { ts[i].classList.add('absent'); letrasErradas.add(chute[i]); }
             }
             if(acertos === 5) {
-                confetti({ particleCount: 100, spread: 50, origin: { y: 0.6 } });
-                await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0) + 1, coins: (userLocal.coins||0) + 2 });
-                mostrarTelaAds("VITÓRIA!", "Palavra encontrada!");
+                confetti({ particleCount: 100, spread: 60 });
+                await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0)+1, coins: (userLocal.coins||0)+2 });
+                mostrarTelaAds("VOCÊ VENCEU!", "Parabéns!");
             } else if(linha === 5) {
-                mostrarTelaAds("DERROTA!", "Era: " + segredo);
+                await db.ref('users/'+auth.currentUser.uid).update({ streak: 0 });
+                mostrarTelaAds("FIM DE JOGO", "A palavra era " + segredo);
+                revelar("FIM DE JOGO", "A palavra era " + segredo);
             } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); criarTeclado(); }
-        }
-
-        function novoJogo() {
-            const SEGREDO_POOL = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO", "COCOS", "CASAS", "PORTA", "MESA", "LIVRO", "FOGO", "AGUA", "VENTO", "TERRA", "AREIA", "PLANO"];
-            segredo = SEGREDO_POOL[Math.floor(Math.random()*SEGREDO_POOL.length)];
-            linha = 0; focadoIndex = 0; tentativaArray = ["","","","",""]; letrasErradas.clear();
-            const g = document.getElementById('grid'); g.innerHTML = "";
-            for(let i=0; i<6; i++) {
-                const r = document.createElement('div'); r.className = 'row';
-                for(let j=0; j<5; j++) { const t = document.createElement('div'); t.className = 'tile'; t.onclick = () => { if(linha === i) { focadoIndex = j; atualizarVisual(); } }; r.appendChild(t); }
-                g.appendChild(r);
-            }
-            criarTeclado(); atualizarVisual();
         }
 
         function criarTeclado() {
@@ -203,24 +247,9 @@
             ts.forEach((t, i) => { t.innerText = tentativaArray[i]; t.classList.remove('focused'); if(i === focadoIndex) t.classList.add('focused'); });
         }
 
+        function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
         function mostrarTelaAds(t, m) { document.getElementById('ad-status').innerText = t; document.getElementById('ad-msg').innerText = m; document.getElementById('ad-screen').classList.add('active'); }
-        function proximoNivelAds() { window.open(LINK_SMART, '_blank'); fecharTelas(); novoJogo(); }
-
-        auth.onAuthStateChanged(user => {
-            if(user) {
-                db.ref('users/'+user.uid).on('value', s => {
-                    userLocal = s.val() || {};
-                    document.getElementById('auth-screen').classList.remove('active');
-                    document.getElementById('game-container').style.display='flex';
-                    document.getElementById('streakDisplay').innerText = userLocal.streak || 0;
-                    document.getElementById('coinsDisplay').innerText = userLocal.coins || 0;
-                    if(!segredo) novoJogo();
-                });
-            }
-        });
-
-        async function fazerLogin() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; auth.signInWithEmailAndPassword(n+"@termo.com", p).catch(() => alert("Erro!")); }
-        async function criarConta() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; if(!n || p.length < 6) return alert("Senha curta!"); const res = await auth.createUserWithEmailAndPassword(n+"@termo.com", p); await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, inventory:[], titulo:'Novato', cor:'#ffffff'}); }
+        async function revelarLetra() { if(userLocal.coins < 10) return alert("Moedas insuficientes!"); await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - 10 }); document.getElementById('message').innerText = "DICA: COMEÇA COM " + segredo[0]; }
     </script>
 </body>
 </html>
