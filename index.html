@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Verbete Online </title>
+    <title>Verbete Online</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -17,7 +17,7 @@
 
         /* ADS BANNER LATERAL */
         .ad-sidebar { position: fixed; left: 10px; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; background: #1a1a1b; display: flex; align-items: center; justify-content: center; border: 1px solid #333; }
-        @media (max-width: 800px) { .ad-sidebar { display: none; } } /* Esconde no celular para não cobrir o jogo */
+        @media (max-width: 800px) { .ad-sidebar { display: none; } }
 
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
         .overlay.active { display: flex; }
@@ -30,7 +30,7 @@
         
         #grid { display: grid; gap: 5px; padding: 10px; margin: auto; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { width: 55px; height: 55px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
+        .tile { width: 55px; height: 55px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; }
         .tile.focused { border-color: var(--selecionado) !important; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
@@ -44,6 +44,7 @@
         .power-ups { display: flex; gap: 10px; padding: 0 10px; margin-bottom: 10px; }
         .btn-pwr { flex: 1; padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 12px; }
         
+        .list-container { text-align: left; margin: 15px 0; max-height: 300px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #444; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
         .shake { animation: shake 0.4s; }
     </style>
@@ -68,9 +69,17 @@
             </div>
         </div>
 
+        <div id="rank-screen" class="overlay">
+            <div class="card">
+                <h2>🏆 TOP 10 RANKING</h2>
+                <div id="rank-content" class="list-container">Carregando...</div>
+                <button class="btn-main" onclick="fecharTelas()">Voltar</button>
+            </div>
+        </div>
+
         <div id="ad-screen" class="overlay">
             <div class="card">
-                <h2 id="ad-status">FIM DE JOGO!</h2>
+                <h2 id="ad-status">RESULTADO</h2>
                 <p id="ad-msg"></p>
                 <button class="btn-main" style="background:#4a90e2;" onclick="proximoNivelAds()">PRÓXIMO NÍVEL (ADS) ⏭️</button>
             </div>
@@ -79,7 +88,10 @@
         <div id="game-container" style="display:none; flex-direction:column; height:100%;">
             <div class="top-nav">
                 <div style="font-weight:bold;">🔥 <span id="streakDisplay">0</span> | 💰 <span id="coinsDisplay">0</span></div>
-                <button onclick="fazerLogout()" style="background:#333; border:none; color:white; padding:5px 10px; border-radius:5px;">SAIR</button>
+                <div>
+                    <button onclick="abrirRanking()" style="background:#444; border:none; color:white; padding:5px 10px; border-radius:5px; margin-right:5px;">🏆</button>
+                    <button onclick="fazerLogout()" style="background:#333; border:none; color:white; padding:5px 10px; border-radius:5px;">SAIR</button>
+                </div>
             </div>
             
             <div id="grid"></div>
@@ -91,7 +103,7 @@
             </div>
 
             <div style="padding:0 10px 10px 10px;">
-                <button onclick="proximoNivelAds()" style="width:100%; padding:10px; background:#4a90e2; border:none; border-radius:8px; color:white; font-weight:bold;">⏭️ PULAR (ADS)</button>
+                <button id="btnPular" onclick="proximoNivelAds()" style="width:100%; padding:10px; background:#4a90e2; border:none; border-radius:8px; color:white; font-weight:bold;">⏭️ PULAR (ADS)</button>
             </div>
 
             <div id="keyboard" style="padding:10px;"></div>
@@ -110,11 +122,11 @@
         let segredo = ""; let linha = 0; let focadoIndex = 0;
         let tentativaArray = ["","","","",""]; let letrasErradas = new Set();
         let userLocal = {};
+        let pulouNestaRodada = false;
 
         function limparTexto(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(); }
         function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
 
-        // --- TECLADO FÍSICO ---
         window.addEventListener('keydown', (e) => {
             if (document.querySelector('.overlay.active')) return;
             const tecla = e.key.toUpperCase();
@@ -126,26 +138,22 @@
         async function verificar() {
             const chute = limparTexto(tentativaArray.join("").trim());
             const alvo = limparTexto(segredo);
-            if (chute.length < 5) {
-                document.querySelectorAll('.row')[linha].classList.add('shake');
-                setTimeout(() => document.querySelectorAll('.row')[linha].classList.remove('shake'), 400);
-                return;
-            }
+            if (chute.length < 5) return;
+
             const ts = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
             let acertos = 0;
             for(let i=0; i<5; i++) {
-                const letra = chute[i];
-                if(letra === alvo[i]) { ts[i].classList.add('correct'); acertos++; }
-                else if(alvo.includes(letra)) { ts[i].classList.add('present'); }
-                else { ts[i].classList.add('absent'); letrasErradas.add(letra); }
+                if(chute[i] === alvo[i]) { ts[i].classList.add('correct'); acertos++; }
+                else if(alvo.includes(chute[i])) { ts[i].classList.add('present'); }
+                else { ts[i].classList.add('absent'); letrasErradas.add(chute[i]); }
             }
             if(acertos === 5) {
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                 await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0) + 1, coins: (userLocal.coins||0) + 2 });
-                mostrarTelaAds("VOCÊ GANHOU!", "+2 Moedas 💰");
+                mostrarTelaAds("VITÓRIA!", "Você ganhou 2 moedas!");
             } else if(linha === 5) {
                 await db.ref('users/'+auth.currentUser.uid).update({ streak: 0 });
-                mostrarTelaAds("FIM DE JOGO!", "A palavra era: " + segredo);
+                mostrarTelaAds("DERROTA!", "A palavra era: " + segredo);
             } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); criarTeclado(); }
         }
 
@@ -163,22 +171,43 @@
         }
 
         function proximoNivelAds() {
-            window.open(LINK_SMART, '_blank'); 
-            fecharTelas();
-            novoJogo();
+            if(!pulouNestaRodada) {
+                window.open(LINK_SMART, '_blank'); 
+                pulouNestaRodada = true;
+                fecharTelas();
+                novoJogo();
+            }
         }
 
         async function revelarLetra() {
-            if(userLocal.coins < 10) return alert("Moedas insuficientes!");
+            if(userLocal.coins < 10) return alert("Sem moedas!");
             await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - 10 });
             document.getElementById('message').innerText = "Começa com: " + segredo[0];
         }
 
         async function liberarPalavra() {
-            if(userLocal.coins < 25) return alert("Moedas insuficientes!");
+            if(userLocal.coins < 25) return alert("Sem moedas!");
             await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - 25 });
-            let r = segredo[Math.floor(Math.random()*5)];
-            document.getElementById('message').innerText = "Dica: Tem a letra " + r;
+            document.getElementById('message').innerText = "Tem a letra: " + segredo[Math.floor(Math.random()*5)];
+        }
+
+        function abrirRanking() {
+            document.getElementById('rank-screen').classList.add('active');
+            const rankDiv = document.getElementById('rank-content');
+            rankDiv.innerHTML = "Carregando...";
+            db.ref('users').once('value', s => {
+                let users = [];
+                s.forEach(child => { users.push(child.val()); });
+                users.sort((a,b) => (b.streak || 0) - (a.streak || 0));
+                let html = "";
+                users.slice(0, 10).forEach((u, i) => {
+                    html += `<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #333;">
+                                <span>${i+1}º ${u.nick}</span>
+                                <span>🔥 ${u.streak || 0}</span>
+                             </div>`;
+                });
+                rankDiv.innerHTML = html || "Nenhum jogador ainda.";
+            });
         }
 
         function criarTeclado() {
@@ -198,7 +227,8 @@
         function novoJogo() {
             segredo = SEGREDO_POOL[Math.floor(Math.random()*SEGREDO_POOL.length)];
             linha = 0; focadoIndex = 0; tentativaArray = ["","","","",""]; letrasErradas.clear();
-            document.getElementById('message').innerText = "";
+            pulouNestaRodada = false;
+            document.getElementById('btnPular').style.display = "block";
             const g = document.getElementById('grid'); g.innerHTML = "";
             for(let i=0; i<6; i++) {
                 const r = document.createElement('div'); r.className = 'row';
@@ -232,7 +262,6 @@
 
         async function fazerLogin() {
             const n = document.getElementById('loginNick').value.trim(); const p = document.getElementById('loginPass').value;
-            if(!n || !p) return alert("Preencha!");
             auth.signInWithEmailAndPassword(n.toLowerCase()+"@termo.com", p).catch(() => alert("Erro no login!"));
         }
         async function criarConta() {
