@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Verbete Online</title>
+    <title>Verbete Online - Full Ads</title>
     
+    <script type='text/javascript' src='https://pl29010888.profitablecpmratenetwork.com/a4/b5/a8/a4b5a8c3910b3d082855407a6ae50703.js'></script>
+
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -13,22 +15,23 @@
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; --selecionado: #ffd700; }
         * { box-sizing: border-box; touch-action: manipulation; }
-        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; overflow-x: hidden; height: 100dvh; display: flex; align-items: center; justify-content: center; }
+        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; overflow-x: hidden; height: 100dvh; display: flex; justify-content: center; align-items: center; }
 
-        /* ADS BANNER LATERAL ESQUERDO */
-        .ad-sidebar-left { position: fixed; left: 10px; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; background: #1a1a1b; display: flex; align-items: center; justify-content: center; border: 1px solid #333; z-index: 5; }
-        @media (max-width: 900px) { .ad-sidebar-left { display: none; } }
+        /* BANNERS LATERAIS */
+        .ad-side { position: fixed; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; background: #000; border: 1px solid #333; z-index: 100; }
+        .ad-left { left: 10px; }
+        .ad-right { right: 10px; }
 
+        /* Esconde anúncios em telas pequenas para não quebrar o jogo */
+        @media (max-width: 1000px) { .ad-side { display: none; } }
+
+        .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; height: 100%; position: relative; z-index: 10; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
         .overlay.active { display: flex; }
         .card { background: #222; padding: 25px; border-radius: 15px; width: 100%; max-width: 420px; text-align: center; border: 1px solid #333; }
         
         .btn-main { width: 100%; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
-        
-        .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; height: 100%; position: relative; z-index: 10; }
         .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
-        .nav-icons { display: flex; gap: 8px; }
-        .nav-icons button { background: #333; border: none; color: white; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 18px; }
         
         #grid { display: grid; gap: 5px; padding: 10px; margin: auto; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
@@ -44,14 +47,19 @@
         .key.hidden { opacity: 0.2; pointer-events: none; }
 
         .btn-hint { width: calc(100% - 20px); margin: 0 10px 10px 10px; padding: 14px; background: #e67e22; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        
         .list-container { text-align: left; margin: 15px 0; max-height: 280px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #444; }
-        .shop-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #222; }
     </style>
 </head>
 <body>
 
-    <div class="ad-sidebar-left">
+    <div class="ad-side ad-left">
+        <script type="text/javascript">
+            atOptions = { 'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };
+        </script>
+        <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
+    </div>
+
+    <div class="ad-side ad-right">
         <script type="text/javascript">
             atOptions = { 'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };
         </script>
@@ -69,38 +77,38 @@
             </div>
         </div>
 
-        <div id="shop-screen" class="overlay">
+        <div id="rank-screen" class="overlay">
             <div class="card">
-                <h2>🛒 LOJA VIP</h2>
-                <p>Suas Moedas: 💰 <span id="shopCoins">0</span></p>
-                <div id="shop-content" class="list-container"></div>
-                <button class="btn-main" style="background:#444" onclick="fecharTelas()">Voltar</button>
+                <h2>🏆 RANKING</h2>
+                <div id="rank-content" class="list-container"></div>
+                <button class="btn-main" onclick="fecharTelas()">Voltar</button>
             </div>
         </div>
 
-        <div id="rank-screen" class="overlay">
+        <div id="shop-screen" class="overlay">
             <div class="card">
-                <h2>🏆 TOP 10</h2>
-                <div id="rank-content" class="list-container"></div>
+                <h2>🛒 LOJA</h2>
+                <p>💰 <span id="shopCoins">0</span></p>
+                <div id="shop-content" class="list-container"></div>
                 <button class="btn-main" onclick="fecharTelas()">Sair</button>
             </div>
         </div>
 
         <div id="ad-screen" class="overlay">
             <div class="card">
-                <h2 id="ad-status">FIM DE JOGO</h2>
+                <h2 id="ad-status">FIM</h2>
                 <p id="ad-msg"></p>
-                <button class="btn-main" style="background:#4a90e2;" onclick="proximoNivelAds()">PRÓXIMO NÍVEL (ADS) ⏭️</button>
+                <button class="btn-main" style="background:#4a90e2;" onclick="proximoNivelAds()">PRÓXIMO (ADS) ⏭️</button>
             </div>
         </div>
 
         <div id="game-container" style="display:none; flex-direction:column; height:100%;">
             <div class="top-nav">
-                <div style="font-weight:bold;">🔥 <span id="streakDisplay">0</span> | 💰 <span id="coinsDisplay">0</span></div>
-                <div class="nav-icons">
-                    <button onclick="abrirLoja()">🛒</button>
-                    <button onclick="abrirRanking()">🏆</button>
-                    <button onclick="fazerLogout()">🚪</button>
+                <div>🔥 <span id="streakDisplay">0</span> | 💰 <span id="coinsDisplay">0</span></div>
+                <div>
+                    <button onclick="abrirLoja()" style="background:#333; border:none; color:white; padding:5px 8px; border-radius:4px; cursor:pointer;">🛒</button>
+                    <button onclick="abrirRanking()" style="background:#333; border:none; color:white; padding:5px 8px; border-radius:4px; cursor:pointer; margin-left:5px;">🏆</button>
+                    <button onclick="fazerLogout()" style="background:#333; border:none; color:white; padding:5px 8px; border-radius:4px; cursor:pointer; margin-left:5px;">🚪</button>
                 </div>
             </div>
             
@@ -117,8 +125,6 @@
         </div>
     </div>
 
-    <script type='text/javascript' src='https://pl29010888.profitablecpmratenetwork.com/a4/b5/a8/a4b5a8c3910b3d082855407a6ae50703.js'></script>
-
     <script>
         const firebaseConfig = { apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0", authDomain: "termo-rank-5d80d.firebaseapp.com", databaseURL: "https://termo-rank-5d80d-default-rtdb.firebaseio.com", projectId: "termo-rank-5d80d", storageBucket: "termo-rank-5d80d.firebasestorage.app" };
         firebase.initializeApp(firebaseConfig);
@@ -126,52 +132,11 @@
         const LINK_SMART = "https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072";
         const SEGREDO_POOL = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO", "COCOS", "CASAS", "PORTA", "MESA", "LIVRO", "FOGO", "AGUA", "VENTO", "TERRA", "AREIA", "PLANO"];
 
-        const ITENS_LOJA = [
-            {id:'t1', nome:'[Iniciante]', valor:10}, {id:'t2', nome:'[Esforçado]', valor:25}, {id:'t3', nome:'[Sabichão]', valor:50},
-            {id:'t4', nome:'[Mestre]', valor:100}, {id:'t5', nome:'[Gênio]', valor:200}, {id:'t6', nome:'[Lenda]', valor:500},
-            {id:'t7', nome:'[Verbete King]', valor:1000}, {id:'t8', nome:'[Deus do Termo]', valor:2500}, {id:'t9', nome:'[Imortal]', valor:5000},
-            {id:'t10', nome:'[Hacker]', valor:9999}, {id:'c1', nome:'Cor: Azul Sky', valor:30}, {id:'c2', nome:'Cor: Rosa Choque', valor:30},
-            {id:'c3', nome:'Cor: Laranja Neon', valor:40}, {id:'c4', nome:'Cor: Roxo Dark', valor:40}, {id:'c5', nome:'Cor: Verde Lima', valor:50},
-            {id:'c6', nome:'Cor: Ciano', valor:50}, {id:'c7', nome:'Cor: Vermelho Sangue', valor:60}, {id:'c8', nome:'Cor: Branco Neve', valor:70},
-            {id:'c9', nome:'Cor: Arco-Íris', valor:150}, {id:'c10', nome:'Cor: Ouro Puro', valor:300}
-        ];
-
         let segredo = ""; let linha = 0; let focadoIndex = 0;
         let tentativaArray = ["","","","",""]; let letrasErradas = new Set();
         let userLocal = {};
 
-        function limparTexto(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(); }
         function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
-
-        window.addEventListener('keydown', (e) => {
-            if (document.querySelector('.overlay.active')) return;
-            const tecla = e.key.toUpperCase();
-            if (tecla === 'ENTER') verificar();
-            else if (tecla === 'BACKSPACE') digitar('DEL');
-            else if (tecla.length === 1 && tecla >= 'A' && tecla <= 'Z') digitar(tecla);
-        });
-
-        async function verificar() {
-            const chute = limparTexto(tentativaArray.join("").trim());
-            const alvo = limparTexto(segredo);
-            if (chute.length < 5) return;
-            const ts = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
-            let acertos = 0;
-            for(let i=0; i<5; i++) {
-                if(chute[i] === alvo[i]) { ts[i].classList.add('correct'); acertos++; }
-                else if(alvo.includes(chute[i])) { ts[i].classList.add('present'); }
-                else { ts[i].classList.add('absent'); letrasErradas.add(chute[i]); }
-            }
-            if(acertos === 5) {
-                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0) + 1, coins: (userLocal.coins||0) + 2 });
-                mostrarTelaAds("VITÓRIA!", "Palavra correta!");
-            } else if(linha === 5) {
-                await db.ref('users/'+auth.currentUser.uid).update({ streak: 0 });
-                mostrarTelaAds("DERROTA!", "A palavra era: " + segredo);
-            } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); criarTeclado(); }
-        }
-
         function digitar(k) {
             if(k === "ENTER") verificar();
             else if(k === "DEL") { tentativaArray[focadoIndex] = ""; if(focadoIndex > 0) focadoIndex--; }
@@ -179,41 +144,24 @@
             atualizarVisual();
         }
 
-        async function revelarLetra() {
-            if((userLocal.coins || 0) < 10) return alert("Sem moedas!");
-            await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - 10 });
-            document.getElementById('message').innerText = "Começa com: " + segredo[0];
-        }
-
-        function abrirLoja() {
-            document.getElementById('shop-screen').classList.add('active');
-            document.getElementById('shopCoins').innerText = userLocal.coins || 0;
-            let html = "";
-            ITENS_LOJA.forEach(it => {
-                const jaTem = userLocal.inventory && userLocal.inventory.includes(it.id);
-                html += `<div class="shop-item"><span>${it.nome}</span><button onclick="comprarItem('${it.id}', ${it.valor})" style="background:#4a90e2; border:none; color:white; padding:8px; border-radius:5px;">${jaTem ? 'OK' : '💰'+it.valor}</button></div>`;
-            });
-            document.getElementById('shop-content').innerHTML = html;
-        }
-
-        async function comprarItem(id, preco) {
-            if(userLocal.inventory?.includes(id)) return;
-            if((userLocal.coins || 0) < preco) return alert("Sem moedas!");
-            let inv = userLocal.inventory || []; inv.push(id);
-            await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - preco, inventory: inv });
-            abrirLoja();
-        }
-
-        function abrirRanking() {
-            document.getElementById('rank-screen').classList.add('active');
-            db.ref('users').once('value', s => {
-                let users = []; s.forEach(c => users.push(c.val()));
-                users.sort((a,b) => (b.streak||0) - (a.streak||0));
-                let h = ""; users.slice(0, 10).forEach((u, i) => {
-                    h += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;"><span>${i+1}º ${u.nick}</span><span>🔥 ${u.streak||0}</span></div>`;
-                });
-                document.getElementById('rank-content').innerHTML = h;
-            });
+        async function verificar() {
+            const chute = tentativaArray.join("").toUpperCase();
+            if (chute.length < 5) return;
+            const ts = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
+            let acertos = 0;
+            for(let i=0; i<5; i++) {
+                if(chute[i] === segredo[i]) { ts[i].classList.add('correct'); acertos++; }
+                else if(segredo.includes(chute[i])) { ts[i].classList.add('present'); }
+                else { ts[i].classList.add('absent'); letrasErradas.add(chute[i]); }
+            }
+            if(acertos === 5) {
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0) + 1, coins: (userLocal.coins||0) + 2 });
+                mostrarTelaAds("VITÓRIA!", "Palavra encontrada!");
+            } else if(linha === 5) {
+                await db.ref('users/'+auth.currentUser.uid).update({ streak: 0 });
+                mostrarTelaAds("DERROTA!", "A palavra era: " + segredo);
+            } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); criarTeclado(); }
         }
 
         function proximoNivelAds() { window.open(LINK_SMART, '_blank'); fecharTelas(); novoJogo(); }
@@ -221,7 +169,6 @@
         function novoJogo() {
             segredo = SEGREDO_POOL[Math.floor(Math.random()*SEGREDO_POOL.length)];
             linha = 0; focadoIndex = 0; tentativaArray = ["","","","",""]; letrasErradas.clear();
-            document.getElementById('message').innerText = "";
             const g = document.getElementById('grid'); g.innerHTML = "";
             for(let i=0; i<6; i++) {
                 const r = document.createElement('div'); r.className = 'row';
@@ -254,10 +201,12 @@
             ts.forEach((t, i) => { t.innerText = tentativaArray[i]; t.classList.remove('focused'); if(i === focadoIndex) t.classList.add('focused'); });
         }
 
-        function mostrarTelaAds(titulo, msg) {
-            document.getElementById('ad-status').innerText = titulo;
-            document.getElementById('ad-msg').innerText = msg;
-            document.getElementById('ad-screen').classList.add('active');
+        function mostrarTelaAds(t, m) { document.getElementById('ad-status').innerText = t; document.getElementById('ad-msg').innerText = m; document.getElementById('ad-screen').classList.add('active'); }
+
+        async function revelarLetra() {
+            if((userLocal.coins || 0) < 10) return alert("Sem moedas!");
+            await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - 10 });
+            document.getElementById('message').innerText = "Dica: Começa com " + segredo[0];
         }
 
         auth.onAuthStateChanged(user => {
@@ -274,16 +223,19 @@
         });
 
         async function fazerLogin() {
-            const n = document.getElementById('loginNick').value.trim(); const p = document.getElementById('loginPass').value;
-            auth.signInWithEmailAndPassword(n.toLowerCase()+"@termo.com", p).catch(() => alert("Erro!"));
+            const n = document.getElementById('loginNick').value.trim().toLowerCase();
+            const p = document.getElementById('loginPass').value;
+            auth.signInWithEmailAndPassword(n+"@termo.com", p).catch(() => alert("Erro!"));
         }
         async function criarConta() {
-            const n = document.getElementById('loginNick').value.trim(); const p = document.getElementById('loginPass').value;
-            if(!n || p.length < 6) return alert("Dados inválidos!");
-            const res = await auth.createUserWithEmailAndPassword(n.toLowerCase()+"@termo.com", p);
-            await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, inventory:[]});
+            const n = document.getElementById('loginNick').value.trim().toLowerCase();
+            const p = document.getElementById('loginPass').value;
+            const res = await auth.createUserWithEmailAndPassword(n+"@termo.com", p);
+            await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0});
         }
         function fazerLogout() { auth.signOut().then(() => location.reload()); }
+        function abrirRanking() { document.getElementById('rank-screen').classList.add('active'); }
+        function abrirLoja() { document.getElementById('shop-screen').classList.add('active'); }
     </script>
 </body>
 </html>
