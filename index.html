@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Verbete Online - Pro Fix</title>
+    <title>Verbete Online - Final Fix</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -19,69 +19,68 @@
             color: white; 
             font-family: sans-serif; 
             margin: 0; 
-            overflow: hidden; 
-            height: 100dvh; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
+            height: 100vh;
+            display: grid;
+            /* No PC: 3 colunas (Banner, Jogo, Banner) */
+            grid-template-columns: 160px 1fr 160px;
+            align-items: center;
+            overflow: hidden;
         }
 
-        /* ADS LATERAIS - PADRÃO DESKTOP */
-        .ad-side { position: fixed; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; background: #000; border: 1px solid #333; z-index: 100; }
-        .ad-left { left: 20px; } 
-        .ad-right { right: 20px; }
+        /* ADS LATERAIS */
+        .ad-side { width: 160px; height: 600px; background: #000; border: 1px solid #333; margin: auto; }
 
-        /* --- CONFIGURAÇÃO EXCLUSIVA MOBILE --- */
+        /* --- CONFIGURAÇÃO CELULAR (Banner Esquerda + Jogo Direita) --- */
         @media (max-width: 850px) {
+            body { 
+                grid-template-columns: 115px 1fr; /* Só 2 colunas no celular */
+            }
             .ad-right { display: none !important; }
-            body { flex-direction: row; justify-content: flex-start; align-items: stretch; }
             .ad-left { 
-                position: relative; left: 0; top: 0; transform: none; 
-                width: 115px; min-width: 115px; height: 100vh; 
-                overflow: hidden; border-right: 1px solid #333; 
+                height: 100vh; width: 115px; 
+                overflow: hidden; border-right: 1px solid #333;
             }
             .ad-left iframe, .ad-left div { transform: scale(0.72); transform-origin: top left; }
-            .game-column { flex: 1; max-width: none; padding: 5px; justify-content: space-between; }
-            .tile { width: 42px; height: 42px; font-size: 1.4rem; }
-            .key { height: 42px; font-size: 0.7rem; }
+            
+            .tile { width: 40px; height: 40px; font-size: 1.2rem; }
+            .key { height: 45px; font-size: 0.7rem; }
         }
 
-        /* --- CONFIGURAÇÃO DESKTOP --- */
-        @media (min-width: 851px) {
-            .game-column { width: 450px; height: 95vh; display: flex; flex-direction: column; }
+        .game-column { 
+            display: flex; flex-direction: column; 
+            height: 100vh; max-width: 500px; 
+            margin: auto; width: 100%;
         }
 
-        .game-column { display: flex; flex-direction: column; position: relative; z-index: 10; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
         .overlay.active { display: flex; }
-        .card { background: #222; padding: 20px; border-radius: 15px; width: 100%; max-width: 420px; text-align: center; border: 1px solid #333; }
+        .card { background: #222; padding: 20px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; border: 1px solid #333; }
         
         .btn-main { width: 100%; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
         
-        /* BANNER PÁSCOA */
-        .pascoa-img { width: 100%; max-width: 280px; border-radius: 12px; border: 2px solid #ff69b4; margin: 15px 0; }
+        .pascoa-img { width: 100%; max-width: 250px; border-radius: 12px; border: 2px solid #ff69b4; margin: 10px 0; }
         
-        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #1a1a1b; border-bottom: 1px solid #333; border-radius: 8px 8px 0 0; }
+        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
         #grid { display: grid; gap: 5px; padding: 10px; margin: auto; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-weight: bold; text-transform: uppercase; border-radius: 4px; }
+        .tile { border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-weight: bold; text-transform: uppercase; border-radius: 4px; aspect-ratio: 1; }
         .tile.focused { border-color: var(--selecionado) !important; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        .controls-area { display: flex; gap: 8px; padding: 5px 10px; }
+        .controls-area { display: flex; gap: 8px; padding: 10px; }
         .btn-control { flex: 1; padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
         .btn-hint { background: var(--laranja-dica); }
         .btn-skip { background: var(--azul-ads); }
 
-        .kb-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 5px; }
-        .key { background: #818384; border-radius: 4px; color: white; border: none; font-weight: bold; flex: 1; height: 50px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 5px; padding: 0 5px; }
+        .key { background: #818384; border-radius: 4px; color: white; border: none; font-weight: bold; flex: 1; height: 55px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .key.wide { flex: 1.5; background: #565758; }
         
-        .nav-btns { display: flex; gap: 5px; }
-        .btn-nav { background: #333; border: 1px solid #444; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 1.1rem; }
-        .btn-logout { background: #8e2424; border: none; font-size: 0.8rem; font-weight: bold; }
+        .nav-btns { display: flex; gap: 8px; }
+        .btn-nav { background: #333; border: 1px solid #444; color: white; padding: 8px; border-radius: 6px; cursor: pointer; }
+        .btn-logout { background: #b02a2a; border: none; font-weight: bold; font-size: 0.7rem; }
     </style>
 </head>
 <body>
@@ -89,21 +88,6 @@
     <div class="ad-side ad-left">
         <script type="text/javascript">atOptions = {'key':'bbd26afcc6a6f83c66b0322a7e089fb1','format':'iframe','height':600,'width':160,'params':{}};</script>
         <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
-    </div>
-
-    <div class="ad-side ad-right">
-        <script type="text/javascript">atOptions = {'key':'bbd26afcc6a6f83c66b0322a7e089fb1','format':'iframe','height':600,'width':160,'params':{}};</script>
-        <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
-    </div>
-
-    <div id="pascoa-overlay" class="overlay">
-        <div class="card">
-            <h2 style="color:#ff69b4">🐰 PÁSCOA VERBETE 🍫</h2>
-            <p>Compre nossos deliciosos ovos de Páscoa!</p>
-            <img src="https://raw.githubusercontent.com/Jorganho712/OnlineTermo/refs/heads/main/WhatsApp%20Image%202026-03-30%20at%2019.06.07.jpeg" class="pascoa-img">
-            <button class="btn-main" onclick="fecharPascoa()">QUERO VER PREÇOS! 🛒</button>
-            <button class="btn-main" style="background:#444" onclick="fecharPascoa()">Agora não</button>
-        </div>
     </div>
 
     <div class="game-column">
@@ -123,20 +107,33 @@
                 <div class="nav-btns">
                     <button class="btn-nav" onclick="abrirLoja()">🛒</button>
                     <button class="btn-nav" onclick="abrirRanking()">🏆</button>
-                    <button class="btn-nav btn-logout" onclick="fazerLogout()">SAIR</button>
+                    <button class="btn-nav btn-logout" onclick="fazerLogout()">LOGOUT</button>
                 </div>
             </div>
             
             <div id="grid"></div>
-            
-            <div id="message" style="color:var(--selecionado); text-align:center; height:20px; font-weight:bold; font-size: 0.8rem; margin: 5px;"></div>
+            <div id="message" style="color:var(--selecionado); text-align:center; min-height:20px; font-weight:bold; font-size: 0.8rem;"></div>
 
             <div class="controls-area">
                 <button class="btn-control btn-hint" onclick="revelarLetra()">🔍 DICA</button>
                 <button class="btn-control btn-skip" onclick="gerenciarTransicao()">⏭️ PULAR</button>
             </div>
 
-            <div id="keyboard" style="padding: 10px;"></div>
+            <div id="keyboard"></div>
+        </div>
+    </div>
+
+    <div class="ad-side ad-right">
+        <script type="text/javascript">atOptions = {'key':'bbd26afcc6a6f83c66b0322a7e089fb1','format':'iframe','height':600,'width':160,'params':{}};</script>
+        <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
+    </div>
+
+    <div id="pascoa-overlay" class="overlay">
+        <div class="card">
+            <h2 style="color:#ff69b4">🐰 COMPRE NOSSOS OVOS! 🍫</h2>
+            <img src="https://raw.githubusercontent.com/Jorganho712/OnlineTermo/refs/heads/main/WhatsApp%20Image%202026-03-30%20at%2019.06.07.jpeg" class="pascoa-img">
+            <button class="btn-main" onclick="fecharPascoa()">VER CATÁLOGO 🛒</button>
+            <button class="btn-main" style="background:#444" onclick="fecharPascoa()">Agora não</button>
         </div>
     </div>
 
@@ -154,10 +151,14 @@
         let tentativaArray = ["","","","",""]; let letrasErradas = new Set();
         let userLocal = {};
 
-        // LOGIN E LOGOUT
-        async function fazerLogin() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; auth.signInWithEmailAndPassword(n+"@termo.com", p).catch(() => alert("Dados incorretos!")); }
-        async function criarConta() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; if(!n || p.length < 6) return alert("Senha mínima 6 dígitos!"); const res = await auth.createUserWithEmailAndPassword(n+"@termo.com", p); await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, inventory:[], titulo:'Novato', cor:'#ffffff'}); }
         function fazerLogout() { auth.signOut().then(() => location.reload()); }
+        function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
+
+        function gerenciarTransicao() {
+            if(Math.random() < 0.3) { fecharTelas(); document.getElementById('pascoa-overlay').classList.add('active'); } 
+            else { window.open(LINK_SMART, '_blank'); fecharTelas(); novoJogo(); }
+        }
+        function fecharPascoa() { document.getElementById('pascoa-overlay').classList.remove('active'); novoJogo(); }
 
         auth.onAuthStateChanged(user => {
             if(user) {
@@ -172,20 +173,9 @@
             }
         });
 
-        // TRANSIÇÃO DE ADS E PÁSCOA
-        function gerenciarTransicao() {
-            if(Math.random() < 0.3) {
-                fecharTelas();
-                document.getElementById('pascoa-overlay').classList.add('active');
-            } else {
-                window.open(LINK_SMART, '_blank');
-                fecharTelas();
-                novoJogo();
-            }
-        }
-        function fecharPascoa() { document.getElementById('pascoa-overlay').classList.remove('active'); novoJogo(); }
+        async function fazerLogin() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; auth.signInWithEmailAndPassword(n+"@termo.com", p).catch(() => alert("Erro!")); }
+        async function criarConta() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; if(!n || p.length < 6) return alert("Senha curta!"); const res = await auth.createUserWithEmailAndPassword(n+"@termo.com", p); await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, inventory:[], titulo:'Novato', cor:'#ffffff'}); }
 
-        // LOGICA DO JOGO
         function novoJogo() {
             const SEGREDO_POOL = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO"];
             segredo = SEGREDO_POOL[Math.floor(Math.random()*SEGREDO_POOL.length)];
@@ -219,11 +209,9 @@
             if(acertos === 5) {
                 confetti({ particleCount: 100, spread: 60 });
                 await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0)+1, coins: (userLocal.coins||0)+2 });
-                mostrarTelaAds("VOCÊ VENCEU!", "Parabéns!");
+                mostrarTelaAds("VENCEU!", "Parabéns!");
             } else if(linha === 5) {
-                await db.ref('users/'+auth.currentUser.uid).update({ streak: 0 });
-                mostrarTelaAds("FIM DE JOGO", "A palavra era " + segredo);
-                revelar("FIM DE JOGO", "A palavra era " + segredo);
+                mostrarTelaAds("PERDEU!", "Era: " + segredo);
             } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); criarTeclado(); }
         }
 
@@ -246,8 +234,6 @@
             const ts = rows[linha].querySelectorAll('.tile');
             ts.forEach((t, i) => { t.innerText = tentativaArray[i]; t.classList.remove('focused'); if(i === focadoIndex) t.classList.add('focused'); });
         }
-
-        function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
         function mostrarTelaAds(t, m) { document.getElementById('ad-status').innerText = t; document.getElementById('ad-msg').innerText = m; document.getElementById('ad-screen').classList.add('active'); }
         async function revelarLetra() { if(userLocal.coins < 10) return alert("Moedas insuficientes!"); await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - 10 }); document.getElementById('message').innerText = "DICA: COMEÇA COM " + segredo[0]; }
     </script>
