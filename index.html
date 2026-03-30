@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Verbete Online - FULL EDITION</title>
+    <title>Verbete Online - Pro</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -15,9 +15,9 @@
         * { box-sizing: border-box; touch-action: manipulation; }
         body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; overflow-x: hidden; height: 100dvh; display: flex; align-items: center; justify-content: center; }
 
-        /* ADS BANNER LATERAL */
-        .ad-sidebar { position: fixed; left: 10px; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; background: #1a1a1b; display: flex; align-items: center; justify-content: center; border: 1px solid #333; }
-        @media (max-width: 850px) { .ad-sidebar { display: none; } }
+        /* ADS BANNER LATERAL ESQUERDO */
+        .ad-sidebar-left { position: fixed; left: 10px; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; background: #1a1a1b; display: flex; align-items: center; justify-content: center; border: 1px solid #333; z-index: 5; }
+        @media (max-width: 900px) { .ad-sidebar-left { display: none; } }
 
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
         .overlay.active { display: flex; }
@@ -43,18 +43,15 @@
         .key.wide { flex: 1.5; background: #565758; }
         .key.hidden { opacity: 0.2; pointer-events: none; }
 
-        .power-ups { display: flex; gap: 10px; padding: 0 10px; margin-bottom: 10px; }
-        .btn-pwr { flex: 1; padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 11px; }
+        .btn-hint { width: calc(100% - 20px); margin: 0 10px 10px 10px; padding: 14px; background: #e67e22; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         
         .list-container { text-align: left; margin: 15px 0; max-height: 280px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #444; }
         .shop-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #222; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
-        .shake { animation: shake 0.4s; }
     </style>
 </head>
 <body>
 
-    <div class="ad-sidebar">
+    <div class="ad-sidebar-left">
         <script type="text/javascript">
             atOptions = { 'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };
         </script>
@@ -77,13 +74,13 @@
                 <h2>🛒 LOJA VIP</h2>
                 <p>Suas Moedas: 💰 <span id="shopCoins">0</span></p>
                 <div id="shop-content" class="list-container"></div>
-                <button class="btn-main" style="background:#444" onclick="fecharTelas()">Voltar ao Jogo</button>
+                <button class="btn-main" style="background:#444" onclick="fecharTelas()">Voltar</button>
             </div>
         </div>
 
         <div id="rank-screen" class="overlay">
             <div class="card">
-                <h2>🏆 TOP 10 RANKING</h2>
+                <h2>🏆 TOP 10</h2>
                 <div id="rank-content" class="list-container"></div>
                 <button class="btn-main" onclick="fecharTelas()">Sair</button>
             </div>
@@ -91,7 +88,7 @@
 
         <div id="ad-screen" class="overlay">
             <div class="card">
-                <h2 id="ad-status">RESULTADO</h2>
+                <h2 id="ad-status">FIM DE JOGO</h2>
                 <p id="ad-msg"></p>
                 <button class="btn-main" style="background:#4a90e2;" onclick="proximoNivelAds()">PRÓXIMO NÍVEL (ADS) ⏭️</button>
             </div>
@@ -110,20 +107,17 @@
             <div id="grid"></div>
             <div id="message" style="color:var(--selecionado); text-align:center; height:20px; font-weight:bold; margin-bottom:5px;"></div>
 
-            <div class="power-ups">
-                <button class="btn-pwr" style="background:#e67e22;" onclick="revelarLetra()">🔍 REVELAR (💰10)</button>
-                <button class="btn-pwr" style="background:#9b59b6;" onclick="liberarPalavra()">🔓 LIBERAR (💰25)</button>
-            </div>
+            <button class="btn-hint" onclick="revelarLetra()">🔍 DICA (💰10)</button>
 
             <div style="padding:0 10px 10px 10px;">
-                <button id="btnPular" onclick="proximoNivelAds()" style="width:100%; padding:10px; background:#4a90e2; border:none; border-radius:8px; color:white; font-weight:bold;">⏭️ PULAR PALAVRA (ADS)</button>
+                <button id="btnPular" onclick="proximoNivelAds()" style="width:100%; padding:10px; background:#4a90e2; border:none; border-radius:8px; color:white; font-weight:bold;">⏭️ PULAR (ADS)</button>
             </div>
 
             <div id="keyboard" style="padding:10px;"></div>
         </div>
     </div>
 
-    <script src="https://pl29010888.profitablecpmratenetwork.com/a4/b5/a8/a4b5a8c3910b3d082855407a6ae50703.js"></script>
+    <script type='text/javascript' src='https://pl29010888.profitablecpmratenetwork.com/a4/b5/a8/a4b5a8c3910b3d082855407a6ae50703.js'></script>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0", authDomain: "termo-rank-5d80d.firebaseapp.com", databaseURL: "https://termo-rank-5d80d-default-rtdb.firebaseio.com", projectId: "termo-rank-5d80d", storageBucket: "termo-rank-5d80d.firebasestorage.app" };
@@ -144,12 +138,11 @@
 
         let segredo = ""; let linha = 0; let focadoIndex = 0;
         let tentativaArray = ["","","","",""]; let letrasErradas = new Set();
-        let userLocal = {}; let pulouNestaRodada = false;
+        let userLocal = {};
 
         function limparTexto(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(); }
         function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
 
-        // TECLADO FÍSICO
         window.addEventListener('keydown', (e) => {
             if (document.querySelector('.overlay.active')) return;
             const tecla = e.key.toUpperCase();
@@ -162,7 +155,6 @@
             const chute = limparTexto(tentativaArray.join("").trim());
             const alvo = limparTexto(segredo);
             if (chute.length < 5) return;
-
             const ts = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
             let acertos = 0;
             for(let i=0; i<5; i++) {
@@ -173,7 +165,7 @@
             if(acertos === 5) {
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                 await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0) + 1, coins: (userLocal.coins||0) + 2 });
-                mostrarTelaAds("VITÓRIA!", "Ganhou 💰2 moedas.");
+                mostrarTelaAds("VITÓRIA!", "Palavra correta!");
             } else if(linha === 5) {
                 await db.ref('users/'+auth.currentUser.uid).update({ streak: 0 });
                 mostrarTelaAds("DERROTA!", "A palavra era: " + segredo);
@@ -187,25 +179,26 @@
             atualizarVisual();
         }
 
+        async function revelarLetra() {
+            if((userLocal.coins || 0) < 10) return alert("Sem moedas!");
+            await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - 10 });
+            document.getElementById('message').innerText = "Começa com: " + segredo[0];
+        }
+
         function abrirLoja() {
             document.getElementById('shop-screen').classList.add('active');
             document.getElementById('shopCoins').innerText = userLocal.coins || 0;
-            const shopDiv = document.getElementById('shop-content');
             let html = "";
             ITENS_LOJA.forEach(it => {
                 const jaTem = userLocal.inventory && userLocal.inventory.includes(it.id);
-                html += `<div class="shop-item">
-                            <span>${it.nome}</span>
-                            <button style="background:#4a90e2; border:none; color:white; padding:8px; border-radius:5px;" 
-                            onclick="comprarItem('${it.id}', ${it.valor})">${jaTem ? 'OK' : '💰'+it.valor}</button>
-                         </div>`;
+                html += `<div class="shop-item"><span>${it.nome}</span><button onclick="comprarItem('${it.id}', ${it.valor})" style="background:#4a90e2; border:none; color:white; padding:8px; border-radius:5px;">${jaTem ? 'OK' : '💰'+it.valor}</button></div>`;
             });
-            shopDiv.innerHTML = html;
+            document.getElementById('shop-content').innerHTML = html;
         }
 
         async function comprarItem(id, preco) {
             if(userLocal.inventory?.includes(id)) return;
-            if((userLocal.coins || 0) < preco) return alert("Moedas insuficientes!");
+            if((userLocal.coins || 0) < preco) return alert("Sem moedas!");
             let inv = userLocal.inventory || []; inv.push(id);
             await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - preco, inventory: inv });
             abrirLoja();
@@ -217,18 +210,13 @@
                 let users = []; s.forEach(c => users.push(c.val()));
                 users.sort((a,b) => (b.streak||0) - (a.streak||0));
                 let h = ""; users.slice(0, 10).forEach((u, i) => {
-                    h += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;">
-                            <span>${i+1}º ${u.nick}</span><span>🔥 ${u.streak||0}</span></div>`;
+                    h += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;"><span>${i+1}º ${u.nick}</span><span>🔥 ${u.streak||0}</span></div>`;
                 });
-                document.getElementById('rank-content').innerHTML = h || "Sem dados.";
+                document.getElementById('rank-content').innerHTML = h;
             });
         }
 
-        function proximoNivelAds() {
-            window.open(LINK_SMART, '_blank');
-            fecharTelas();
-            novoJogo();
-        }
+        function proximoNivelAds() { window.open(LINK_SMART, '_blank'); fecharTelas(); novoJogo(); }
 
         function novoJogo() {
             segredo = SEGREDO_POOL[Math.floor(Math.random()*SEGREDO_POOL.length)];
@@ -272,18 +260,6 @@
             document.getElementById('ad-screen').classList.add('active');
         }
 
-        async function revelarLetra() {
-            if(userLocal.coins < 10) return alert("Sem moedas!");
-            await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - 10 });
-            document.getElementById('message').innerText = "Começa com: " + segredo[0];
-        }
-
-        async function liberarPalavra() {
-            if(userLocal.coins < 25) return alert("Sem moedas!");
-            await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - 25 });
-            document.getElementById('message').innerText = "Tem a letra: " + segredo[Math.floor(Math.random()*5)];
-        }
-
         auth.onAuthStateChanged(user => {
             if(user) {
                 db.ref('users/'+user.uid).on('value', s => {
@@ -303,7 +279,7 @@
         }
         async function criarConta() {
             const n = document.getElementById('loginNick').value.trim(); const p = document.getElementById('loginPass').value;
-            if(!n || p.length < 6) return alert("Mínimo 6 dígitos!");
+            if(!n || p.length < 6) return alert("Dados inválidos!");
             const res = await auth.createUserWithEmailAndPassword(n.toLowerCase()+"@termo.com", p);
             await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, inventory:[]});
         }
