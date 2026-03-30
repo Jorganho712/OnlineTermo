@@ -11,43 +11,58 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; --selecionado: #ffd700; }
+        :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; --selecionado: #ffd700; --azul-ads: #4a90e2; --laranja-dica: #e67e22; }
         * { box-sizing: border-box; touch-action: manipulation; }
-        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; overflow-x: hidden; height: 100dvh; display: flex; justify-content: center; align-items: center; }
+        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; overflow: hidden; height: 100dvh; display: flex; flex-direction: column; align-items: center; }
 
-        /* ADS LATERAIS */
+        /* ADS LATERAIS (DESKTOP) */
         .ad-side { position: fixed; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; background: #000; border: 1px solid #333; z-index: 100; }
         .ad-left { left: 10px; } .ad-right { right: 10px; }
-        @media (max-width: 1100px) { .ad-side { display: none; } }
 
-        .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; height: 100%; position: relative; z-index: 10; }
+        /* ADS MOBILE (TOPO E RODAPÉ) */
+        .ad-mobile { display: none; width: 100%; height: 50px; background: #000; justify-content: center; align-items: center; z-index: 1000; border-bottom: 1px solid #333; }
+        .ad-footer { border-bottom: none; border-top: 1px solid #333; position: fixed; bottom: 0; }
+
+        @media (max-width: 1100px) { 
+            .ad-side { display: none; } 
+            .ad-mobile { display: flex; }
+        }
+
+        .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; flex: 1; position: relative; z-index: 10; padding-bottom: 60px; } /* Espaço pro banner debaixo */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
         .overlay.active { display: flex; }
         .card { background: #222; padding: 20px; border-radius: 15px; width: 100%; max-width: 420px; text-align: center; border: 1px solid #333; }
         
         .btn-main { width: 100%; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
-        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
+        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
         
         #grid { display: grid; gap: 5px; padding: 10px; margin: auto; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { width: 55px; height: 55px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; }
+        .tile { width: 50px; height: 50px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.6rem; font-weight: bold; text-transform: uppercase; }
         .tile.focused { border-color: var(--selecionado) !important; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 8px; }
-        .key { height: 50px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.8rem; font-weight: bold; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .key.wide { flex: 1.5; background: #565758; }
+        .controls-area { display: flex; gap: 8px; padding: 0 10px 10px 10px; }
+        .btn-control { flex: 1; padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.2s; }
+        .btn-hint { background: var(--laranja-dica); box-shadow: 0 3px 0 #a04a00; }
+        .btn-skip { background: var(--azul-ads); box-shadow: 0 3px 0 #2a60a0; }
 
-        .list-container { text-align: left; margin: 10px 0; max-height: 350px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #444; }
-        .item-row { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #333; align-items: center; font-size: 0.9rem; }
-        .shop-tabs { display: flex; gap: 5px; margin-bottom: 10px; }
-        .tab-btn { flex: 1; padding: 8px; background: #333; border: none; color: white; border-radius: 5px; cursor: pointer; font-size: 0.7rem; }
-        .tab-btn.active { background: var(--cor-correta); }
+        .kb-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 5px; }
+        .key { height: 45px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.75rem; font-weight: bold; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .key.wide { flex: 1.4; background: #565758; }
+
+        .list-container { text-align: left; margin: 10px 0; max-height: 300px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #444; }
+        .item-row { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #333; align-items: center; font-size: 0.85rem; }
     </style>
 </head>
 <body>
+
+    <div class="ad-mobile">
+        <script type="text/javascript">atOptions = {'key':'bbd26afcc6a6f83c66b0322a7e089fb1','format':'iframe','height':50,'width':320,'params':{}};</script>
+        <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
+    </div>
 
     <div class="ad-side ad-left">
         <script type="text/javascript">atOptions = {'key':'bbd26afcc6a6f83c66b0322a7e089fb1','format':'iframe','height':600,'width':160,'params':{}};</script>
@@ -78,19 +93,31 @@
                     <button onclick="fazerLogout()" style="background:#333; border:none; color:white; padding:5px 8px; border-radius:4px; cursor:pointer; margin-left:5px;">🚪</button>
                 </div>
             </div>
+            
             <div id="grid"></div>
-            <div id="message" style="color:var(--selecionado); text-align:center; height:20px; font-weight:bold; margin-bottom:5px;"></div>
-            <button class="btn-hint" onclick="revelarLetra()">🔍 DICA (💰10)</button>
-            <div id="keyboard" style="padding:10px;"></div>
+            
+            <div id="message" style="color:var(--selecionado); text-align:center; height:20px; font-weight:bold; margin-bottom:5px; font-size: 0.8rem;"></div>
+
+            <div class="controls-area">
+                <button class="btn-control btn-hint" onclick="revelarLetra()">🔍 DICA (💰10)</button>
+                <button class="btn-control btn-skip" onclick="proximoNivelAds()">⏭️ PULAR (ADS)</button>
+            </div>
+
+            <div id="keyboard" style="padding:0 5px;"></div>
         </div>
+    </div>
+
+    <div class="ad-mobile ad-footer">
+        <script type="text/javascript">atOptions = {'key':'bbd26afcc6a6f83c66b0322a7e089fb1','format':'iframe','height':50,'width':320,'params':{}};</script>
+        <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
     </div>
 
     <div id="shop-screen" class="overlay">
         <div class="card">
             <h2>🛒 LOJA (💰 <span id="shopCoins">0</span>)</h2>
-            <div class="shop-tabs">
-                <button class="tab-btn active" onclick="mudarAba('titulos')">TÍTULOS</button>
-                <button class="tab-btn" onclick="mudarAba('cores')">CORES</button>
+            <div class="shop-tabs" style="display:flex; gap:5px; margin-bottom:10px;">
+                <button class="btn-main" style="margin:0; font-size:0.7rem;" onclick="mudarAba('titulos')">TÍTULOS</button>
+                <button class="btn-main" style="margin:0; font-size:0.7rem; background:#444;" onclick="mudarAba('cores')">CORES</button>
             </div>
             <div id="shop-content" class="list-container"></div>
             <button class="btn-main" onclick="fecharTelas()">SAIR</button>
@@ -148,11 +175,7 @@
             } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); criarTeclado(); }
         }
 
-        function mudarAba(aba) {
-            abaAtual = aba;
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(aba.substring(0,3))));
-            abrirLoja();
-        }
+        function mudarAba(aba) { abaAtual = aba; abrirLoja(); }
 
         function abrirLoja() {
             document.getElementById('shopCoins').innerText = userLocal.coins || 0;
@@ -161,12 +184,12 @@
             if(abaAtual === 'titulos') {
                 TITULOS.forEach((t, i) => {
                     const id = 't_'+i; const jaTem = userLocal.inventory?.includes(id); const equipado = userLocal.titulo === t;
-                    h += `<div class="item-row"><span>[${t}]</span><button onclick="${jaTem ? `equipar('${id}', '${t}')` : `comprar('${id}', ${i*20})`}" style="background:${equipado?'#ff9800':'#4a90e2'}; border:none; color:white; padding:5px; border-radius:4px; min-width:60px;">${equipado?'USANDO':(jaTem?'EQUIPAR':'💰'+(i*20))}</button></div>`;
+                    h += `<div class="item-row"><span>[${t}]</span><button onclick="${jaTem ? `equipar('${id}', '${t}')` : `comprar('${id}', ${i*20})`}" style="background:${equipado?'#ff9800':'#4a90e2'}; border:none; color:white; padding:5px; border-radius:4px;">${equipado?'USANDO':(jaTem?'EQUIPAR':'💰'+(i*20))}</button></div>`;
                 });
             } else {
                 CORES.forEach((c, i) => {
                     const id = 'c_'+i; const jaTem = userLocal.inventory?.includes(id); const equipado = userLocal.cor === c;
-                    h += `<div class="item-row"><span style="color:${c}">⬤ Amostra de Cor</span><button onclick="${jaTem ? `equiparCor('${id}', '${c}')` : `comprar('${id}', 50)`}" style="background:${equipado?'#ff9800':'#4a90e2'}; border:none; color:white; padding:5px; border-radius:4px; min-width:60px;">${equipado?'USANDO':(jaTem?'EQUIPAR':'💰50')}</button></div>`;
+                    h += `<div class="item-row"><span style="color:${c}">⬤ Cor Personalizada</span><button onclick="${jaTem ? `equiparCor('${id}', '${c}')` : `comprar('${id}', 50)`}" style="background:${equipado?'#ff9800':'#4a90e2'}; border:none; color:white; padding:5px; border-radius:4px;">${equipado?'USANDO':(jaTem?'EQUIPAR':'💰50')}</button></div>`;
                 });
             }
             sContent.innerHTML = h;
@@ -179,7 +202,6 @@
             await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - preco, inventory: inv });
             abrirLoja();
         }
-
         async function equipar(id, t) { await db.ref('users/'+auth.currentUser.uid).update({ titulo: t }); abrirLoja(); }
         async function equiparCor(id, c) { await db.ref('users/'+auth.currentUser.uid).update({ cor: c }); abrirLoja(); }
 
@@ -190,9 +212,7 @@
             db.ref('users').orderByChild('streak').limitToLast(10).once('value', (s) => {
                 let list = []; s.forEach(c => { list.push(c.val()); });
                 list.sort((a,b) => (b.streak || 0) - (a.streak || 0));
-                let h = ""; list.forEach((u, i) => { 
-                    h += `<div class="item-row"><span style="color:${u.cor || '#fff'}">${i+1}º [${u.titulo || 'Membro'}] ${u.nick}</span><span>🔥 ${u.streak||0}</span></div>`; 
-                });
+                let h = ""; list.forEach((u, i) => { h += `<div class="item-row"><span style="color:${u.cor || '#fff'}">${i+1}º [${u.titulo || 'Membro'}] ${u.nick}</span><span>🔥 ${u.streak||0}</span></div>`; });
                 rContent.innerHTML = h || "Vazio.";
             });
         }
@@ -206,11 +226,7 @@
             const g = document.getElementById('grid'); g.innerHTML = "";
             for(let i=0; i<6; i++) {
                 const r = document.createElement('div'); r.className = 'row';
-                for(let j=0; j<5; j++) { 
-                    const t = document.createElement('div'); t.className = 'tile'; 
-                    t.onclick = () => { if(linha === i) { focadoIndex = j; atualizarVisual(); } };
-                    r.appendChild(t); 
-                }
+                for(let j=0; j<5; j++) { const t = document.createElement('div'); t.className = 'tile'; t.onclick = () => { if(linha === i) { focadoIndex = j; atualizarVisual(); } }; r.appendChild(t); }
                 g.appendChild(r);
             }
             criarTeclado(); atualizarVisual();
@@ -238,7 +254,7 @@
 
         function mostrarTelaAds(t, m) { document.getElementById('ad-status').innerText = t; document.getElementById('ad-msg').innerText = m; document.getElementById('ad-screen').classList.add('active'); }
         function proximoNivelAds() { window.open(LINK_SMART, '_blank'); fecharTelas(); novoJogo(); }
-        async function revelarLetra() { if(userLocal.coins < 10) return alert("Sem moedas!"); await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - 10 }); document.getElementById('message').innerText = "Começa com: " + segredo[0]; }
+        async function revelarLetra() { if(userLocal.coins < 10) return alert("Sem moedas!"); await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - 10 }); document.getElementById('message').innerText = "💡 COMEÇA COM: " + segredo[0]; }
 
         auth.onAuthStateChanged(user => {
             if(user) {
@@ -257,7 +273,5 @@
         async function criarConta() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; if(!n || p.length < 6) return alert("Senha curta!"); const res = await auth.createUserWithEmailAndPassword(n+"@termo.com", p); await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, inventory:[], titulo:'Novato', cor:'#ffffff'}); }
         function fazerLogout() { auth.signOut().then(() => location.reload()); }
     </script>
-    
-    <script type='text/javascript' src='https://pl29010888.profitablecpmratenetwork.com/a4/b5/a8/a4b5a8c3910b3d082855407a6ae50703.js'></script>
 </body>
 </html>
