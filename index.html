@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Verbete Online</title>
+    <title>Verbete Online - Pro Mobile Layout</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -13,61 +13,74 @@
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; --selecionado: #ffd700; --azul-ads: #4a90e2; --laranja-dica: #e67e22; }
         * { box-sizing: border-box; touch-action: manipulation; }
-        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; overflow: hidden; height: 100dvh; display: flex; flex-direction: column; align-items: center; }
+        body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; overflow: hidden; height: 100dvh; display: flex; justify-content: center; align-items: center; }
 
         /* ADS LATERAIS (DESKTOP) */
         .ad-side { position: fixed; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; background: #000; border: 1px solid #333; z-index: 100; }
         .ad-left { left: 10px; } .ad-right { right: 10px; }
 
-        /* ADS MOBILE (TOPO E RODAPÉ) */
-        .ad-mobile { display: none; width: 100%; height: 50px; background: #000; justify-content: center; align-items: center; z-index: 1000; border-bottom: 1px solid #333; }
-        .ad-footer { border-bottom: none; border-top: 1px solid #333; position: fixed; bottom: 0; }
-
-        @media (max-width: 1100px) { 
-            .ad-side { display: none; } 
-            .ad-mobile { display: flex; }
+        /* LAYOUT MOBILE ESPECIAL (BANNER ESQUERDA + JOGO DIREITA) */
+        @media (max-width: 800px) {
+            .ad-right { display: none; } /* Esconde o da direita no celular */
+            .ad-left { 
+                position: static; 
+                transform: none; 
+                width: 120px; /* Banner mais fino para caber no celular */
+                height: 100%; 
+                display: flex;
+            }
+            body { 
+                flex-direction: row; /* Coloca o banner e o jogo lado a lado */
+                align-items: stretch;
+                justify-content: flex-start;
+            }
+            .game-column { 
+                flex: 1; 
+                max-width: none; 
+                padding-bottom: 10px;
+                height: 100vh;
+                overflow-y: auto;
+            }
+            .tile { width: 40px; height: 40px; font-size: 1.3rem; } /* Menor para caber na direita */
+            .key { height: 40px; font-size: 0.65rem; }
         }
 
-        .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; flex: 1; position: relative; z-index: 10; padding-bottom: 60px; } /* Espaço pro banner debaixo */
+        .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; position: relative; z-index: 10; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
         .overlay.active { display: flex; }
         .card { background: #222; padding: 20px; border-radius: 15px; width: 100%; max-width: 420px; text-align: center; border: 1px solid #333; }
         
         .btn-main { width: 100%; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
-        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
+        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #1a1a1b; border-bottom: 1px solid #333; font-size: 0.8rem; }
         
-        #grid { display: grid; gap: 5px; padding: 10px; margin: auto; }
-        .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { width: 50px; height: 50px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-size: 1.6rem; font-weight: bold; text-transform: uppercase; }
+        #grid { display: grid; gap: 4px; padding: 5px; margin: auto; }
+        .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+        .tile { border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-weight: bold; text-transform: uppercase; border-radius: 4px; }
         .tile.focused { border-color: var(--selecionado) !important; }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        .controls-area { display: flex; gap: 8px; padding: 0 10px 10px 10px; }
-        .btn-control { flex: 1; padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.2s; }
+        .controls-area { display: flex; gap: 5px; padding: 5px; }
+        .btn-control { flex: 1; padding: 10px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .btn-hint { background: var(--laranja-dica); box-shadow: 0 3px 0 #a04a00; }
         .btn-skip { background: var(--azul-ads); box-shadow: 0 3px 0 #2a60a0; }
 
-        .kb-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 5px; }
-        .key { height: 45px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.75rem; font-weight: bold; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .key.wide { flex: 1.4; background: #565758; }
+        .kb-row { display: flex; justify-content: center; gap: 3px; margin-bottom: 4px; }
+        .key { background: #818384; border-radius: 4px; color: white; border: none; font-weight: bold; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .key.wide { flex: 1.5; background: #565758; }
 
-        .list-container { text-align: left; margin: 10px 0; max-height: 300px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #444; }
-        .item-row { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #333; align-items: center; font-size: 0.85rem; }
+        .list-container { text-align: left; margin: 10px 0; max-height: 250px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #444; }
+        .item-row { display: flex; justify-content: space-between; padding: 6px; border-bottom: 1px solid #333; align-items: center; font-size: 0.8rem; }
     </style>
 </head>
 <body>
-
-    <div class="ad-mobile">
-        <script type="text/javascript">atOptions = {'key':'bbd26afcc6a6f83c66b0322a7e089fb1','format':'iframe','height':50,'width':320,'params':{}};</script>
-        <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
-    </div>
 
     <div class="ad-side ad-left">
         <script type="text/javascript">atOptions = {'key':'bbd26afcc6a6f83c66b0322a7e089fb1','format':'iframe','height':600,'width':160,'params':{}};</script>
         <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
     </div>
+
     <div class="ad-side ad-right">
         <script type="text/javascript">atOptions = {'key':'bbd26afcc6a6f83c66b0322a7e089fb1','format':'iframe','height':600,'width':160,'params':{}};</script>
         <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
@@ -90,35 +103,25 @@
                 <div>
                     <button onclick="abrirLoja()" style="background:#333; border:none; color:white; padding:5px 8px; border-radius:4px; cursor:pointer;">🛒</button>
                     <button onclick="abrirRanking()" style="background:#333; border:none; color:white; padding:5px 8px; border-radius:4px; cursor:pointer; margin-left:5px;">🏆</button>
-                    <button onclick="fazerLogout()" style="background:#333; border:none; color:white; padding:5px 8px; border-radius:4px; cursor:pointer; margin-left:5px;">🚪</button>
                 </div>
             </div>
             
             <div id="grid"></div>
             
-            <div id="message" style="color:var(--selecionado); text-align:center; height:20px; font-weight:bold; margin-bottom:5px; font-size: 0.8rem;"></div>
+            <div id="message" style="color:var(--selecionado); text-align:center; height:20px; font-weight:bold; font-size: 0.7rem;"></div>
 
             <div class="controls-area">
-                <button class="btn-control btn-hint" onclick="revelarLetra()">🔍 DICA (💰10)</button>
-                <button class="btn-control btn-skip" onclick="proximoNivelAds()">⏭️ PULAR (ADS)</button>
+                <button class="btn-control btn-hint" onclick="revelarLetra()">🔍 DICA</button>
+                <button class="btn-control btn-skip" onclick="proximoNivelAds()">⏭️ PULAR</button>
             </div>
 
-            <div id="keyboard" style="padding:0 5px;"></div>
+            <div id="keyboard" style="padding:5px;"></div>
         </div>
-    </div>
-
-    <div class="ad-mobile ad-footer">
-        <script type="text/javascript">atOptions = {'key':'bbd26afcc6a6f83c66b0322a7e089fb1','format':'iframe','height':50,'width':320,'params':{}};</script>
-        <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
     </div>
 
     <div id="shop-screen" class="overlay">
         <div class="card">
             <h2>🛒 LOJA (💰 <span id="shopCoins">0</span>)</h2>
-            <div class="shop-tabs" style="display:flex; gap:5px; margin-bottom:10px;">
-                <button class="btn-main" style="margin:0; font-size:0.7rem;" onclick="mudarAba('titulos')">TÍTULOS</button>
-                <button class="btn-main" style="margin:0; font-size:0.7rem; background:#444;" onclick="mudarAba('cores')">CORES</button>
-            </div>
             <div id="shop-content" class="list-container"></div>
             <button class="btn-main" onclick="fecharTelas()">SAIR</button>
         </div>
@@ -138,15 +141,7 @@
 
         let segredo = ""; let linha = 0; let focadoIndex = 0;
         let tentativaArray = ["","","","",""]; let letrasErradas = new Set();
-        let userLocal = {}; let abaAtual = 'titulos';
-
-        window.addEventListener('keydown', (e) => {
-            if (document.querySelector('.overlay.active')) return;
-            const k = e.key.toUpperCase();
-            if (k === 'ENTER') verificar();
-            else if (k === 'BACKSPACE') digitar('DEL');
-            else if (k.length === 1 && k >= 'A' && k <= 'Z') digitar(k);
-        });
+        let userLocal = {};
 
         function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
         function digitar(k) {
@@ -168,30 +163,20 @@
             if(acertos === 5) {
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                 await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0) + 1, coins: (userLocal.coins||0) + 2 });
-                mostrarTelaAds("VITÓRIA!", "Palavra encontrada!");
+                mostrarTelaAds("VITÓRIA!", "Paravra encontrada!");
             } else if(linha === 5) {
-                await db.ref('users/'+auth.currentUser.uid).update({ streak: 0 });
                 mostrarTelaAds("DERROTA!", "Era: " + segredo);
             } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); criarTeclado(); }
         }
-
-        function mudarAba(aba) { abaAtual = aba; abrirLoja(); }
 
         function abrirLoja() {
             document.getElementById('shopCoins').innerText = userLocal.coins || 0;
             const sContent = document.getElementById('shop-content');
             let h = "";
-            if(abaAtual === 'titulos') {
-                TITULOS.forEach((t, i) => {
-                    const id = 't_'+i; const jaTem = userLocal.inventory?.includes(id); const equipado = userLocal.titulo === t;
-                    h += `<div class="item-row"><span>[${t}]</span><button onclick="${jaTem ? `equipar('${id}', '${t}')` : `comprar('${id}', ${i*20})`}" style="background:${equipado?'#ff9800':'#4a90e2'}; border:none; color:white; padding:5px; border-radius:4px;">${equipado?'USANDO':(jaTem?'EQUIPAR':'💰'+(i*20))}</button></div>`;
-                });
-            } else {
-                CORES.forEach((c, i) => {
-                    const id = 'c_'+i; const jaTem = userLocal.inventory?.includes(id); const equipado = userLocal.cor === c;
-                    h += `<div class="item-row"><span style="color:${c}">⬤ Cor Personalizada</span><button onclick="${jaTem ? `equiparCor('${id}', '${c}')` : `comprar('${id}', 50)`}" style="background:${equipado?'#ff9800':'#4a90e2'}; border:none; color:white; padding:5px; border-radius:4px;">${equipado?'USANDO':(jaTem?'EQUIPAR':'💰50')}</button></div>`;
-                });
-            }
+            TITULOS.forEach((t, i) => {
+                const id = 't_'+i; const jaTem = userLocal.inventory?.includes(id); const equipado = userLocal.titulo === t;
+                h += `<div class="item-row"><span>[${t}]</span><button onclick="${jaTem ? `equipar('${t}')` : `comprar('${id}', ${i*20})`}" style="background:${equipado?'#ff9800':'#4a90e2'}; border:none; color:white; padding:5px; border-radius:4px;">${equipado?'USANDO':(jaTem?'EQUIPAR':'💰'+(i*20))}</button></div>`;
+            });
             sContent.innerHTML = h;
             document.getElementById('shop-screen').classList.add('active');
         }
@@ -202,8 +187,7 @@
             await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - preco, inventory: inv });
             abrirLoja();
         }
-        async function equipar(id, t) { await db.ref('users/'+auth.currentUser.uid).update({ titulo: t }); abrirLoja(); }
-        async function equiparCor(id, c) { await db.ref('users/'+auth.currentUser.uid).update({ cor: c }); abrirLoja(); }
+        async function equipar(t) { await db.ref('users/'+auth.currentUser.uid).update({ titulo: t }); abrirLoja(); }
 
         function abrirRanking() {
             const rContent = document.getElementById('rank-content');
@@ -219,8 +203,7 @@
 
         function novoJogo() {
             const SEGREDO_POOL = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO", "COCOS", "CASAS", "PORTA", "MESA", "LIVRO", "FOGO", "AGUA", "VENTO", "TERRA", "AREIA", "PLANO"];
-            const poolFiltrado = SEGREDO_POOL.filter(p => p.length === 5);
-            segredo = poolFiltrado[Math.floor(Math.random()*poolFiltrado.length)];
+            segredo = SEGREDO_POOL[Math.floor(Math.random()*SEGREDO_POOL.length)];
             linha = 0; focadoIndex = 0; tentativaArray = ["","","","",""]; letrasErradas.clear();
             document.getElementById('message').innerText = "";
             const g = document.getElementById('grid'); g.innerHTML = "";
@@ -239,7 +222,7 @@
                 const d=document.createElement('div'); d.className='kb-row';
                 r.forEach(k=>{
                     const b=document.createElement('button'); b.className=(k.length>1)?'key wide':'key';
-                    if(letrasErradas.has(k)) b.classList.add('hidden');
+                    if(letrasErradas.has(k)) b.style.opacity = "0.3";
                     b.innerText = k; b.onclick = () => (k==='ENTER'?verificar():digitar(k)); d.appendChild(b);
                 });
                 kb.appendChild(d);
@@ -271,7 +254,6 @@
 
         async function fazerLogin() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; auth.signInWithEmailAndPassword(n+"@termo.com", p).catch(() => alert("Erro!")); }
         async function criarConta() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; if(!n || p.length < 6) return alert("Senha curta!"); const res = await auth.createUserWithEmailAndPassword(n+"@termo.com", p); await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, inventory:[], titulo:'Novato', cor:'#ffffff'}); }
-        function fazerLogout() { auth.signOut().then(() => location.reload()); }
     </script>
 </body>
 </html>
