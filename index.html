@@ -15,15 +15,15 @@
         * { box-sizing: border-box; touch-action: manipulation; }
         body { background-color: var(--preto); color: white; font-family: sans-serif; margin: 0; overflow-x: hidden; height: 100dvh; display: flex; justify-content: center; align-items: center; }
 
+        /* ADS LATERAIS */
         .ad-side { position: fixed; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; background: #000; border: 1px solid #333; z-index: 100; }
-        .ad-left { left: 10px; }
-        .ad-right { right: 10px; }
-        @media (max-width: 1000px) { .ad-side { display: none; } }
+        .ad-left { left: 10px; } .ad-right { right: 10px; }
+        @media (max-width: 1100px) { .ad-side { display: none; } }
 
         .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; height: 100%; position: relative; z-index: 10; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
         .overlay.active { display: flex; }
-        .card { background: #222; padding: 25px; border-radius: 15px; width: 100%; max-width: 420px; text-align: center; border: 1px solid #333; }
+        .card { background: #222; padding: 20px; border-radius: 15px; width: 100%; max-width: 420px; text-align: center; border: 1px solid #333; }
         
         .btn-main { width: 100%; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
         .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
@@ -37,24 +37,24 @@
         .tile.absent { background: var(--cor-errada); border: none; }
 
         .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 8px; }
-        .key { height: 55px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.9rem; font-weight: bold; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .key { height: 50px; background: #818384; border-radius: 4px; color: white; border: none; font-size: 0.8rem; font-weight: bold; flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .key.wide { flex: 1.5; background: #565758; }
-        .key.hidden { opacity: 0.2; pointer-events: none; }
 
-        .btn-hint { width: calc(100% - 20px); margin: 0 10px 10px 10px; padding: 14px; background: #e67e22; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .list-container { text-align: left; margin: 15px 0; max-height: 280px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #444; }
-        .item-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; align-items: center; }
+        .list-container { text-align: left; margin: 10px 0; max-height: 350px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #444; }
+        .item-row { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #333; align-items: center; font-size: 0.9rem; }
+        .shop-tabs { display: flex; gap: 5px; margin-bottom: 10px; }
+        .tab-btn { flex: 1; padding: 8px; background: #333; border: none; color: white; border-radius: 5px; cursor: pointer; font-size: 0.7rem; }
+        .tab-btn.active { background: var(--cor-correta); }
     </style>
 </head>
 <body>
 
     <div class="ad-side ad-left">
-        <script type="text/javascript">atOptions = { 'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };</script>
+        <script type="text/javascript">atOptions = {'key':'bbd26afcc6a6f83c66b0322a7e089fb1','format':'iframe','height':600,'width':160,'params':{}};</script>
         <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
     </div>
-
     <div class="ad-side ad-right">
-        <script type="text/javascript">atOptions = { 'key' : 'bbd26afcc6a6f83c66b0322a7e089fb1', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };</script>
+        <script type="text/javascript">atOptions = {'key':'bbd26afcc6a6f83c66b0322a7e089fb1','format':'iframe','height':600,'width':160,'params':{}};</script>
         <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
     </div>
 
@@ -78,17 +78,26 @@
                     <button onclick="fazerLogout()" style="background:#333; border:none; color:white; padding:5px 8px; border-radius:4px; cursor:pointer; margin-left:5px;">🚪</button>
                 </div>
             </div>
-            
             <div id="grid"></div>
             <div id="message" style="color:var(--selecionado); text-align:center; height:20px; font-weight:bold; margin-bottom:5px;"></div>
             <button class="btn-hint" onclick="revelarLetra()">🔍 DICA (💰10)</button>
-            <div style="padding:0 10px 10px 10px;"><button id="btnPular" onclick="proximoNivelAds()" style="width:100%; padding:10px; background:#4a90e2; border:none; border-radius:8px; color:white; font-weight:bold;">⏭️ PULAR (ADS)</button></div>
             <div id="keyboard" style="padding:10px;"></div>
         </div>
     </div>
 
-    <div id="rank-screen" class="overlay"><div class="card"><h2>🏆 RANKING</h2><div id="rank-content" class="list-container">Carregando...</div><button class="btn-main" onclick="fecharTelas()">VOLTAR</button></div></div>
-    <div id="shop-screen" class="overlay"><div class="card"><h2>🛒 LOJA</h2><p>Moedas: 💰 <span id="shopCoins">0</span></p><div id="shop-content" class="list-container"></div><button class="btn-main" onclick="fecharTelas()">SAIR</button></div></div>
+    <div id="shop-screen" class="overlay">
+        <div class="card">
+            <h2>🛒 LOJA (💰 <span id="shopCoins">0</span>)</h2>
+            <div class="shop-tabs">
+                <button class="tab-btn active" onclick="mudarAba('titulos')">TÍTULOS</button>
+                <button class="tab-btn" onclick="mudarAba('cores')">CORES</button>
+            </div>
+            <div id="shop-content" class="list-container"></div>
+            <button class="btn-main" onclick="fecharTelas()">SAIR</button>
+        </div>
+    </div>
+
+    <div id="rank-screen" class="overlay"><div class="card"><h2>🏆 RANKING</h2><div id="rank-content" class="list-container"></div><button class="btn-main" onclick="fecharTelas()">VOLTAR</button></div></div>
     <div id="ad-screen" class="overlay"><div class="card"><h2 id="ad-status"></h2><p id="ad-msg"></p><button class="btn-main" onclick="proximoNivelAds()">PRÓXIMO ⏭️</button></div></div>
 
     <script>
@@ -96,19 +105,20 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.database();
         const LINK_SMART = "https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072";
-        const SEGREDO_POOL = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO", "COCOS", "CASAS", "PORTA", "MESA", "LIVRO", "FOGO", "AGUA", "VENTO", "TERRA", "AREIA", "PLANO"];
-        const ITENS_LOJA = [{id:'t1', nome:'[Iniciante]', valor:10}, {id:'t2', nome:'[Mestre]', valor:100}, {id:'c1', nome:'Cor Azul', valor:50}, {id:'c2', nome:'Cor Ouro', valor:200}];
+
+        const TITULOS = ["Novato", "Aprendiz", "Intermediário", "Viciado", "Mestre", "Lenda", "Estrategista", "Gênio", "Imortal", "Verbeteiro", "Rei do Termo", "Sniper", "Sabio", "Elite", "Grandmaster", "Campeão", "Fenômeno", "Divino", "Supremo", "DEUS"];
+        const CORES = ["#ffffff", "#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff", "#ffa500", "#800080", "#ffc0cb", "#a52a2a", "#808080", "#ffd700", "#adff2f", "#ff4500", "#1e90ff", "#ee82ee", "#7fffd4", "#d2691e", "#f0e68c"];
 
         let segredo = ""; let linha = 0; let focadoIndex = 0;
         let tentativaArray = ["","","","",""]; let letrasErradas = new Set();
-        let userLocal = {};
+        let userLocal = {}; let abaAtual = 'titulos';
 
         window.addEventListener('keydown', (e) => {
             if (document.querySelector('.overlay.active')) return;
-            const key = e.key.toUpperCase();
-            if (key === 'ENTER') verificar();
-            else if (key === 'BACKSPACE') digitar('DEL');
-            else if (key.length === 1 && key >= 'A' && key <= 'Z') digitar(key);
+            const k = e.key.toUpperCase();
+            if (k === 'ENTER') verificar();
+            else if (k === 'BACKSPACE') digitar('DEL');
+            else if (k.length === 1 && k >= 'A' && k <= 'Z') digitar(k);
         });
 
         function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
@@ -138,51 +148,61 @@
             } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); criarTeclado(); }
         }
 
-        // LÓGICA DO RANKING (AGORA BUSCA DE VERDADE)
-        function abrirRanking() {
-            const rContent = document.getElementById('rank-content');
-            rContent.innerHTML = "Carregando...";
-            document.getElementById('rank-screen').classList.add('active');
-            
-            db.ref('users').orderByChild('streak').limitToLast(10).once('value', (snapshot) => {
-                let list = [];
-                snapshot.forEach(child => { list.push(child.val()); });
-                list.reverse();
-                let html = "";
-                list.forEach((u, i) => {
-                    html += `<div class="item-row"><span>${i+1}º ${u.nick}</span><span>🔥 ${u.streak || 0}</span></div>`;
-                });
-                rContent.innerHTML = html || "Nenhum jogador ainda.";
-            });
+        function mudarAba(aba) {
+            abaAtual = aba;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(aba.substring(0,3))));
+            abrirLoja();
         }
 
-        // LÓGICA DA LOJA (COMPRANDO DE VERDADE)
         function abrirLoja() {
             document.getElementById('shopCoins').innerText = userLocal.coins || 0;
             const sContent = document.getElementById('shop-content');
-            let html = "";
-            ITENS_LOJA.forEach(it => {
-                const jaTem = userLocal.inventory?.includes(it.id);
-                html += `<div class="item-row"><span>${it.nome}</span>
-                         <button onclick="comprarItem('${it.id}', ${it.valor})" style="background:#4a90e2; border:none; color:white; padding:5px 10px; border-radius:4px;">
-                         ${jaTem ? 'OK' : '💰'+it.valor}</button></div>`;
-            });
-            sContent.innerHTML = html;
+            let h = "";
+            if(abaAtual === 'titulos') {
+                TITULOS.forEach((t, i) => {
+                    const id = 't_'+i; const jaTem = userLocal.inventory?.includes(id); const equipado = userLocal.titulo === t;
+                    h += `<div class="item-row"><span>[${t}]</span><button onclick="${jaTem ? `equipar('${id}', '${t}')` : `comprar('${id}', ${i*20})`}" style="background:${equipado?'#ff9800':'#4a90e2'}; border:none; color:white; padding:5px; border-radius:4px; min-width:60px;">${equipado?'USANDO':(jaTem?'EQUIPAR':'💰'+(i*20))}</button></div>`;
+                });
+            } else {
+                CORES.forEach((c, i) => {
+                    const id = 'c_'+i; const jaTem = userLocal.inventory?.includes(id); const equipado = userLocal.cor === c;
+                    h += `<div class="item-row"><span style="color:${c}">⬤ Amostra de Cor</span><button onclick="${jaTem ? `equiparCor('${id}', '${c}')` : `comprar('${id}', 50)`}" style="background:${equipado?'#ff9800':'#4a90e2'}; border:none; color:white; padding:5px; border-radius:4px; min-width:60px;">${equipado?'USANDO':(jaTem?'EQUIPAR':'💰50')}</button></div>`;
+                });
+            }
+            sContent.innerHTML = h;
             document.getElementById('shop-screen').classList.add('active');
         }
 
-        async function comprarItem(id, preco) {
-            if(userLocal.inventory?.includes(id)) return;
-            if(userLocal.coins < preco) return alert("Moedas insuficientes!");
-            let inv = userLocal.inventory || [];
-            inv.push(id);
+        async function comprar(id, preco) {
+            if(userLocal.coins < preco) return alert("Sem moedas!");
+            let inv = userLocal.inventory || []; inv.push(id);
             await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - preco, inventory: inv });
             abrirLoja();
         }
 
+        async function equipar(id, t) { await db.ref('users/'+auth.currentUser.uid).update({ titulo: t }); abrirLoja(); }
+        async function equiparCor(id, c) { await db.ref('users/'+auth.currentUser.uid).update({ cor: c }); abrirLoja(); }
+
+        function abrirRanking() {
+            const rContent = document.getElementById('rank-content');
+            rContent.innerHTML = "Carregando...";
+            document.getElementById('rank-screen').classList.add('active');
+            db.ref('users').orderByChild('streak').limitToLast(10).once('value', (s) => {
+                let list = []; s.forEach(c => { list.push(c.val()); });
+                list.sort((a,b) => (b.streak || 0) - (a.streak || 0));
+                let h = ""; list.forEach((u, i) => { 
+                    h += `<div class="item-row"><span style="color:${u.cor || '#fff'}">${i+1}º [${u.titulo || 'Membro'}] ${u.nick}</span><span>🔥 ${u.streak||0}</span></div>`; 
+                });
+                rContent.innerHTML = h || "Vazio.";
+            });
+        }
+
         function novoJogo() {
-            segredo = SEGREDO_POOL[Math.floor(Math.random()*SEGREDO_POOL.length)];
+            const SEGREDO_POOL = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO", "COCOS", "CASAS", "PORTA", "MESA", "LIVRO", "FOGO", "AGUA", "VENTO", "TERRA", "AREIA", "PLANO"];
+            const poolFiltrado = SEGREDO_POOL.filter(p => p.length === 5);
+            segredo = poolFiltrado[Math.floor(Math.random()*poolFiltrado.length)];
             linha = 0; focadoIndex = 0; tentativaArray = ["","","","",""]; letrasErradas.clear();
+            document.getElementById('message').innerText = "";
             const g = document.getElementById('grid'); g.innerHTML = "";
             for(let i=0; i<6; i++) {
                 const r = document.createElement('div'); r.className = 'row';
@@ -211,7 +231,8 @@
         }
 
         function atualizarVisual() {
-            const ts = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
+            const rows = document.querySelectorAll('.row'); if(!rows[linha]) return;
+            const ts = rows[linha].querySelectorAll('.tile');
             ts.forEach((t, i) => { t.innerText = tentativaArray[i]; t.classList.remove('focused'); if(i === focadoIndex) t.classList.add('focused'); });
         }
 
@@ -233,7 +254,7 @@
         });
 
         async function fazerLogin() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; auth.signInWithEmailAndPassword(n+"@termo.com", p).catch(() => alert("Erro!")); }
-        async function criarConta() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; if(!n || p.length < 6) return alert("Dados inválidos!"); const res = await auth.createUserWithEmailAndPassword(n+"@termo.com", p); await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, inventory:[]}); }
+        async function criarConta() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; if(!n || p.length < 6) return alert("Senha curta!"); const res = await auth.createUserWithEmailAndPassword(n+"@termo.com", p); await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, inventory:[], titulo:'Novato', cor:'#ffffff'}); }
         function fazerLogout() { auth.signOut().then(() => location.reload()); }
     </script>
     
