@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Verbete Online - Full Ads</title>
+    <title>Verbete Online</title>
     
-    <script type='text/javascript' src='https://pl29010888.profitablecpmratenetwork.com/a4/b5/a8/a4b5a8c3910b3d082855407a6ae50703.js'></script>
-
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -22,7 +20,6 @@
         .ad-left { left: 10px; }
         .ad-right { right: 10px; }
 
-        /* Esconde anúncios em telas pequenas para não quebrar o jogo */
         @media (max-width: 1000px) { .ad-side { display: none; } }
 
         .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; height: 100%; position: relative; z-index: 10; }
@@ -77,31 +74,6 @@
             </div>
         </div>
 
-        <div id="rank-screen" class="overlay">
-            <div class="card">
-                <h2>🏆 RANKING</h2>
-                <div id="rank-content" class="list-container"></div>
-                <button class="btn-main" onclick="fecharTelas()">Voltar</button>
-            </div>
-        </div>
-
-        <div id="shop-screen" class="overlay">
-            <div class="card">
-                <h2>🛒 LOJA</h2>
-                <p>💰 <span id="shopCoins">0</span></p>
-                <div id="shop-content" class="list-container"></div>
-                <button class="btn-main" onclick="fecharTelas()">Sair</button>
-            </div>
-        </div>
-
-        <div id="ad-screen" class="overlay">
-            <div class="card">
-                <h2 id="ad-status">FIM</h2>
-                <p id="ad-msg"></p>
-                <button class="btn-main" style="background:#4a90e2;" onclick="proximoNivelAds()">PRÓXIMO (ADS) ⏭️</button>
-            </div>
-        </div>
-
         <div id="game-container" style="display:none; flex-direction:column; height:100%;">
             <div class="top-nav">
                 <div>🔥 <span id="streakDisplay">0</span> | 💰 <span id="coinsDisplay">0</span></div>
@@ -125,6 +97,10 @@
         </div>
     </div>
 
+    <div id="ad-screen" class="overlay"><div class="card"><h2 id="ad-status"></h2><p id="ad-msg"></p><button class="btn-main" onclick="proximoNivelAds()">PRÓXIMO ⏭️</button></div></div>
+    <div id="rank-screen" class="overlay"><div class="card"><h2>🏆 RANKING</h2><div id="rank-content" class="list-container"></div><button class="btn-main" onclick="fecharTelas()">VOLTAR</button></div></div>
+    <div id="shop-screen" class="overlay"><div class="card"><h2>🛒 LOJA</h2><p>💰 <span id="shopCoins">0</span></p><div id="shop-content" class="list-container"></div><button class="btn-main" onclick="fecharTelas()">SAIR</button></div></div>
+
     <script>
         const firebaseConfig = { apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0", authDomain: "termo-rank-5d80d.firebaseapp.com", databaseURL: "https://termo-rank-5d80d-default-rtdb.firebaseio.com", projectId: "termo-rank-5d80d", storageBucket: "termo-rank-5d80d.firebasestorage.app" };
         firebase.initializeApp(firebaseConfig);
@@ -135,6 +111,15 @@
         let segredo = ""; let linha = 0; let focadoIndex = 0;
         let tentativaArray = ["","","","",""]; let letrasErradas = new Set();
         let userLocal = {};
+
+        // TECLADO FÍSICO (VOLTOU!)
+        window.addEventListener('keydown', (e) => {
+            if (document.querySelector('.overlay.active')) return;
+            const key = e.key.toUpperCase();
+            if (key === 'ENTER') verificar();
+            else if (key === 'BACKSPACE' || key === 'DELETE') digitar('DEL');
+            else if (key.length === 1 && key >= 'A' && key <= 'Z') digitar(key);
+        });
 
         function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
         function digitar(k) {
@@ -237,5 +222,7 @@
         function abrirRanking() { document.getElementById('rank-screen').classList.add('active'); }
         function abrirLoja() { document.getElementById('shop-screen').classList.add('active'); }
     </script>
+
+    <script type='text/javascript' src='https://pl29010888.profitablecpmratenetwork.com/a4/b5/a8/a4b5a8c3910b3d082855407a6ae50703.js'></script>
 </body>
 </html>
