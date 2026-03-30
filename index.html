@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Verbete Online</title>
+    <title>Verbete Online - FULL EDITION</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -17,16 +17,18 @@
 
         /* ADS BANNER LATERAL */
         .ad-sidebar { position: fixed; left: 10px; top: 50%; transform: translateY(-50%); width: 160px; height: 600px; background: #1a1a1b; display: flex; align-items: center; justify-content: center; border: 1px solid #333; }
-        @media (max-width: 800px) { .ad-sidebar { display: none; } }
+        @media (max-width: 850px) { .ad-sidebar { display: none; } }
 
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
         .overlay.active { display: flex; }
-        .card { background: #222; padding: 25px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; border: 1px solid #333; }
+        .card { background: #222; padding: 25px; border-radius: 15px; width: 100%; max-width: 420px; text-align: center; border: 1px solid #333; }
         
         .btn-main { width: 100%; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
         
         .game-column { width: 100%; max-width: 450px; display: flex; flex-direction: column; height: 100%; position: relative; z-index: 10; }
         .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
+        .nav-icons { display: flex; gap: 8px; }
+        .nav-icons button { background: #333; border: none; color: white; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 18px; }
         
         #grid { display: grid; gap: 5px; padding: 10px; margin: auto; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
@@ -42,9 +44,10 @@
         .key.hidden { opacity: 0.2; pointer-events: none; }
 
         .power-ups { display: flex; gap: 10px; padding: 0 10px; margin-bottom: 10px; }
-        .btn-pwr { flex: 1; padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .btn-pwr { flex: 1; padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 11px; }
         
-        .list-container { text-align: left; margin: 15px 0; max-height: 300px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #444; }
+        .list-container { text-align: left; margin: 15px 0; max-height: 280px; overflow-y: auto; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #444; }
+        .shop-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #222; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
         .shake { animation: shake 0.4s; }
     </style>
@@ -61,7 +64,7 @@
     <div class="game-column">
         <div id="auth-screen" class="overlay active">
             <div class="card">
-                <h1>VERBETE ONLINE</h1>
+                <h1>VERBETE</h1>
                 <input type="text" id="loginNick" style="width:100%; padding:12px; margin-bottom:10px;" placeholder="Usuário">
                 <input type="password" id="loginPass" style="width:100%; padding:12px; margin-bottom:10px;" placeholder="Senha">
                 <button class="btn-main" onclick="fazerLogin()">Entrar</button>
@@ -69,11 +72,20 @@
             </div>
         </div>
 
+        <div id="shop-screen" class="overlay">
+            <div class="card">
+                <h2>🛒 LOJA VIP</h2>
+                <p>Suas Moedas: 💰 <span id="shopCoins">0</span></p>
+                <div id="shop-content" class="list-container"></div>
+                <button class="btn-main" style="background:#444" onclick="fecharTelas()">Voltar ao Jogo</button>
+            </div>
+        </div>
+
         <div id="rank-screen" class="overlay">
             <div class="card">
                 <h2>🏆 TOP 10 RANKING</h2>
-                <div id="rank-content" class="list-container">Carregando...</div>
-                <button class="btn-main" onclick="fecharTelas()">Voltar</button>
+                <div id="rank-content" class="list-container"></div>
+                <button class="btn-main" onclick="fecharTelas()">Sair</button>
             </div>
         </div>
 
@@ -88,9 +100,10 @@
         <div id="game-container" style="display:none; flex-direction:column; height:100%;">
             <div class="top-nav">
                 <div style="font-weight:bold;">🔥 <span id="streakDisplay">0</span> | 💰 <span id="coinsDisplay">0</span></div>
-                <div>
-                    <button onclick="abrirRanking()" style="background:#444; border:none; color:white; padding:5px 10px; border-radius:5px; margin-right:5px;">🏆</button>
-                    <button onclick="fazerLogout()" style="background:#333; border:none; color:white; padding:5px 10px; border-radius:5px;">SAIR</button>
+                <div class="nav-icons">
+                    <button onclick="abrirLoja()">🛒</button>
+                    <button onclick="abrirRanking()">🏆</button>
+                    <button onclick="fazerLogout()">🚪</button>
                 </div>
             </div>
             
@@ -103,7 +116,7 @@
             </div>
 
             <div style="padding:0 10px 10px 10px;">
-                <button id="btnPular" onclick="proximoNivelAds()" style="width:100%; padding:10px; background:#4a90e2; border:none; border-radius:8px; color:white; font-weight:bold;">⏭️ PULAR (ADS)</button>
+                <button id="btnPular" onclick="proximoNivelAds()" style="width:100%; padding:10px; background:#4a90e2; border:none; border-radius:8px; color:white; font-weight:bold;">⏭️ PULAR PALAVRA (ADS)</button>
             </div>
 
             <div id="keyboard" style="padding:10px;"></div>
@@ -119,14 +132,24 @@
         const LINK_SMART = "https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072";
         const SEGREDO_POOL = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO", "COCOS", "CASAS", "PORTA", "MESA", "LIVRO", "FOGO", "AGUA", "VENTO", "TERRA", "AREIA", "PLANO"];
 
+        const ITENS_LOJA = [
+            {id:'t1', nome:'[Iniciante]', valor:10}, {id:'t2', nome:'[Esforçado]', valor:25}, {id:'t3', nome:'[Sabichão]', valor:50},
+            {id:'t4', nome:'[Mestre]', valor:100}, {id:'t5', nome:'[Gênio]', valor:200}, {id:'t6', nome:'[Lenda]', valor:500},
+            {id:'t7', nome:'[Verbete King]', valor:1000}, {id:'t8', nome:'[Deus do Termo]', valor:2500}, {id:'t9', nome:'[Imortal]', valor:5000},
+            {id:'t10', nome:'[Hacker]', valor:9999}, {id:'c1', nome:'Cor: Azul Sky', valor:30}, {id:'c2', nome:'Cor: Rosa Choque', valor:30},
+            {id:'c3', nome:'Cor: Laranja Neon', valor:40}, {id:'c4', nome:'Cor: Roxo Dark', valor:40}, {id:'c5', nome:'Cor: Verde Lima', valor:50},
+            {id:'c6', nome:'Cor: Ciano', valor:50}, {id:'c7', nome:'Cor: Vermelho Sangue', valor:60}, {id:'c8', nome:'Cor: Branco Neve', valor:70},
+            {id:'c9', nome:'Cor: Arco-Íris', valor:150}, {id:'c10', nome:'Cor: Ouro Puro', valor:300}
+        ];
+
         let segredo = ""; let linha = 0; let focadoIndex = 0;
         let tentativaArray = ["","","","",""]; let letrasErradas = new Set();
-        let userLocal = {};
-        let pulouNestaRodada = false;
+        let userLocal = {}; let pulouNestaRodada = false;
 
         function limparTexto(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase(); }
         function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
 
+        // TECLADO FÍSICO
         window.addEventListener('keydown', (e) => {
             if (document.querySelector('.overlay.active')) return;
             const tecla = e.key.toUpperCase();
@@ -150,7 +173,7 @@
             if(acertos === 5) {
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                 await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0) + 1, coins: (userLocal.coins||0) + 2 });
-                mostrarTelaAds("VITÓRIA!", "Você ganhou 2 moedas!");
+                mostrarTelaAds("VITÓRIA!", "Ganhou 💰2 moedas.");
             } else if(linha === 5) {
                 await db.ref('users/'+auth.currentUser.uid).update({ streak: 0 });
                 mostrarTelaAds("DERROTA!", "A palavra era: " + segredo);
@@ -164,50 +187,64 @@
             atualizarVisual();
         }
 
-        function mostrarTelaAds(titulo, msg) {
-            document.getElementById('ad-status').innerText = titulo;
-            document.getElementById('ad-msg').innerText = msg;
-            document.getElementById('ad-screen').classList.add('active');
+        function abrirLoja() {
+            document.getElementById('shop-screen').classList.add('active');
+            document.getElementById('shopCoins').innerText = userLocal.coins || 0;
+            const shopDiv = document.getElementById('shop-content');
+            let html = "";
+            ITENS_LOJA.forEach(it => {
+                const jaTem = userLocal.inventory && userLocal.inventory.includes(it.id);
+                html += `<div class="shop-item">
+                            <span>${it.nome}</span>
+                            <button style="background:#4a90e2; border:none; color:white; padding:8px; border-radius:5px;" 
+                            onclick="comprarItem('${it.id}', ${it.valor})">${jaTem ? 'OK' : '💰'+it.valor}</button>
+                         </div>`;
+            });
+            shopDiv.innerHTML = html;
         }
 
-        function proximoNivelAds() {
-            if(!pulouNestaRodada) {
-                window.open(LINK_SMART, '_blank'); 
-                pulouNestaRodada = true;
-                fecharTelas();
-                novoJogo();
-            }
-        }
-
-        async function revelarLetra() {
-            if(userLocal.coins < 10) return alert("Sem moedas!");
-            await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - 10 });
-            document.getElementById('message').innerText = "Começa com: " + segredo[0];
-        }
-
-        async function liberarPalavra() {
-            if(userLocal.coins < 25) return alert("Sem moedas!");
-            await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - 25 });
-            document.getElementById('message').innerText = "Tem a letra: " + segredo[Math.floor(Math.random()*5)];
+        async function comprarItem(id, preco) {
+            if(userLocal.inventory?.includes(id)) return;
+            if((userLocal.coins || 0) < preco) return alert("Moedas insuficientes!");
+            let inv = userLocal.inventory || []; inv.push(id);
+            await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - preco, inventory: inv });
+            abrirLoja();
         }
 
         function abrirRanking() {
             document.getElementById('rank-screen').classList.add('active');
-            const rankDiv = document.getElementById('rank-content');
-            rankDiv.innerHTML = "Carregando...";
             db.ref('users').once('value', s => {
-                let users = [];
-                s.forEach(child => { users.push(child.val()); });
-                users.sort((a,b) => (b.streak || 0) - (a.streak || 0));
-                let html = "";
-                users.slice(0, 10).forEach((u, i) => {
-                    html += `<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #333;">
-                                <span>${i+1}º ${u.nick}</span>
-                                <span>🔥 ${u.streak || 0}</span>
-                             </div>`;
+                let users = []; s.forEach(c => users.push(c.val()));
+                users.sort((a,b) => (b.streak||0) - (a.streak||0));
+                let h = ""; users.slice(0, 10).forEach((u, i) => {
+                    h += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;">
+                            <span>${i+1}º ${u.nick}</span><span>🔥 ${u.streak||0}</span></div>`;
                 });
-                rankDiv.innerHTML = html || "Nenhum jogador ainda.";
+                document.getElementById('rank-content').innerHTML = h || "Sem dados.";
             });
+        }
+
+        function proximoNivelAds() {
+            window.open(LINK_SMART, '_blank');
+            fecharTelas();
+            novoJogo();
+        }
+
+        function novoJogo() {
+            segredo = SEGREDO_POOL[Math.floor(Math.random()*SEGREDO_POOL.length)];
+            linha = 0; focadoIndex = 0; tentativaArray = ["","","","",""]; letrasErradas.clear();
+            document.getElementById('message').innerText = "";
+            const g = document.getElementById('grid'); g.innerHTML = "";
+            for(let i=0; i<6; i++) {
+                const r = document.createElement('div'); r.className = 'row';
+                for(let j=0; j<5; j++) { 
+                    const t = document.createElement('div'); t.className = 'tile'; 
+                    t.onclick = () => { if(linha === i) { focadoIndex = j; atualizarVisual(); } };
+                    r.appendChild(t); 
+                }
+                g.appendChild(r);
+            }
+            criarTeclado(); atualizarVisual();
         }
 
         function criarTeclado() {
@@ -224,27 +261,27 @@
             });
         }
 
-        function novoJogo() {
-            segredo = SEGREDO_POOL[Math.floor(Math.random()*SEGREDO_POOL.length)];
-            linha = 0; focadoIndex = 0; tentativaArray = ["","","","",""]; letrasErradas.clear();
-            pulouNestaRodada = false;
-            document.getElementById('btnPular').style.display = "block";
-            const g = document.getElementById('grid'); g.innerHTML = "";
-            for(let i=0; i<6; i++) {
-                const r = document.createElement('div'); r.className = 'row';
-                for(let j=0; j<5; j++) { 
-                    const t = document.createElement('div'); t.className = 'tile'; 
-                    t.onclick = () => { if(linha === i) { focadoIndex = j; atualizarVisual(); } };
-                    r.appendChild(t); 
-                }
-                g.appendChild(r);
-            }
-            criarTeclado(); atualizarVisual();
-        }
-
         function atualizarVisual() {
             const ts = document.querySelectorAll('.row')[linha].querySelectorAll('.tile');
             ts.forEach((t, i) => { t.innerText = tentativaArray[i]; t.classList.remove('focused'); if(i === focadoIndex) t.classList.add('focused'); });
+        }
+
+        function mostrarTelaAds(titulo, msg) {
+            document.getElementById('ad-status').innerText = titulo;
+            document.getElementById('ad-msg').innerText = msg;
+            document.getElementById('ad-screen').classList.add('active');
+        }
+
+        async function revelarLetra() {
+            if(userLocal.coins < 10) return alert("Sem moedas!");
+            await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - 10 });
+            document.getElementById('message').innerText = "Começa com: " + segredo[0];
+        }
+
+        async function liberarPalavra() {
+            if(userLocal.coins < 25) return alert("Sem moedas!");
+            await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - 25 });
+            document.getElementById('message').innerText = "Tem a letra: " + segredo[Math.floor(Math.random()*5)];
         }
 
         auth.onAuthStateChanged(user => {
@@ -262,11 +299,11 @@
 
         async function fazerLogin() {
             const n = document.getElementById('loginNick').value.trim(); const p = document.getElementById('loginPass').value;
-            auth.signInWithEmailAndPassword(n.toLowerCase()+"@termo.com", p).catch(() => alert("Erro no login!"));
+            auth.signInWithEmailAndPassword(n.toLowerCase()+"@termo.com", p).catch(() => alert("Erro!"));
         }
         async function criarConta() {
             const n = document.getElementById('loginNick').value.trim(); const p = document.getElementById('loginPass').value;
-            if(!n || p.length < 6) return alert("Senha mínima 6!");
+            if(!n || p.length < 6) return alert("Mínimo 6 dígitos!");
             const res = await auth.createUserWithEmailAndPassword(n.toLowerCase()+"@termo.com", p);
             await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, inventory:[]});
         }
