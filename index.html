@@ -2,8 +2,8 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Verbete Online - Final Fix</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Verbete Online - v3.0</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -11,76 +11,70 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; --selecionado: #ffd700; --azul-ads: #4a90e2; --laranja-dica: #e67e22; }
-        * { box-sizing: border-box; touch-action: manipulation; }
+        :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; --selecionado: #ffd700; --azul-ads: #4a90e2; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body { 
             background-color: var(--preto); 
             color: white; 
-            font-family: sans-serif; 
-            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             height: 100vh;
-            display: grid;
-            /* No PC: 3 colunas (Banner, Jogo, Banner) */
-            grid-template-columns: 160px 1fr 160px;
+            display: flex !important;
+            justify-content: center;
             align-items: center;
             overflow: hidden;
         }
 
-        /* ADS LATERAIS */
-        .ad-side { width: 160px; height: 600px; background: #000; border: 1px solid #333; margin: auto; }
+        /* ADS PC */
+        .ad-side { width: 160px; height: 600px; background: #000; border: 1px solid #333; flex-shrink: 0; }
+        .ad-left { margin-right: auto; margin-left: 20px; }
+        .ad-right { margin-left: auto; margin-right: 20px; }
 
-        /* --- CONFIGURAÇÃO CELULAR (Banner Esquerda + Jogo Direita) --- */
+        /* JOGO */
+        .game-column { 
+            width: 100%; 
+            max-width: 500px; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            z-index: 10;
+        }
+
+        /* AJUSTE CELULAR */
         @media (max-width: 850px) {
-            body { 
-                grid-template-columns: 115px 1fr; /* Só 2 colunas no celular */
-            }
+            body { justify-content: flex-start; }
             .ad-right { display: none !important; }
             .ad-left { 
-                height: 100vh; width: 115px; 
-                overflow: hidden; border-right: 1px solid #333;
+                margin: 0; width: 110px; height: 100vh; 
+                border-right: 1px solid #333; overflow: hidden;
             }
-            .ad-left iframe, .ad-left div { transform: scale(0.72); transform-origin: top left; }
-            
+            .ad-left div, .ad-left iframe { transform: scale(0.68); transform-origin: top left; }
+            .game-column { max-width: none; flex: 1; }
             .tile { width: 40px; height: 40px; font-size: 1.2rem; }
-            .key { height: 45px; font-size: 0.7rem; }
         }
 
-        .game-column { 
-            display: flex; flex-direction: column; 
-            height: 100vh; max-width: 500px; 
-            margin: auto; width: 100%;
-        }
-
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
-        .overlay.active { display: flex; }
-        .card { background: #222; padding: 20px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; border: 1px solid #333; }
-        
-        .btn-main { width: 100%; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
-        
-        .pascoa-img { width: 100%; max-width: 250px; border-radius: 12px; border: 2px solid #ff69b4; margin: 10px 0; }
-        
         .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
-        #grid { display: grid; gap: 5px; padding: 10px; margin: auto; }
+        .nav-btns { display: flex; gap: 8px; }
+        .btn-nav { background: #333; border: 1px solid #444; color: white; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 1rem; }
+        .btn-logout { background: #d32f2f; border: none; font-weight: bold; font-size: 0.7rem; }
+
+        #grid { display: grid; gap: 5px; padding: 15px; margin: auto; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
         .tile { border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-weight: bold; text-transform: uppercase; border-radius: 4px; aspect-ratio: 1; }
-        .tile.focused { border-color: var(--selecionado) !important; }
+        .tile.focused { border-color: var(--selecionado); }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        .controls-area { display: flex; gap: 8px; padding: 10px; }
-        .btn-control { flex: 1; padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
-        .btn-hint { background: var(--laranja-dica); }
-        .btn-skip { background: var(--azul-ads); }
-
-        .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 5px; padding: 0 5px; }
-        .key { background: #818384; border-radius: 4px; color: white; border: none; font-weight: bold; flex: 1; height: 55px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 6px; padding: 0 8px; }
+        .key { background: #818384; border-radius: 4px; color: white; border: none; font-weight: bold; flex: 1; height: 50px; cursor: pointer; font-size: 0.9rem; }
         .key.wide { flex: 1.5; background: #565758; }
-        
-        .nav-btns { display: flex; gap: 8px; }
-        .btn-nav { background: #333; border: 1px solid #444; color: white; padding: 8px; border-radius: 6px; cursor: pointer; }
-        .btn-logout { background: #b02a2a; border: none; font-weight: bold; font-size: 0.7rem; }
+
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; }
+        .overlay.active { display: flex; }
+        .card { background: #222; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; border: 1px solid #333; }
+        .btn-main { width: 100%; padding: 15px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+        .pascoa-img { width: 100%; border-radius: 10px; margin: 15px 0; border: 2px solid #ff69b4; }
     </style>
 </head>
 <body>
@@ -91,17 +85,7 @@
     </div>
 
     <div class="game-column">
-        <div id="auth-screen" class="overlay active">
-            <div class="card">
-                <h1>VERBETE</h1>
-                <input type="text" id="loginNick" style="width:100%; padding:12px; margin-bottom:10px;" placeholder="Usuário">
-                <input type="password" id="loginPass" style="width:100%; padding:12px; margin-bottom:10px;" placeholder="Senha">
-                <button class="btn-main" onclick="fazerLogin()">Entrar</button>
-                <button class="btn-main" style="background:#444" onclick="criarConta()">Criar Conta</button>
-            </div>
-        </div>
-
-        <div id="game-container" style="display:none; flex-direction:column; flex:1;">
+        <div id="game-container" style="display:none; flex-direction:column; height:100%;">
             <div class="top-nav">
                 <div>🔥 <span id="streakDisplay">0</span> | 💰 <span id="coinsDisplay">0</span></div>
                 <div class="nav-btns">
@@ -110,16 +94,9 @@
                     <button class="btn-nav btn-logout" onclick="fazerLogout()">LOGOUT</button>
                 </div>
             </div>
-            
             <div id="grid"></div>
-            <div id="message" style="color:var(--selecionado); text-align:center; min-height:20px; font-weight:bold; font-size: 0.8rem;"></div>
-
-            <div class="controls-area">
-                <button class="btn-control btn-hint" onclick="revelarLetra()">🔍 DICA</button>
-                <button class="btn-control btn-skip" onclick="gerenciarTransicao()">⏭️ PULAR</button>
-            </div>
-
-            <div id="keyboard"></div>
+            <div id="message" style="text-align:center; min-height:25px; color:var(--selecionado); font-weight:bold;"></div>
+            <div id="keyboard" style="padding-bottom: 20px;"></div>
         </div>
     </div>
 
@@ -128,35 +105,51 @@
         <script type="text/javascript" src="https://www.highperformanceformat.com/bbd26afcc6a6f83c66b0322a7e089fb1/invoke.js"></script>
     </div>
 
+    <div id="auth-screen" class="overlay active">
+        <div class="card">
+            <h2>VERBETE</h2>
+            <input type="text" id="loginNick" style="width:100%; padding:12px; margin:10px 0;" placeholder="Usuário">
+            <input type="password" id="loginPass" style="width:100%; padding:12px; margin-bottom:10px;" placeholder="Senha">
+            <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
+            <button class="btn-main" style="background:#444" onclick="criarConta()">CRIAR CONTA</button>
+        </div>
+    </div>
+
     <div id="pascoa-overlay" class="overlay">
         <div class="card">
-            <h2 style="color:#ff69b4">🐰 COMPRE NOSSOS OVOS! 🍫</h2>
+            <h2 style="color:#ff69b4">🍫 PÁSCOA CHEGOU! 🐰</h2>
             <img src="https://raw.githubusercontent.com/Jorganho712/OnlineTermo/refs/heads/main/WhatsApp%20Image%202026-03-30%20at%2019.06.07.jpeg" class="pascoa-img">
-            <button class="btn-main" onclick="fecharPascoa()">VER CATÁLOGO 🛒</button>
-            <button class="btn-main" style="background:#444" onclick="fecharPascoa()">Agora não</button>
+            <button class="btn-main" onclick="fecharPascoa()">VER NO WHATSAPP 🛒</button>
+            <button class="btn-main" style="background:#444" onclick="fecharPascoa()">FECHAR</button>
         </div>
     </div>
 
     <div id="ad-screen" class="overlay"><div class="card"><h2 id="ad-status"></h2><p id="ad-msg"></p><button class="btn-main" onclick="gerenciarTransicao()">PRÓXIMO ⏭️</button></div></div>
-    <div id="shop-screen" class="overlay"><div class="card"><h2>🛒 LOJA</h2><div id="shop-content"></div><button class="btn-main" onclick="fecharTelas()">VOLTAR</button></div></div>
-    <div id="rank-screen" class="overlay"><div class="card"><h2>🏆 RANKING</h2><div id="rank-content"></div><button class="btn-main" onclick="fecharTelas()">VOLTAR</button></div></div>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0", authDomain: "termo-rank-5d80d.firebaseapp.com", databaseURL: "https://termo-rank-5d80d-default-rtdb.firebaseio.com", projectId: "termo-rank-5d80d", storageBucket: "termo-rank-5d80d.firebasestorage.app" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.database();
-        const LINK_SMART = "https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072";
 
         let segredo = ""; let linha = 0; let focadoIndex = 0;
         let tentativaArray = ["","","","",""]; let letrasErradas = new Set();
         let userLocal = {};
+
+        // --- TECLADO FÍSICO ---
+        window.addEventListener("keydown", (e) => {
+            if (document.getElementById('auth-screen').classList.contains('active')) return;
+            const tecla = e.key.toUpperCase();
+            if (tecla === "ENTER") verificar();
+            else if (tecla === "BACKSPACE") digitar("DEL");
+            else if (/^[A-ZÁÀÂÃÉÈÊÍÏÓÒÔÕÚÇ]$/.test(tecla)) digitar(tecla);
+        });
 
         function fazerLogout() { auth.signOut().then(() => location.reload()); }
         function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
 
         function gerenciarTransicao() {
             if(Math.random() < 0.3) { fecharTelas(); document.getElementById('pascoa-overlay').classList.add('active'); } 
-            else { window.open(LINK_SMART, '_blank'); fecharTelas(); novoJogo(); }
+            else { window.open("https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072", '_blank'); fecharTelas(); novoJogo(); }
         }
         function fecharPascoa() { document.getElementById('pascoa-overlay').classList.remove('active'); novoJogo(); }
 
@@ -174,7 +167,7 @@
         });
 
         async function fazerLogin() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; auth.signInWithEmailAndPassword(n+"@termo.com", p).catch(() => alert("Erro!")); }
-        async function criarConta() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; if(!n || p.length < 6) return alert("Senha curta!"); const res = await auth.createUserWithEmailAndPassword(n+"@termo.com", p); await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, inventory:[], titulo:'Novato', cor:'#ffffff'}); }
+        async function criarConta() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; if(!n || p.length < 6) return alert("Senha curta!"); const res = await auth.createUserWithEmailAndPassword(n+"@termo.com", p); await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, inventory:[], titulo:'Novato'}); }
 
         function novoJogo() {
             const SEGREDO_POOL = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO"];
@@ -211,7 +204,7 @@
                 await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0)+1, coins: (userLocal.coins||0)+2 });
                 mostrarTelaAds("VENCEU!", "Parabéns!");
             } else if(linha === 5) {
-                mostrarTelaAds("PERDEU!", "Era: " + segredo);
+                mostrarTelaAds("PERDEU!", "A palavra era: " + segredo);
             } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); criarTeclado(); }
         }
 
@@ -235,7 +228,6 @@
             ts.forEach((t, i) => { t.innerText = tentativaArray[i]; t.classList.remove('focused'); if(i === focadoIndex) t.classList.add('focused'); });
         }
         function mostrarTelaAds(t, m) { document.getElementById('ad-status').innerText = t; document.getElementById('ad-msg').innerText = m; document.getElementById('ad-screen').classList.add('active'); }
-        async function revelarLetra() { if(userLocal.coins < 10) return alert("Moedas insuficientes!"); await db.ref('users/'+auth.currentUser.uid).update({ coins: userLocal.coins - 10 }); document.getElementById('message').innerText = "DICA: COMEÇA COM " + segredo[0]; }
     </script>
 </body>
 </html>
