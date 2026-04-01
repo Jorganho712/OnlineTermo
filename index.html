@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Verbete Online - v3.0</title>
+    <title>Verbete Online</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -11,70 +11,62 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; --selecionado: #ffd700; --azul-ads: #4a90e2; }
+        :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; --selecionado: #ffd700; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
+        /* ESTRUTURA PC */
         body { 
             background-color: var(--preto); 
             color: white; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: sans-serif;
             height: 100vh;
             display: flex !important;
+            flex-direction: row !important;
             justify-content: center;
             align-items: center;
             overflow: hidden;
         }
 
-        /* ADS PC */
         .ad-side { width: 160px; height: 600px; background: #000; border: 1px solid #333; flex-shrink: 0; }
-        .ad-left { margin-right: auto; margin-left: 20px; }
-        .ad-right { margin-left: auto; margin-right: 20px; }
-
-        /* JOGO */
+        
+        /* O Jogo sempre terá 500px no PC */
         .game-column { 
-            width: 100%; 
-            max-width: 500px; 
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
+            width: 500px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: #121213;
             z-index: 10;
+            margin: 0 20px;
         }
 
-        /* AJUSTE CELULAR */
+        /* AJUSTE MOBILE */
         @media (max-width: 850px) {
             body { justify-content: flex-start; }
             .ad-right { display: none !important; }
-            .ad-left { 
-                margin: 0; width: 110px; height: 100vh; 
-                border-right: 1px solid #333; overflow: hidden;
-            }
-            .ad-left div, .ad-left iframe { transform: scale(0.68); transform-origin: top left; }
-            .game-column { max-width: none; flex: 1; }
-            .tile { width: 40px; height: 40px; font-size: 1.2rem; }
+            .ad-left { width: 110px; height: 100vh; border-right: 1px solid #333; overflow: hidden; }
+            .ad-left iframe { transform: scale(0.68); transform-origin: top left; }
+            .game-column { width: 100%; margin: 0; flex: 1; }
         }
 
-        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
-        .nav-btns { display: flex; gap: 8px; }
-        .btn-nav { background: #333; border: 1px solid #444; color: white; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 1rem; }
-        .btn-logout { background: #d32f2f; border: none; font-weight: bold; font-size: 0.7rem; }
+        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #333; }
+        .btn-logout { background: #b71c1c; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
 
         #grid { display: grid; gap: 5px; padding: 15px; margin: auto; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-weight: bold; text-transform: uppercase; border-radius: 4px; aspect-ratio: 1; }
+        .tile { border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-weight: bold; text-transform: uppercase; border-radius: 4px; aspect-ratio: 1; font-size: 1.8rem; }
         .tile.focused { border-color: var(--selecionado); }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 6px; padding: 0 8px; }
-        .key { background: #818384; border-radius: 4px; color: white; border: none; font-weight: bold; flex: 1; height: 50px; cursor: pointer; font-size: 0.9rem; }
-        .key.wide { flex: 1.5; background: #565758; }
-
+        .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 6px; padding: 0 10px; }
+        .key { background: #818384; border-radius: 4px; color: white; border: none; font-weight: bold; flex: 1; height: 50px; cursor: pointer; }
+        
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; }
         .overlay.active { display: flex; }
         .card { background: #222; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; border: 1px solid #333; }
         .btn-main { width: 100%; padding: 15px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; }
-        .pascoa-img { width: 100%; border-radius: 10px; margin: 15px 0; border: 2px solid #ff69b4; }
     </style>
 </head>
 <body>
@@ -88,14 +80,10 @@
         <div id="game-container" style="display:none; flex-direction:column; height:100%;">
             <div class="top-nav">
                 <div>🔥 <span id="streakDisplay">0</span> | 💰 <span id="coinsDisplay">0</span></div>
-                <div class="nav-btns">
-                    <button class="btn-nav" onclick="abrirLoja()">🛒</button>
-                    <button class="btn-nav" onclick="abrirRanking()">🏆</button>
-                    <button class="btn-nav btn-logout" onclick="fazerLogout()">LOGOUT</button>
-                </div>
+                <button class="btn-logout" onclick="fazerLogout()">LOGOUT (SAIR)</button>
             </div>
             <div id="grid"></div>
-            <div id="message" style="text-align:center; min-height:25px; color:var(--selecionado); font-weight:bold;"></div>
+            <div id="message" style="text-align:center; min-height:30px; color:var(--selecionado); font-weight:bold;"></div>
             <div id="keyboard" style="padding-bottom: 20px;"></div>
         </div>
     </div>
@@ -117,9 +105,9 @@
 
     <div id="pascoa-overlay" class="overlay">
         <div class="card">
-            <h2 style="color:#ff69b4">🍫 PÁSCOA CHEGOU! 🐰</h2>
-            <img src="https://raw.githubusercontent.com/Jorganho712/OnlineTermo/refs/heads/main/WhatsApp%20Image%202026-03-30%20at%2019.06.07.jpeg" class="pascoa-img">
-            <button class="btn-main" onclick="fecharPascoa()">VER NO WHATSAPP 🛒</button>
+            <h2 style="color:#ff69b4">🐰 COMPRE NOSSOS OVOS! 🍫</h2>
+            <img src="https://raw.githubusercontent.com/Jorganho712/OnlineTermo/refs/heads/main/WhatsApp%20Image%202026-03-30%20at%2019.06.07.jpeg" style="width:100%; border-radius:10px; margin:15px 0;">
+            <button class="btn-main" onclick="fecharPascoa()">VER WHATSAPP 🛒</button>
             <button class="btn-main" style="background:#444" onclick="fecharPascoa()">FECHAR</button>
         </div>
     </div>
@@ -127,6 +115,7 @@
     <div id="ad-screen" class="overlay"><div class="card"><h2 id="ad-status"></h2><p id="ad-msg"></p><button class="btn-main" onclick="gerenciarTransicao()">PRÓXIMO ⏭️</button></div></div>
 
     <script>
+        // CONFIG FIREBASE
         const firebaseConfig = { apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0", authDomain: "termo-rank-5d80d.firebaseapp.com", databaseURL: "https://termo-rank-5d80d-default-rtdb.firebaseio.com", projectId: "termo-rank-5d80d", storageBucket: "termo-rank-5d80d.firebasestorage.app" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.database();
@@ -135,20 +124,21 @@
         let tentativaArray = ["","","","",""]; let letrasErradas = new Set();
         let userLocal = {};
 
-        // --- TECLADO FÍSICO ---
-        window.addEventListener("keydown", (e) => {
+        // --- ESCUTA TECLADO FÍSICO DO PC ---
+        document.addEventListener("keydown", (e) => {
             if (document.getElementById('auth-screen').classList.contains('active')) return;
             const tecla = e.key.toUpperCase();
-            if (tecla === "ENTER") verificar();
-            else if (tecla === "BACKSPACE") digitar("DEL");
-            else if (/^[A-ZÁÀÂÃÉÈÊÍÏÓÒÔÕÚÇ]$/.test(tecla)) digitar(tecla);
+            
+            if (tecla === "ENTER") { verificar(); }
+            else if (tecla === "BACKSPACE") { digitar("DEL"); }
+            else if (/^[A-Z]$/.test(tecla)) { digitar(tecla); }
         });
 
         function fazerLogout() { auth.signOut().then(() => location.reload()); }
         function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
-
+        
         function gerenciarTransicao() {
-            if(Math.random() < 0.3) { fecharTelas(); document.getElementById('pascoa-overlay').classList.add('active'); } 
+            if(Math.random() < 0.3) { fecharTelas(); document.getElementById('pascoa-overlay').classList.add('active'); }
             else { window.open("https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072", '_blank'); fecharTelas(); novoJogo(); }
         }
         function fecharPascoa() { document.getElementById('pascoa-overlay').classList.remove('active'); novoJogo(); }
@@ -167,18 +157,17 @@
         });
 
         async function fazerLogin() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; auth.signInWithEmailAndPassword(n+"@termo.com", p).catch(() => alert("Erro!")); }
-        async function criarConta() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; if(!n || p.length < 6) return alert("Senha curta!"); const res = await auth.createUserWithEmailAndPassword(n+"@termo.com", p); await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0, inventory:[], titulo:'Novato'}); }
+        async function criarConta() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; if(!n || p.length < 6) return alert("Senha curta!"); const res = await auth.createUserWithEmailAndPassword(n+"@termo.com", p); await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0}); }
 
         function novoJogo() {
             const SEGREDO_POOL = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO"];
             segredo = SEGREDO_POOL[Math.floor(Math.random()*SEGREDO_POOL.length)];
             linha = 0; focadoIndex = 0; tentativaArray = ["","","","",""]; letrasErradas.clear();
-            document.getElementById('message').innerText = "";
-            const g = document.getElementById('grid'); g.innerHTML = "";
+            document.getElementById('grid').innerHTML = "";
             for(let i=0; i<6; i++) {
                 const r = document.createElement('div'); r.className = 'row';
                 for(let j=0; j<5; j++) { const t = document.createElement('div'); t.className = 'tile'; t.onclick = () => { if(linha === i) { focadoIndex = j; atualizarVisual(); } }; r.appendChild(t); }
-                g.appendChild(r);
+                document.getElementById('grid').appendChild(r);
             }
             criarTeclado(); atualizarVisual();
         }
@@ -204,7 +193,7 @@
                 await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0)+1, coins: (userLocal.coins||0)+2 });
                 mostrarTelaAds("VENCEU!", "Parabéns!");
             } else if(linha === 5) {
-                mostrarTelaAds("PERDEU!", "A palavra era: " + segredo);
+                mostrarTelaAds("GAME OVER", "Era: " + segredo);
             } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); criarTeclado(); }
         }
 
