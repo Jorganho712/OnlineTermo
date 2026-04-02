@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Verbete Online</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -12,61 +12,85 @@
 
     <style>
         :root { --cor-correta: #6aaa64; --cor-lugar-errado: #c9b458; --cor-errada: #3a3a3c; --preto: #121213; --selecionado: #ffd700; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
         
-        /* ESTRUTURA PC */
         body { 
             background-color: var(--preto); 
             color: white; 
             font-family: sans-serif;
             height: 100vh;
-            display: flex !important;
-            flex-direction: row !important;
+            display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
         }
 
+        /* ADS */
         .ad-side { width: 160px; height: 600px; background: #000; border: 1px solid #333; flex-shrink: 0; }
-        
-        /* O Jogo sempre terá 500px no PC */
+        .ad-left { margin-right: auto; margin-left: 10px; }
+        .ad-right { margin-left: auto; margin-right: 10px; }
+
+        /* COLUNA DO JOGO */
         .game-column { 
-            width: 500px;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: #121213;
+            width: 100%;
+            max-width: 500px; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            background: var(--preto);
             z-index: 10;
-            margin: 0 20px;
         }
 
-        /* AJUSTE MOBILE */
+        /* AJUSTE PARA CELULAR */
         @media (max-width: 850px) {
             body { justify-content: flex-start; }
             .ad-right { display: none !important; }
-            .ad-left { width: 110px; height: 100vh; border-right: 1px solid #333; overflow: hidden; }
+            .ad-left { 
+                margin: 0; width: 110px; height: 100vh; 
+                border-right: 1px solid #333; overflow: hidden;
+            }
             .ad-left iframe { transform: scale(0.68); transform-origin: top left; }
-            .game-column { width: 100%; margin: 0; flex: 1; }
+            
+            .game-column { max-width: none; flex: 1; }
+            
+            /* Quadrados menores no celular para não empurrar o teclado */
+            .tile { width: 11vw !important; height: 11vw !important; max-width: 45px; max-height: 45px; font-size: 1.2rem !important; }
+            .key { height: 45px !important; font-size: 0.7rem !important; }
+            .kb-row { gap: 3px !important; padding: 0 4px !important; }
         }
 
-        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #333; }
-        .btn-logout { background: #b71c1c; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
-
-        #grid { display: grid; gap: 5px; padding: 15px; margin: auto; }
-        .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-weight: bold; text-transform: uppercase; border-radius: 4px; aspect-ratio: 1; font-size: 1.8rem; }
+        /* GRID E TILES */
+        #grid { display: flex; flex-direction: column; gap: 6px; padding: 10px; align-items: center; justify-content: center; flex-grow: 1; }
+        .row { display: flex; gap: 6px; }
+        .tile { 
+            width: 60px; height: 60px; border: 2px solid #3a3a3c; 
+            display: flex; justify-content: center; align-items: center; 
+            font-weight: bold; text-transform: uppercase; border-radius: 4px; 
+            font-size: 2rem;
+        }
         .tile.focused { border-color: var(--selecionado); }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 6px; padding: 0 10px; }
-        .key { background: #818384; border-radius: 4px; color: white; border: none; font-weight: bold; flex: 1; height: 50px; cursor: pointer; }
+        /* TOPO E TECLADO */
+        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
+        .btn-logout { background: #b71c1c; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-weight: bold; font-size: 10px; cursor: pointer; }
         
+        .kb-row { display: flex; justify-content: center; gap: 5px; margin-bottom: 5px; padding: 0 8px; }
+        .key { 
+            background: #818384; border-radius: 4px; color: white; border: none; 
+            font-weight: bold; flex: 1; height: 58px; cursor: pointer; 
+            text-transform: uppercase; font-size: 0.9rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .key.wide { flex: 1.5; background: #565758; }
+
+        /* OVERLAYS */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; }
         .overlay.active { display: flex; }
-        .card { background: #222; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; border: 1px solid #333; }
-        .btn-main { width: 100%; padding: 15px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+        .card { background: #222; padding: 25px; border-radius: 12px; width: 85%; max-width: 350px; text-align: center; border: 1px solid #333; }
+        .btn-main { width: 100%; padding: 14px; background: var(--cor-correta); border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -80,11 +104,12 @@
         <div id="game-container" style="display:none; flex-direction:column; height:100%;">
             <div class="top-nav">
                 <div>🔥 <span id="streakDisplay">0</span> | 💰 <span id="coinsDisplay">0</span></div>
-                <button class="btn-logout" onclick="fazerLogout()">LOGOUT (SAIR)</button>
+                <button class="btn-logout" onclick="fazerLogout()">SAIR</button>
             </div>
+            
             <div id="grid"></div>
-            <div id="message" style="text-align:center; min-height:30px; color:var(--selecionado); font-weight:bold;"></div>
-            <div id="keyboard" style="padding-bottom: 20px;"></div>
+            <div id="message" style="text-align:center; min-height:30px; color:var(--selecionado); font-weight:bold; font-size:0.8rem;"></div>
+            <div id="keyboard" style="padding-bottom: 10px;"></div>
         </div>
     </div>
 
@@ -96,26 +121,16 @@
     <div id="auth-screen" class="overlay active">
         <div class="card">
             <h2>VERBETE</h2>
-            <input type="text" id="loginNick" style="width:100%; padding:12px; margin:10px 0;" placeholder="Usuário">
-            <input type="password" id="loginPass" style="width:100%; padding:12px; margin-bottom:10px;" placeholder="Senha">
+            <input type="text" id="loginNick" style="width:100%; padding:12px; margin:10px 0; background:#333; color:white; border:1px solid #444;" placeholder="Usuário">
+            <input type="password" id="loginPass" style="width:100%; padding:12px; margin-bottom:10px; background:#333; color:white; border:1px solid #444;" placeholder="Senha">
             <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
             <button class="btn-main" style="background:#444" onclick="criarConta()">CRIAR CONTA</button>
         </div>
     </div>
 
-    <div id="pascoa-overlay" class="overlay">
-        <div class="card">
-            <h2 style="color:#ff69b4">🐰 COMPRE NOSSOS OVOS! 🍫</h2>
-            <img src="https://raw.githubusercontent.com/Jorganho712/OnlineTermo/refs/heads/main/WhatsApp%20Image%202026-03-30%20at%2019.06.07.jpeg" style="width:100%; border-radius:10px; margin:15px 0;">
-            <button class="btn-main" onclick="fecharPascoa()">VER WHATSAPP 🛒</button>
-            <button class="btn-main" style="background:#444" onclick="fecharPascoa()">FECHAR</button>
-        </div>
-    </div>
-
-    <div id="ad-screen" class="overlay"><div class="card"><h2 id="ad-status"></h2><p id="ad-msg"></p><button class="btn-main" onclick="gerenciarTransicao()">PRÓXIMO ⏭️</button></div></div>
+    <div id="ad-screen" class="overlay"><div class="card"><h2 id="ad-status"></h2><button class="btn-main" onclick="novoJogo()">PRÓXIMO ⏭️</button></div></div>
 
     <script>
-        // CONFIG FIREBASE
         const firebaseConfig = { apiKey: "AIzaSyCxq9aM8B_XWioHztJhVVLnawlykYD2xs0", authDomain: "termo-rank-5d80d.firebaseapp.com", databaseURL: "https://termo-rank-5d80d-default-rtdb.firebaseio.com", projectId: "termo-rank-5d80d", storageBucket: "termo-rank-5d80d.firebasestorage.app" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.database();
@@ -124,24 +139,17 @@
         let tentativaArray = ["","","","",""]; let letrasErradas = new Set();
         let userLocal = {};
 
-        // --- ESCUTA TECLADO FÍSICO DO PC ---
+        // --- TECLADO FÍSICO (PC) ---
         document.addEventListener("keydown", (e) => {
             if (document.getElementById('auth-screen').classList.contains('active')) return;
-            const tecla = e.key.toUpperCase();
-            
-            if (tecla === "ENTER") { verificar(); }
-            else if (tecla === "BACKSPACE") { digitar("DEL"); }
-            else if (/^[A-Z]$/.test(tecla)) { digitar(tecla); }
+            const key = e.key.toUpperCase();
+            if (key === "ENTER") verificar();
+            else if (key === "BACKSPACE") digitar("DEL");
+            else if (/^[A-Z]$/.test(key)) digitar(key);
         });
 
         function fazerLogout() { auth.signOut().then(() => location.reload()); }
         function fecharTelas() { document.querySelectorAll('.overlay').forEach(el => el.classList.remove('active')); }
-        
-        function gerenciarTransicao() {
-            if(Math.random() < 0.3) { fecharTelas(); document.getElementById('pascoa-overlay').classList.add('active'); }
-            else { window.open("https://www.profitablecpmratenetwork.com/sw8yv06j5g?key=edf6d59c2cca79eb989069841f9cb072", '_blank'); fecharTelas(); novoJogo(); }
-        }
-        function fecharPascoa() { document.getElementById('pascoa-overlay').classList.remove('active'); novoJogo(); }
 
         auth.onAuthStateChanged(user => {
             if(user) {
@@ -160,13 +168,14 @@
         async function criarConta() { const n = document.getElementById('loginNick').value.trim().toLowerCase(); const p = document.getElementById('loginPass').value; if(!n || p.length < 6) return alert("Senha curta!"); const res = await auth.createUserWithEmailAndPassword(n+"@termo.com", p); await db.ref('users/'+res.user.uid).set({nick:n, streak:0, coins:0}); }
 
         function novoJogo() {
+            fecharTelas();
             const SEGREDO_POOL = ["SAGAZ", "AMAGO", "TERMO", "EXITO", "NOBRE", "SENSO", "AFETO", "ALGOZ", "ETICA", "FAZER", "PODER", "VIVER", "JUSTO", "IDEIA", "MUITO", "SONHO", "TEMPO", "VALOR", "BRAVO", "FORTE", "GRITO", "MUNDO"];
             segredo = SEGREDO_POOL[Math.floor(Math.random()*SEGREDO_POOL.length)];
             linha = 0; focadoIndex = 0; tentativaArray = ["","","","",""]; letrasErradas.clear();
             document.getElementById('grid').innerHTML = "";
             for(let i=0; i<6; i++) {
                 const r = document.createElement('div'); r.className = 'row';
-                for(let j=0; j<5; j++) { const t = document.createElement('div'); t.className = 'tile'; t.onclick = () => { if(linha === i) { focadoIndex = j; atualizarVisual(); } }; r.appendChild(t); }
+                for(let j=0; j<5; j++) { const t = document.createElement('div'); t.className = 'tile'; r.appendChild(t); }
                 document.getElementById('grid').appendChild(r);
             }
             criarTeclado(); atualizarVisual();
@@ -191,9 +200,9 @@
             if(acertos === 5) {
                 confetti({ particleCount: 100, spread: 60 });
                 await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0)+1, coins: (userLocal.coins||0)+2 });
-                mostrarTelaAds("VENCEU!", "Parabéns!");
+                mostrarTelaAds("VENCEU!");
             } else if(linha === 5) {
-                mostrarTelaAds("GAME OVER", "Era: " + segredo);
+                mostrarTelaAds("PERDEU! Era: " + segredo);
             } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); criarTeclado(); }
         }
 
@@ -216,7 +225,7 @@
             const ts = rows[linha].querySelectorAll('.tile');
             ts.forEach((t, i) => { t.innerText = tentativaArray[i]; t.classList.remove('focused'); if(i === focadoIndex) t.classList.add('focused'); });
         }
-        function mostrarTelaAds(t, m) { document.getElementById('ad-status').innerText = t; document.getElementById('ad-msg').innerText = m; document.getElementById('ad-screen').classList.add('active'); }
+        function mostrarTelaAds(t) { document.getElementById('ad-status').innerText = t; document.getElementById('ad-screen').classList.add('active'); }
     </script>
 </body>
 </html>
