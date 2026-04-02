@@ -30,7 +30,6 @@
         .ad-left { margin-right: auto; margin-left: 10px; }
         .ad-right { margin-left: auto; margin-right: 10px; }
 
-        /* COLUNA DO JOGO */
         .game-column { 
             width: 100%;
             max-width: 500px; 
@@ -41,52 +40,53 @@
             z-index: 10;
         }
 
-        /* AJUSTE PARA CELULAR */
+        /* --- AJUSTE MOBILE (FOCO NO TECLADO) --- */
         @media (max-width: 850px) {
             body { justify-content: flex-start; }
             .ad-right { display: none !important; }
-            .ad-left { 
-                margin: 0; width: 110px; height: 100vh; 
-                border-right: 1px solid #333; overflow: hidden;
-            }
+            .ad-left { margin: 0; width: 110px; height: 100vh; border-right: 1px solid #333; overflow: hidden; }
             .ad-left iframe { transform: scale(0.68); transform-origin: top left; }
             
-            .game-column { max-width: none; flex: 1; }
+            .game-column { max-width: none; flex: 1; height: 100vh; justify-content: space-between; }
             
-            /* Quadrados menores no celular para não empurrar o teclado */
-            .tile { width: 11vw !important; height: 11vw !important; max-width: 45px; max-height: 45px; font-size: 1.2rem !important; }
-            .key { height: 45px !important; font-size: 0.7rem !important; }
-            .kb-row { gap: 3px !important; padding: 0 4px !important; }
+            /* Diminuir o Grid para o teclado subir */
+            #grid { flex-grow: 0 !important; max-height: 45vh; padding: 5px !important; }
+            .tile { width: 10vw !important; height: 10vw !important; font-size: 1.1rem !important; }
+            
+            /* Teclado mais compacto e alto */
+            #keyboard { padding-bottom: 15px !important; }
+            .key { height: 42px !important; font-size: 0.75rem !important; }
+            .kb-row { gap: 3px !important; margin-bottom: 4px !important; }
+            
+            #message { min-height: 20px !important; font-size: 0.7rem !important; }
         }
 
-        /* GRID E TILES */
-        #grid { display: flex; flex-direction: column; gap: 6px; padding: 10px; align-items: center; justify-content: center; flex-grow: 1; }
+        /* GRID */
+        #grid { display: flex; flex-direction: column; gap: 6px; padding: 20px; align-items: center; justify-content: center; flex-grow: 1; }
         .row { display: flex; gap: 6px; }
         .tile { 
             width: 60px; height: 60px; border: 2px solid #3a3a3c; 
             display: flex; justify-content: center; align-items: center; 
             font-weight: bold; text-transform: uppercase; border-radius: 4px; 
-            font-size: 2rem;
+            font-size: 1.8rem;
         }
         .tile.focused { border-color: var(--selecionado); }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
 
-        /* TOPO E TECLADO */
+        /* NAV E TECLADO */
         .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #1a1a1b; border-bottom: 1px solid #333; }
-        .btn-logout { background: #b71c1c; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-weight: bold; font-size: 10px; cursor: pointer; }
+        .btn-logout { background: #b71c1c; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 10px; cursor: pointer; }
         
-        .kb-row { display: flex; justify-content: center; gap: 5px; margin-bottom: 5px; padding: 0 8px; }
+        .kb-row { display: flex; justify-content: center; gap: 5px; margin-bottom: 6px; padding: 0 8px; }
         .key { 
             background: #818384; border-radius: 4px; color: white; border: none; 
-            font-weight: bold; flex: 1; height: 58px; cursor: pointer; 
-            text-transform: uppercase; font-size: 0.9rem;
-            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; flex: 1; height: 55px; cursor: pointer; 
+            text-transform: uppercase; display: flex; align-items: center; justify-content: center;
         }
-        .key.wide { flex: 1.5; background: #565758; }
+        .key.wide { flex: 1.6; background: #565758; }
 
-        /* OVERLAYS */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; }
         .overlay.active { display: flex; }
         .card { background: #222; padding: 25px; border-radius: 12px; width: 85%; max-width: 350px; text-align: center; border: 1px solid #333; }
@@ -108,7 +108,7 @@
             </div>
             
             <div id="grid"></div>
-            <div id="message" style="text-align:center; min-height:30px; color:var(--selecionado); font-weight:bold; font-size:0.8rem;"></div>
+            <div id="message" style="text-align:center; min-height:25px; color:var(--selecionado); font-weight:bold; padding: 2px;"></div>
             <div id="keyboard" style="padding-bottom: 10px;"></div>
         </div>
     </div>
@@ -139,13 +139,13 @@
         let tentativaArray = ["","","","",""]; let letrasErradas = new Set();
         let userLocal = {};
 
-        // --- TECLADO FÍSICO (PC) ---
+        // TECLADO FÍSICO
         document.addEventListener("keydown", (e) => {
             if (document.getElementById('auth-screen').classList.contains('active')) return;
-            const key = e.key.toUpperCase();
-            if (key === "ENTER") verificar();
-            else if (key === "BACKSPACE") digitar("DEL");
-            else if (/^[A-Z]$/.test(key)) digitar(key);
+            const k = e.key.toUpperCase();
+            if (k === "ENTER") verificar();
+            else if (k === "BACKSPACE") digitar("DEL");
+            else if (/^[A-Z]$/.test(k)) digitar(k);
         });
 
         function fazerLogout() { auth.signOut().then(() => location.reload()); }
@@ -202,7 +202,7 @@
                 await db.ref('users/'+auth.currentUser.uid).update({ streak: (userLocal.streak||0)+1, coins: (userLocal.coins||0)+2 });
                 mostrarTelaAds("VENCEU!");
             } else if(linha === 5) {
-                mostrarTelaAds("PERDEU! Era: " + segredo);
+                mostrarTelaAds("GAME OVER! Era: " + segredo);
             } else { linha++; focadoIndex = 0; tentativaArray = ["","","","",""]; atualizarVisual(); criarTeclado(); }
         }
 
