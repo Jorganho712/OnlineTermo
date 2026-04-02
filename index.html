@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Verbete Online</title>
+    
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -36,8 +37,13 @@
         /* GRID */
         #grid { display: flex; flex-direction: column; gap: 6px; padding: 20px; align-items: center; justify-content: center; flex-grow: 1; }
         .row { display: flex; gap: 6px; }
-        .tile { width: 58px; height: 58px; border: 2px solid #3a3a3c; display: flex; justify-content: center; align-items: center; font-weight: bold; text-transform: uppercase; border-radius: 4px; font-size: 1.8rem; }
-        .tile.focused { border-color: var(--selecionado); }
+        .tile { 
+            width: 58px; height: 58px; border: 2px solid #3a3a3c; 
+            display: flex; justify-content: center; align-items: center; 
+            font-weight: bold; text-transform: uppercase; border-radius: 4px; 
+            font-size: 1.8rem; cursor: pointer; 
+        }
+        .tile.focused { border: 3px solid var(--selecionado); }
         .tile.correct { background: var(--cor-correta); border: none; }
         .tile.present { background: var(--cor-lugar-errado); border: none; }
         .tile.absent { background: var(--cor-errada); border: none; }
@@ -53,7 +59,7 @@
         .key { background: #818384; border-radius: 4px; color: white; border: none; font-weight: bold; flex: 1; height: 54px; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
         .key.wide { flex: 1.6; background: #565758; }
 
-        /* RANKING OVERLAY */
+        /* OVERLAYS */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; }
         .overlay.active { display: flex; }
         .card { background: #222; padding: 20px; border-radius: 12px; width: 85%; max-width: 350px; border: 1px solid #333; }
@@ -166,7 +172,13 @@
             document.getElementById('grid').innerHTML = "";
             for(let i=0; i<6; i++) {
                 const r = document.createElement('div'); r.className = 'row';
-                for(let j=0; j<5; j++) { const t = document.createElement('div'); t.className = 'tile'; r.appendChild(t); }
+                for(let j=0; j<5; j++) { 
+                    const t = document.createElement('div'); 
+                    t.className = 'tile'; 
+                    // RECOLOCADO O CLIQUE PARA ESCOLHER A LETRA
+                    t.onclick = () => { if(linha === i) { focadoIndex = j; atualizarVisual(); } };
+                    r.appendChild(t); 
+                }
                 document.getElementById('grid').appendChild(r);
             }
             criarTeclado(); atualizarVisual();
@@ -215,7 +227,11 @@
         function atualizarVisual() {
             const rows = document.querySelectorAll('.row'); if(!rows[linha]) return;
             const ts = rows[linha].querySelectorAll('.tile');
-            ts.forEach((t, i) => { t.innerText = tentativaArray[i]; t.classList.remove('focused'); if(i === focadoIndex) t.classList.add('focused'); });
+            ts.forEach((t, i) => { 
+                t.innerText = tentativaArray[i]; 
+                t.classList.remove('focused'); 
+                if(i === focadoIndex) t.classList.add('focused'); 
+            });
         }
         function mostrarTelaAds(t) { document.getElementById('ad-status').innerText = t; document.getElementById('ad-screen').classList.add('active'); }
     </script>
